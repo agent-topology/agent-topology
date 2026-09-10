@@ -69,21 +69,29 @@ Never commit to the default branch.
 ## 4. Implement and verify it yourself
 
 Implement completely — every acceptance criterion, not the easy subset. Respect
-the repo's boundaries in `AGENTS.md`: the security boundary (no real
-credentials anywhere, no plaintext secret values in findings or diagnostics, the
-core stays side-effect free), detection kept separate from policy, and browser /
-Node.js compatibility.
+the repo's boundaries in `AGENTS.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`, and
+the accepted ADRs. The specification stays independent of producers, core fields
+stay framework-neutral, producer-specific facts remain under `x-*`, and tests
+preserve the limitation-versus-gap and canonicalisation contracts.
 
-Then run the checks yourself and read the output:
+Use the authoritative commands in `CONVENTIONS.md`. For the current Python
+Foundation, run the checks yourself and read the output:
 
 ```bash
-rtk npm run ci          # decisions:validate + typecheck + build + vitest
-rtk cargo test          # when the change touches crates/
-rtk cargo clippy
+rtk uv run --project packages/python/spec --group test pytest packages/python/spec/tests
+rtk uv run --project packages/python/spec --group test pytest spec/tests
+rtk uv run --project packages/python/spec --group test python -m pytest tests/test_release_tools.py
+rtk uv run --project packages/python/langgraph --group test pytest packages/python/langgraph/tests
+rtk uvx --from ruff==0.16.7 ruff format --check packages/python scripts tests
+rtk uvx --from ruff==0.16.7 ruff check packages/python scripts tests
+rtk uv build packages/python/spec --out-dir dist/spec --clear
+rtk uv build packages/python/langgraph --out-dir dist/langgraph --clear
 ```
 
-Add deterministic tests for detector, redaction, overlap-resolution, or policy
-changes. If a check fails, fix it — do not report a red build as done.
+Run artifact inspection, clean-installation smoke tests, and every supported
+LangGraph conformance boundary when packaging, compatibility, or release behavior
+changes. Keep each fixture graph at the minimum size needed to measure its
+contract behavior. If a check fails, fix it — do not report a red build as done.
 
 ## 5. Commit — every commit subject is exactly `wip: #<ISSUE_NUMBER>`
 
