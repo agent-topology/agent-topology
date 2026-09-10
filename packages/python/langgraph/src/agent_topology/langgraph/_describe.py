@@ -12,6 +12,17 @@ from agent_topology.spec import finalize_document
 from langgraph.graph import END, START
 from langgraph.graph.state import CompiledStateGraph
 
+from ._exceptions import IncompleteTopologyError
+
+_PRODUCER_LIMITATIONS = [
+    {
+        "code": "dynamic-interrupts",
+        "message": (
+            "Interrupts raised inside node bodies cannot be observed statically."
+        ),
+    }
+]
+
 
 def _distribution_version(distribution: str) -> str:
     try:
@@ -132,6 +143,7 @@ def describe(
     compiled_graph: CompiledStateGraph,
     *,
     depth: int = 0,
+    strict: bool = False,
 ) -> dict[str, Any]:
     """Describe a compiled LangGraph ``StateGraph`` as a topology document.
 
@@ -140,14 +152,19 @@ def describe(
         depth: Number of nested graph levels to expand. The default, ``0``, keeps
             subgraphs opaque. A positive value is passed to LangGraph's drawable
             graph traversal.
+        strict: Raise :class:`IncompleteTopologyError` when graph-specific gaps
+            are present. Producer limitations do not cause strict extraction to fail.
 
     Returns:
         The canonical public document representation from ``agent_topology.spec``.
 
     Raises:
         TypeError: If ``compiled_graph`` is not a compiled LangGraph state graph,
-            or if ``depth`` is not an integer.
+            if ``depth`` is not an integer, or if ``strict`` is not a boolean.
         ValueError: If ``depth`` is negative.
+        IncompleteTopologyError: If ``strict`` is true and the resulting document
+            contains one or more graph-specific gaps. The exception's ``document``
+            attribute contains the canonical incomplete document.
     """
     if not isinstance(compiled_graph, CompiledStateGraph):
         raise TypeError(
@@ -158,6 +175,8 @@ def describe(
         raise TypeError("depth must be a non-negative integer")
     if depth < 0:
         raise ValueError("depth must be a non-negative integer")
+    if not isinstance(strict, bool):
+        raise TypeError("strict must be a boolean")
 
     drawable = compiled_graph.get_graph(xray=depth)
     node_ids = [str(node_id) for node_id in drawable.nodes]
@@ -205,7 +224,7 @@ def describe(
             },
             "source": {"kind": "compiled-object"},
         },
-        "producerLimitations": [],
+        "producerLimitations": _PRODUCER_LIMITATIONS,
         "graphs": [graph_document],
         "completeness": {
             "status": "incomplete" if unknown_routers else "complete",
@@ -221,4 +240,7 @@ def describe(
             ],
         },
     }
-    return finalize_document(document)
+    finalized = finalize_document(document)
+    if strict and finalized["completeness"]["gaps"]:
+        raise IncompleteTopologyError(finalized)
+    return finalized

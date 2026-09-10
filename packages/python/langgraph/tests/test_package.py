@@ -20,7 +20,7 @@ def _step(_state: _State) -> dict[str, str]:
 def test_langgraph_owns_only_its_namespace_portion() -> None:
     package_dir = Path(agent_topology.langgraph.__file__).parent
 
-    assert agent_topology.langgraph.__all__ == ["describe"]
+    assert agent_topology.langgraph.__all__ == ["IncompleteTopologyError", "describe"]
     assert not (package_dir.parent / "__init__.py").exists()
 
 
@@ -60,6 +60,20 @@ def test_describe_returns_public_spec_document() -> None:
         for node in graph["structure"]["nodes"]
     }
     assert sentinel_by_id == {"__end__": True, "__start__": True, "step": False}
+
+
+def test_strict_describe_succeeds_with_only_producer_limitations() -> None:
+    document = agent_topology.langgraph.describe(_compile_minimal_graph(), strict=True)
+
+    assert document["producerLimitations"] == [
+        {
+            "code": "dynamic-interrupts",
+            "message": (
+                "Interrupts raised inside node bodies cannot be observed statically."
+            ),
+        }
+    ]
+    assert document["completeness"] == {"gaps": [], "status": "complete"}
 
 
 def test_describe_exposes_nested_graph_depth() -> None:
@@ -103,6 +117,14 @@ def test_describe_rejects_non_integer_depth(depth: object) -> None:
 def test_describe_rejects_negative_depth() -> None:
     with pytest.raises(ValueError, match="non-negative integer"):
         agent_topology.langgraph.describe(_compile_minimal_graph(), depth=-1)
+
+
+@pytest.mark.parametrize("strict", [None, 0, "yes"])
+def test_describe_rejects_non_boolean_strict(strict: object) -> None:
+    with pytest.raises(TypeError, match="strict must be a boolean"):
+        agent_topology.langgraph.describe(  # type: ignore[arg-type]
+            _compile_minimal_graph(), strict=strict
+        )
 
 
 def _conditional_graph(*, declaration: str) -> CompiledStateGraph:
@@ -181,6 +203,23 @@ def test_describe_records_unknown_router_as_an_element_local_gap() -> None:
         ],
         "status": "incomplete",
     }
+
+
+def test_strict_describe_raises_with_canonical_incomplete_document() -> None:
+    with pytest.raises(
+        agent_topology.langgraph.IncompleteTopologyError,
+        match="1 graph-specific gap",
+    ) as raised:
+        agent_topology.langgraph.describe(
+            _conditional_graph(declaration="none"), strict=True
+        )
+
+    document = raised.value.document
+    assert document["structureHash"]["algorithmVersion"] == "1"
+    assert document["completeness"]["status"] == "incomplete"
+    assert [gap["element"]["id"] for gap in document["completeness"]["gaps"]] == [
+        "router"
+    ]
 
 
 def _join_graph(sources: list[str]) -> CompiledStateGraph:

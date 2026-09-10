@@ -44,6 +44,25 @@ levels. It defaults to `0`, which leaves nested graphs opaque:
 document = describe(compiled_graph, depth=1)
 ```
 
+Pass `strict=True` when the caller requires a graph-specific complete extraction:
+
+```python
+from agent_topology.langgraph import IncompleteTopologyError, describe
+
+try:
+    document = describe(compiled_graph, strict=True)
+except IncompleteTopologyError as error:
+    document = error.document
+    # Map this producer-owned condition to a stable non-zero CLI exit status.
+```
+
+Strict mode raises `IncompleteTopologyError` only when the canonical document contains
+one or more graph-specific `completeness.gaps`. Producer-wide
+`producerLimitations` do not make a document incomplete and do not raise. The
+exception's public `document` attribute contains the canonical incomplete document,
+including its structure hash and gaps, so callers can report the same extraction
+result without repeating completeness logic.
+
 Source code, uncompiled `StateGraph` builders, and runtime execution are not
 accepted by this API. Producer-specific metadata is emitted only beneath the
 `x-langgraph` extension key.
