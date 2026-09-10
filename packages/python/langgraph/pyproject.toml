@@ -10,6 +10,9 @@ requires-python = ">=3.11,<3.15"
 license = "MIT"
 dependencies = ["agent-topology-spec==0.0.0", "langgraph>=1.2.10,<=1.2.11"]
 
+[project.scripts]
+agt = "agent_topology.langgraph._cli:main"
+
 [dependency-groups]
 test = ["pytest==9.1.1"]
 
