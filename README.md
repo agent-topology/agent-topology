@@ -14,16 +14,26 @@ exists at runtime, but there is no common way to **publish** it.
 `agent-topology` reads a compiled graph and emits a JSON document describing its shape:
 
 ```python
-from agent_topology import describe
+from agent_topology.langgraph import describe
 
 doc = describe(compiled_graph)
 ```
 
 ```bash
-agent-topology src/my_agent/graph.py:graph -o agent-topology.manifest.json
+agt describe src/my_agent/graph.py:graph --out agent-topology.manifest.json
 ```
 
 That's the whole library.
+
+The planned PyPI distributions are `agent-topology-spec` and
+`agent-topology-langgraph`, imported as `agent_topology.spec` and
+`agent_topology.langgraph`. The npm packages use the project scope directly:
+`@agent-topology/spec` and `@agent-topology/langgraph`.
+
+For maintainers, see [Architecture](ARCHITECTURE.md),
+[Conventions](CONVENTIONS.md), the
+[architecture decision router](docs/decisions/DECISIONS.md), and the
+[issue-planning model](docs/ISSUE-PLANNING.md).
 
 ---
 
