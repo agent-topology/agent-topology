@@ -139,6 +139,12 @@ that branch has exactly `wip: #<NUMBER>` as its subject, with no body or trailer
 The repository's `ghpr` workflow owns creation of the final commit message and
 pull request. Use `review-pr <NUMBER>` for the final pre-merge review.
 
+Immediately before implementing a Feature, run
+`determine-feature <FEATURE_NUMBER>`. A decision-complete Feature that fits one
+reviewable pull request remains the leaf work item. A broader Feature is split
+into the minimum native Task sub-issues, and `resolve-issue` runs on those Task
+leaves instead.
+
 Pull requests normally close Tasks or Bugs. A Feature may be closed by a pull
 request only when it is already one bounded, independently reviewable change.
 Closing all children triggers review of the parent outcome; it does not prove

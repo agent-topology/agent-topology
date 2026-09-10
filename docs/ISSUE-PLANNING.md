@@ -61,6 +61,19 @@ should normally fit one pull request, name its verification, and close without
 requiring sibling Tasks to be closed at the same moment. Split a Task when its
 parts can fail or be reviewed independently.
 
+### Feature readiness
+
+Run `determine-feature <FEATURE_NUMBER>` immediately before implementation. A
+sub-issue-free Feature is a valid `resolve-issue` unit when it has no open
+blockers, is decision-complete, has one cohesive verification boundary, and fits
+one independently mergeable and reversible pull request.
+
+If it does not, create only the Task boundaries needed to make those statements
+true. Keep downstream issues blocked by the Feature, connect Task-to-Task
+dependencies only where execution requires them, and resolve the Task leaves.
+After every Task closes, verify the Feature's integrated acceptance criteria
+before closing it.
+
 ## Classification
 
 As of 2026-09-10 this repository is owned by a personal GitHub account, while
@@ -137,8 +150,16 @@ not harden into a stale backlog.
 
 ## First-cut hierarchy
 
-Create the following as the initial shape, then refine Features into Tasks only
-after the package build tools and CLI ownership decision are known.
+The initial live hierarchy is below. Refine Features into Tasks only after the
+package build tools and CLI ownership decision are known.
+
+Live tracking:
+
+- [Foundation — usable Python producer](https://github.com/milocosmopolitan/agent-topology/milestone/1)
+- [Spec and conformance foundation](https://github.com/milocosmopolitan/agent-topology/issues/1)
+- [Python LangGraph producer](https://github.com/milocosmopolitan/agent-topology/issues/2)
+- [CLI and document workflow](https://github.com/milocosmopolitan/agent-topology/issues/3)
+- [PyPI packaging and release readiness](https://github.com/milocosmopolitan/agent-topology/issues/4)
 
 ```text
 Milestone: Foundation — usable Python producer
