@@ -54,10 +54,10 @@ A producer runs in the same process and language as the compiled graph it
 inspects. It translates framework concepts into the core document and puts
 framework-only facts under a namespaced `x-*` extension.
 
-The first producer targets Python LangGraph. A TypeScript LangGraph producer is
-possible later, but it would validate cross-language extraction rather than
-vendor neutrality. Only a producer for a structurally different framework can
-test the provisional core boundary.
+The first producer targets Python LangGraph, and the TypeScript producer targets
+LangGraph.js through an idiomatic asynchronous API. Their agreement validates
+cross-language extraction rather than vendor neutrality. Only a producer for a
+structurally different framework can test the provisional core boundary.
 
 ### Consumers
 
@@ -92,7 +92,7 @@ boundaries follow responsibility and framework, not implementation language.
 | Specification and document utilities | `agent-topology-spec` on PyPI | `agent_topology.spec` | Python foundation |
 | Python LangGraph producer | `agent-topology-langgraph` on PyPI | `agent_topology.langgraph` | First producer |
 | Specification for JavaScript consumers | `@agent-topology/spec` on npm | `@agent-topology/spec` | TypeScript expansion |
-| LangGraph.js producer | `@agent-topology/langgraph` on npm | `@agent-topology/langgraph` | Deferred |
+| LangGraph.js producer | `@agent-topology/langgraph` on npm | `@agent-topology/langgraph` | TypeScript expansion |
 
 PyPI distribution names are globally unique installation identifiers. The
 `agent_topology` namespace package is the Python equivalent of the npm
@@ -148,7 +148,7 @@ packages/
     langgraph/           agent-topology-langgraph
   typescript/
     spec/                @agent-topology/spec
-    langgraph/           @agent-topology/langgraph (deferred)
+    langgraph/           @agent-topology/langgraph
 conformance/             shared cases and producer runners
 docs/decisions/          accepted architectural decisions and router
 ```

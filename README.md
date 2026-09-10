@@ -108,8 +108,19 @@ The Python distributions build as `agent-topology-spec` and
 `agent_topology.langgraph`. Release automation exists, but they are not yet
 published to PyPI. TypeScript applications can use `@agent-topology/spec` to
 validate, canonicalize, serialize, and hash documents without a framework runtime.
-The future LangGraph.js producer uses the project scope as
-`@agent-topology/langgraph`.
+They can use the async `describe` API from `@agent-topology/langgraph` to inspect a
+compiled LangGraph.js graph:
+
+```ts
+import { describe } from "@agent-topology/langgraph";
+
+const document = await describe(compiledGraph);
+const expanded = await describe(compiledGraph, { depth: 1 });
+```
+
+The TypeScript producer currently supports LangGraph.js 1.4.14 and refuses other
+versions before graph inspection with an actionable installation command. It has no
+CLI; `agt` remains owned by the Python Foundation producer.
 
 For maintainers, see [Architecture](ARCHITECTURE.md),
 [Conventions](CONVENTIONS.md), the
@@ -226,11 +237,12 @@ If no, it's an extension.
 
 ## Producers
 
-| Framework        | Status                |
-| ---------------- | --------------------- |
-| LangGraph        | Foundation implemented (1.2.10–1.2.11) |
-| LangChain (LCEL) | planned               |
-| others           | contributions welcome |
+| Framework          | Status                                       |
+| ------------------ | -------------------------------------------- |
+| LangGraph (Python) | Foundation implemented (1.2.10–1.2.11)       |
+| LangGraph.js       | TypeScript producer implemented (1.4.14)     |
+| LangChain (LCEL)   | planned                                      |
+| others             | contributions welcome                        |
 
 A producer is a function from a framework's compiled object to this document. It should
 be small. If it needs configuration, the format is probably wrong.
