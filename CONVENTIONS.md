@@ -129,6 +129,23 @@ uvx --from ruff==0.16.7 ruff format --check packages/python
 uvx --from ruff==0.16.7 ruff check packages/python
 ```
 
+CI builds and inspects each wheel and source distribution independently, then
+installs both archive formats in clean environments and proves that the two native
+`agent_topology` namespace portions coexist. The LangGraph compatibility workflow
+derives its version matrix from `_compatibility.json`; package metadata and this
+matrix must not be maintained as separate compatibility claims.
+
+Python releases run through `release-python.yml`. A manual run selects exactly one
+of `spec` or `langgraph` and supplies that distribution's PEP 440 version. Leave the
+`publish` input false to exercise the complete release path without contacting
+PyPI. Publishing uses a package-specific protected GitHub environment and PyPI
+Trusted Publishing. The publish job accepts only artifacts accompanied by the
+release receipt produced after the selected package's tests, quality checks,
+artifact inspection, clean installation, namespace-coexistence check, and (for the
+producer) supported-range conformance. The receipt binds those checks to the exact
+commit, package, version, filenames, and SHA-256 digests; both authorization and
+publication refuse a dirty checkout.
+
 The Python packages are native portions of the `agent_topology` namespace.
 Never add `packages/python/*/src/agent_topology/__init__.py`.
 
