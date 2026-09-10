@@ -22,6 +22,37 @@ The three version axes are intentionally independent:
 - `structureHash.algorithmVersion` versions canonicalisation and hash coverage;
 - `provenance.producer.version` is the producing package version.
 
+## Canonical output and structure hash
+
+Algorithm version `1` sorts graphs, nodes, edges, joins, join sources, entry and
+exit node identifiers, and interrupt locations before output and hashing. JSON
+object keys are sorted and canonical output uses UTF-8 JSON without insignificant
+whitespace. Arrays inside extensions and descriptive fields keep their declared
+order because the core contract does not assign them set semantics.
+
+The version `1` structure hash is SHA-256 over graph identifiers and these core
+structural properties:
+
+- node `id`, `type`, `subgraphId`, and `interrupts`;
+- edge `id`, `source`, `target`, and `kind`;
+- join `id`, `sources`, and `target`; and
+- `entryNodeIds` and `exitNodeIds`.
+
+It excludes graph names, provenance, producer limitations, completeness gaps,
+extensions, labels, descriptive metadata, and the document's existing hash. A
+multi-source join is hashed in the `joins` collection, so it cannot collapse to
+the same input as separate incoming edges.
+
+The Python spec package exposes `canonicalize_document`, `canonical_json`,
+`compute_structure_hash`, and `finalize_document`. `finalize_document` computes
+the hash and returns the canonical output without mutating its input.
+
+Changing collection semantics or the set of hashed properties requires a new
+algorithm version. Add a separate projection for that version, retain the old
+projection while transition output is needed, update the schema's supported
+`algorithmVersion`, and select the new version explicitly. Format and package
+versions do not change implicitly as part of that transition.
+
 JSON Schema validates the document shape and extension boundary. The repository
 validator additionally checks identifier uniqueness, node/subgraph references,
 gap element references, and the completeness invariant:
