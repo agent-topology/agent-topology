@@ -42,11 +42,17 @@ def test_package_metadata_matches_evidence_backed_compatibility_contract() -> No
         ).read_text(encoding="utf-8")
     )
 
-    langgraph_dependency = next(
+    dependencies = project["project"]["dependencies"]
+    spec_dependency = next(
         dependency
-        for dependency in project["project"]["dependencies"]
-        if dependency.startswith("langgraph")
+        for dependency in dependencies
+        if dependency.startswith("agent-topology-spec")
     )
+    langgraph_dependency = next(
+        dependency for dependency in dependencies if dependency.startswith("langgraph")
+    )
+    assert project["project"]["name"] == "agent-topology-langgraph"
+    assert spec_dependency == "agent-topology-spec>=0.0.0,<0.1.0"
     assert langgraph_dependency == f"langgraph{contract['metadataSpecifier']}"
     assert contract["testedVersions"] == ["1.2.10", "1.2.11"]
 
