@@ -1,0 +1,192 @@
+schemaVersion: 1
+updatedAt: 2026-09-10
+
+frameworks:
+  langgraph:
+    implementations:
+      python:
+        ecosystem: pypi
+        distribution: langgraph
+        projectRole: first-producer-framework
+
+        baseline:
+          version: 1.2.11
+          requirement: "langgraph==1.2.11"
+          status: source-verified
+          rationale: >-
+            Use one exact version until every claimed topology surface has a
+            checked-in minimum probe. ADR 0003 requires untested framework
+            versions to be refused rather than silently accepted.
+
+        support:
+          testedRequirement: "langgraph==1.2.11"
+          policy: >-
+            Expand only when the candidate version passes the producer's
+            complete probe and conformance matrix. Upstream semantic-versioning
+            compatibility does not by itself cover producer access to
+            framework internals.
+
+        releases:
+          "1.2.11":
+            status: source-verified
+            tag: 1.2.11
+            commit: 644815f9e5bc52ad8f7a5227a456227e9c3e639b
+            releasedAt: 2026-08-11
+            releaseUrl: https://github.com/langchain-ai/langgraph/releases/tag/1.2.11
+            packageUrl: https://pypi.org/project/langgraph/1.2.11/
+            dossier: frameworks/langgraph/python/1.2.11/dossier.md
+
+            documentation:
+              discoveryIndex:
+                url: https://docs.langchain.com/llms.txt
+                edition: rolling
+                status: documented
+              langgraphGuideIndex:
+                url: https://docs.langchain.com/oss/python/langgraph/llms.txt
+                edition: rolling
+                status: documented
+              apiReference:
+                url: https://reference.langchain.com/python/langgraph/overview
+                reportedVersion: 1.2.11
+                edition: rolling
+                status: documented
+              versioning:
+                url: https://docs.langchain.com/oss/python/versioning
+                edition: rolling
+                status: documented
+              releasePolicy:
+                url: https://docs.langchain.com/oss/python/release-policy
+                edition: rolling
+                status: documented
+
+            sourceRoot: >-
+              https://github.com/langchain-ai/langgraph/tree/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph
+
+            topologySurfaces:
+              compiledBuilder:
+                status: source-verified
+                symbol: langgraph.graph.state.CompiledStateGraph.builder
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/graph/state.py#L1245-L1316
+                finding: >-
+                  StateGraph.compile passes builder=self, and
+                  CompiledStateGraph stores that builder. Whether this is a
+                  supported producer dependency remains to be decided after
+                  probes and compatibility testing.
+                probe: pending
+
+              nodesAndOrdinaryEdges:
+                status: source-verified
+                symbol: langgraph.graph.state.StateGraph
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/graph/state.py#L188-L195
+                finding: >-
+                  The builder keeps nodes in nodes and ordinary directed edges
+                  in edges.
+                probe: pending
+
+              multiSourceEdges:
+                status: source-verified
+                symbol: langgraph.graph.state.StateGraph.waiting_edges
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/graph/state.py#L860-L906
+                finding: >-
+                  add_edge with multiple sources stores one tuple of sources
+                  and one target in waiting_edges, separately from ordinary
+                  edges.
+                probe: pending
+                fixture: pending
+
+              conditionalEdges:
+                status: source-verified
+                symbol: langgraph.graph.state.StateGraph.add_conditional_edges
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/graph/state.py#L908-L950
+                finding: >-
+                  Conditional routes are stored under branches. Without a path
+                  map or return type hint, drawable output may assume every
+                  node is reachable; the producer must not present that
+                  assumption as known routing.
+                probe: pending
+                fixture: pending
+
+              drawableGraph:
+                status: source-verified
+                symbol: langgraph.pregel.main.Pregel.get_graph
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/pregel/main.py#L792-L817
+                finding: >-
+                  get_graph is a public method returning a drawable graph. A
+                  probe must determine which execution semantics it preserves
+                  or normalises.
+                probe: pending
+
+              subgraphs:
+                status: source-verified
+                symbol: langgraph.pregel.main.Pregel.get_subgraphs
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/pregel/main.py#L1005-L1039
+                finding: >-
+                  get_subgraphs publicly yields immediate subgraphs and
+                  optionally recurses through nested Pregel graphs.
+                probe: pending
+                fixture: pending
+
+              interrupts:
+                status: source-verified
+                symbol: langgraph.graph.state.StateGraph.compile
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/graph/state.py#L1087-L1124
+                finding: >-
+                  compile accepts interrupt_before and interrupt_after
+                  declarations. Their reliable representation after
+                  compilation still needs a probe.
+                probe: pending
+                fixture: pending
+
+      typescript:
+        ecosystem: npm
+        distribution: "@langchain/langgraph"
+        projectRole: deferred-producer-framework
+        baseline:
+          version: pending
+          requirement: pending
+          status: pending
+          rationale: >-
+            Select an exact TypeScript baseline only when TypeScript producer
+            research begins. Python findings are not assumed to apply.
+        support:
+          testedRequirement: pending
+          policy: >-
+            Establish support independently with TypeScript-specific source
+            evidence, minimum probes, and the shared conformance meanings.
+        releases: {}
+
+  langchain:
+    implementations:
+      python:
+        ecosystem: pypi
+        distribution: langchain
+        projectRole: research-and-integration-only
+        baseline:
+          version: pending
+          requirement: pending
+          status: pending
+          rationale: >-
+            The Python LangGraph producer consumes a compiled LangGraph object.
+            Do not add LangChain as a producer runtime dependency unless a
+            verified extraction requirement demonstrates that it is necessary.
+        releases: {}
+
+      typescript:
+        ecosystem: npm
+        distribution: langchain
+        projectRole: research-and-integration-only
+        baseline:
+          version: pending
+          requirement: pending
+          status: pending
+          rationale: >-
+            Keep future LangChain.js integration research separate from the
+            LangGraph.js producer and from Python package findings.
+        releases: {}
