@@ -8,6 +8,7 @@ version = "0.0.0"
 description = "LangGraph producer for agent-topology documents"
 requires-python = ">=3.11,<3.15"
 license = "MIT"
+dependencies = ["agent-topology-spec==0.0.0", "langgraph==1.2.11"]
 
 [dependency-groups]
 test = ["pytest==9.1.1"]
@@ -21,3 +22,6 @@ include = ["src/agent_topology", "tests", "pyproject.toml"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+
+[tool.uv.sources]
+agent-topology-spec = { path = "../spec" }
