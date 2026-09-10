@@ -47,7 +47,7 @@ jobs:
       - name: Test release guards
         run: >-
           uv run --project packages/python/spec --group test
-          pytest tests/test_release_tools.py
+          python -m pytest tests/test_release_tools.py
 
   artifacts:
     name: Inspect ${{ matrix.package }} artifacts

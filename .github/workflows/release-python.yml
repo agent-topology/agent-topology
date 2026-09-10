@@ -89,7 +89,7 @@ jobs:
           ${{ needs.selection.outputs.package-root }} scripts tests
       - run: >-
           uv run --project packages/python/spec --group test
-          pytest tests/test_release_tools.py
+          python -m pytest tests/test_release_tools.py
 
   producer-conformance:
     needs: selection
