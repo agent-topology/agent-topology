@@ -69,6 +69,36 @@ exception's public `document` attribute contains the canonical incomplete docume
 including its structure hash and gaps, so callers can report the same extraction
 result without repeating completeness logic.
 
+### Command line
+
+Installing `agent-topology-langgraph` provides the `agt` executable. Its Foundation
+command imports a Python file, resolves the named compiled graph object, and writes the
+byte-stable canonical document without executing the graph:
+
+```bash
+agt describe path/to/graph.py:graph --out topology.json
+```
+
+The target syntax is `path.py:object`. Use `--strict` to require graph-specific
+completeness. When gaps are present, strict mode still writes the canonical incomplete
+document and exits with status 6.
+
+`agt describe` uses stable, distinguishable process results:
+
+| Status | Meaning |
+| --- | --- |
+| 0 | The canonical document was written successfully. |
+| 2 | The command or target syntax is invalid. |
+| 3 | The Python target file could not be imported. |
+| 4 | The named object could not be resolved or is not a compiled graph. |
+| 5 | The installed LangGraph version is unsupported. |
+| 6 | Strict extraction found graph-specific completeness gaps. |
+| 7 | The output document could not be written. |
+| 8 | Extraction failed for another reason. |
+
+Importing a target executes its module-level Python statements so the compiled object
+can be created. The CLI never invokes or schedules the graph itself.
+
 Source code, uncompiled `StateGraph` builders, and runtime execution are not
 accepted by this API. Producer-specific metadata is emitted only beneath the
 `x-langgraph` extension key.
