@@ -1,0 +1,91 @@
+{
+  "completeness": {
+    "gaps": [],
+    "status": "complete"
+  },
+  "graphs": [
+    {
+      "id": "main",
+      "structure": {
+        "edges": [
+          {
+            "id": "edge:__start__:fork:direct:1",
+            "kind": "direct",
+            "source": "__start__",
+            "target": "fork"
+          },
+          {
+            "id": "edge:fork:left:direct:1",
+            "kind": "direct",
+            "source": "fork",
+            "target": "left"
+          },
+          {
+            "id": "edge:fork:right:direct:1",
+            "kind": "direct",
+            "source": "fork",
+            "target": "right"
+          },
+          {
+            "id": "edge:left:__end__:direct:1",
+            "kind": "direct",
+            "source": "left",
+            "target": "__end__"
+          },
+          {
+            "id": "edge:right:__end__:direct:1",
+            "kind": "direct",
+            "source": "right",
+            "target": "__end__"
+          }
+        ],
+        "entryNodeIds": [
+          "__start__"
+        ],
+        "exitNodeIds": [
+          "__end__"
+        ],
+        "joins": [],
+        "nodes": [
+          {
+            "id": "__end__"
+          },
+          {
+            "id": "__start__"
+          },
+          {
+            "id": "fork"
+          },
+          {
+            "id": "left"
+          },
+          {
+            "id": "right"
+          }
+        ]
+      }
+    }
+  ],
+  "producerLimitations": [],
+  "provenance": {
+    "framework": {
+      "name": "conformance-fixture",
+      "version": "1"
+    },
+    "generatedAt": "2000-01-01T00:00:00Z",
+    "producer": {
+      "name": "agent-topology-conformance",
+      "version": "1"
+    },
+    "source": {
+      "kind": "conformance-fixture",
+      "locator": "parallel-fanout"
+    }
+  },
+  "structureHash": {
+    "algorithm": "sha256",
+    "algorithmVersion": "1",
+    "value": "0b4f89b5f118775c55b16ed19e088bb92b058f651b066e60ed238c1c6548afed"
+  },
+  "topologyVersion": "0.1"
+}

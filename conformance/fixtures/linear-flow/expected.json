@@ -1,0 +1,76 @@
+{
+  "completeness": {
+    "gaps": [],
+    "status": "complete"
+  },
+  "graphs": [
+    {
+      "id": "main",
+      "structure": {
+        "edges": [
+          {
+            "id": "edge:__start__:first:direct:1",
+            "kind": "direct",
+            "source": "__start__",
+            "target": "first"
+          },
+          {
+            "id": "edge:first:second:direct:1",
+            "kind": "direct",
+            "source": "first",
+            "target": "second"
+          },
+          {
+            "id": "edge:second:__end__:direct:1",
+            "kind": "direct",
+            "source": "second",
+            "target": "__end__"
+          }
+        ],
+        "entryNodeIds": [
+          "__start__"
+        ],
+        "exitNodeIds": [
+          "__end__"
+        ],
+        "joins": [],
+        "nodes": [
+          {
+            "id": "__end__"
+          },
+          {
+            "id": "__start__"
+          },
+          {
+            "id": "first"
+          },
+          {
+            "id": "second"
+          }
+        ]
+      }
+    }
+  ],
+  "producerLimitations": [],
+  "provenance": {
+    "framework": {
+      "name": "conformance-fixture",
+      "version": "1"
+    },
+    "generatedAt": "2000-01-01T00:00:00Z",
+    "producer": {
+      "name": "agent-topology-conformance",
+      "version": "1"
+    },
+    "source": {
+      "kind": "conformance-fixture",
+      "locator": "linear-flow"
+    }
+  },
+  "structureHash": {
+    "algorithm": "sha256",
+    "algorithmVersion": "1",
+    "value": "c20e3b57730a76f8994e6fe62b3d1f6538e1f3ddb0b36f6a9aa77d7ee6516b75"
+  },
+  "topologyVersion": "0.1"
+}

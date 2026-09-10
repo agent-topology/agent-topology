@@ -1,0 +1,9 @@
+{
+  "nodes": [{"id": "left"}, {"id": "right"}, {"id": "joined"}],
+  "directEdges": [
+    {"source": "$start", "target": "left"},
+    {"source": "$start", "target": "right"},
+    {"source": "joined", "target": "$end"}
+  ],
+  "joins": [{"sources": ["left", "right"], "target": "joined"}]
+}

@@ -1,0 +1,18 @@
+{
+  "nodes": [
+    {
+      "id": "nested",
+      "subgraph": {
+        "nodes": [{"id": "inner"}],
+        "directEdges": [
+          {"source": "$start", "target": "inner"},
+          {"source": "inner", "target": "$end"}
+        ]
+      }
+    }
+  ],
+  "directEdges": [
+    {"source": "$start", "target": "nested"},
+    {"source": "nested", "target": "$end"}
+  ]
+}

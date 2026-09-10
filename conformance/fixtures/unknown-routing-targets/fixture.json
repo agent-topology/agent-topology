@@ -1,0 +1,8 @@
+{
+  "nodes": [{"id": "router"}, {"id": "target"}],
+  "directEdges": [
+    {"source": "$start", "target": "router"},
+    {"source": "target", "target": "$end"}
+  ],
+  "conditionalRoutes": [{"source": "router", "targets": null}]
+}

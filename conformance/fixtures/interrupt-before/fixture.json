@@ -1,0 +1,8 @@
+{
+  "nodes": [{"id": "write"}],
+  "directEdges": [
+    {"source": "$start", "target": "write"},
+    {"source": "write", "target": "$end"}
+  ],
+  "interruptBefore": ["write"]
+}

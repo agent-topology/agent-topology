@@ -1,0 +1,7 @@
+{
+  "nodes": [{"id": "retry"}],
+  "directEdges": [{"source": "$start", "target": "retry"}],
+  "conditionalRoutes": [
+    {"source": "retry", "targets": ["retry", "$end"]}
+  ]
+}
