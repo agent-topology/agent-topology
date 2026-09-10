@@ -1,0 +1,186 @@
+{
+  "completeness": {
+    "gaps": [
+      {
+        "code": "unknown-routing-targets",
+        "element": {
+          "graphId": "approval",
+          "id": "plan",
+          "kind": "node"
+        },
+        "message": "Not every destination of this router could be determined."
+      }
+    ],
+    "status": "incomplete"
+  },
+  "graphs": [
+    {
+      "id": "approval",
+      "name": "approval-flow",
+      "structure": {
+        "edges": [
+          {
+            "id": "edge:__start__:plan:direct:1",
+            "kind": "direct",
+            "source": "__start__",
+            "target": "plan"
+          },
+          {
+            "id": "edge:archive:__end__:direct:1",
+            "kind": "direct",
+            "source": "archive",
+            "target": "__end__"
+          },
+          {
+            "id": "edge:review:__end__:direct:1",
+            "kind": "direct",
+            "source": "review",
+            "target": "__end__"
+          }
+        ],
+        "entryNodeIds": [
+          "__start__",
+          "archive",
+          "review"
+        ],
+        "exitNodeIds": [
+          "__end__"
+        ],
+        "joins": [],
+        "nodes": [
+          {
+            "id": "__end__",
+            "x-langgraph": {
+              "name": "__end__",
+              "sentinel": true
+            }
+          },
+          {
+            "id": "__start__",
+            "x-langgraph": {
+              "name": "__start__",
+              "sentinel": true
+            }
+          },
+          {
+            "id": "archive",
+            "x-langgraph": {
+              "name": "archive",
+              "sentinel": false
+            }
+          },
+          {
+            "id": "plan",
+            "x-langgraph": {
+              "name": "plan",
+              "sentinel": false
+            }
+          },
+          {
+            "id": "review",
+            "x-langgraph": {
+              "name": "review",
+              "sentinel": false
+            }
+          }
+        ]
+      },
+      "x-langgraph": {
+        "traversalDepth": 0
+      }
+    },
+    {
+      "id": "shadow",
+      "name": "shadow-flow",
+      "structure": {
+        "edges": [
+          {
+            "id": "edge:__start__:review:direct:1",
+            "kind": "direct",
+            "source": "__start__",
+            "target": "review"
+          },
+          {
+            "id": "edge:archive:__end__:direct:1",
+            "kind": "direct",
+            "source": "archive",
+            "target": "__end__"
+          },
+          {
+            "id": "edge:review:archive:direct:1",
+            "kind": "direct",
+            "source": "review",
+            "target": "archive"
+          }
+        ],
+        "entryNodeIds": [
+          "__start__"
+        ],
+        "exitNodeIds": [
+          "__end__"
+        ],
+        "joins": [],
+        "nodes": [
+          {
+            "id": "__end__",
+            "x-langgraph": {
+              "name": "__end__",
+              "sentinel": true
+            }
+          },
+          {
+            "id": "__start__",
+            "x-langgraph": {
+              "name": "__start__",
+              "sentinel": true
+            }
+          },
+          {
+            "id": "archive",
+            "x-langgraph": {
+              "name": "archive",
+              "sentinel": false
+            }
+          },
+          {
+            "id": "review",
+            "x-langgraph": {
+              "name": "review",
+              "sentinel": false
+            }
+          }
+        ]
+      },
+      "x-langgraph": {
+        "traversalDepth": 0
+      }
+    }
+  ],
+  "producerLimitations": [
+    {
+      "code": "dynamic-interrupts",
+      "message": "Interrupts raised inside node bodies cannot be observed statically."
+    }
+  ],
+  "provenance": {
+    "framework": {
+      "name": "langgraph",
+      "version": "1.2.11"
+    },
+    "generatedAt": "2026-09-10T00:00:00Z",
+    "producer": {
+      "name": "agent-topology-langgraph",
+      "version": "0.0.0"
+    },
+    "source": {
+      "kind": "compiled-object",
+      "locator": "examples/trace-correlation/generate_fixtures.py"
+    }
+  },
+  "structureHash": {
+    "algorithm": "sha256",
+    "algorithmVersion": "1",
+    "value": "6f105e74159c638fa2ab8f4e34e3b46da7f1545db6a3ae9091f50505c0dd405c"
+  },
+  "topologyVersion": "0.1"
+}

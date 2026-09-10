@@ -1,0 +1,41 @@
+{
+  "events": [
+    {
+      "eventId": "event-001",
+      "graphId": "approval",
+      "kind": "node.completed",
+      "nodeId": "plan"
+    },
+    {
+      "eventId": "event-002",
+      "graphId": "approval",
+      "kind": "tool.completed",
+      "nodeId": "customer-lookup"
+    },
+    {
+      "eventId": "event-003",
+      "kind": "node.completed",
+      "nodeId": "review"
+    },
+    {
+      "eventId": "event-004",
+      "graphId": "approval",
+      "kind": "graph.completed"
+    }
+  ],
+  "provenance": {
+    "framework": {
+      "name": "langgraph",
+      "version": "1.2.11"
+    },
+    "generator": "examples/trace-correlation/generate_fixtures.py",
+    "kind": "sanitized-langgraph-execution",
+    "sanitization": [
+      "removed run identifiers and timestamps",
+      "replaced application payloads with deterministic literals",
+      "omitted graph identity from one node event to retain ambiguity"
+    ],
+    "scenario": "approval-flow routes plan to review"
+  },
+  "traceVersion": "1"
+}
