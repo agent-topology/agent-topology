@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts import release_guard
+from scripts import release_guard, verify_python_artifacts
 
 
 def _inspection() -> dict[str, object]:
@@ -15,6 +15,22 @@ def _inspection() -> dict[str, object]:
         "package": "spec",
         "version": "1.0.0",
     }
+
+
+def test_artifact_contents_are_derived_from_current_package_source(
+    tmp_path: Path,
+) -> None:
+    package_dir = tmp_path / "packages/python/langgraph/src/agent_topology/langgraph"
+    package_dir.mkdir(parents=True)
+    (package_dir / "__init__.py").write_text("", encoding="utf-8")
+    (package_dir / "_cli.py").write_text("", encoding="utf-8")
+    cache_dir = package_dir / "__pycache__"
+    cache_dir.mkdir()
+    (cache_dir / "_cli.pyc").write_bytes(b"generated")
+
+    assert verify_python_artifacts._source_package_files(
+        "langgraph", "langgraph", tmp_path
+    ) == {"__init__.py", "_cli.py"}
 
 
 def test_release_refuses_a_dirty_worktree(monkeypatch: pytest.MonkeyPatch) -> None:

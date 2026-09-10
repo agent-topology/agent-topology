@@ -17,21 +17,10 @@ PACKAGES = {
     "spec": {
         "distribution": "agent-topology-spec",
         "module": "spec",
-        "wheel_files": {
-            "__init__.py",
-            "_canonical.py",
-        },
     },
     "langgraph": {
         "distribution": "agent-topology-langgraph",
         "module": "langgraph",
-        "wheel_files": {
-            "__init__.py",
-            "_compatibility.json",
-            "_compatibility.py",
-            "_describe.py",
-            "_exceptions.py",
-        },
     },
 }
 
@@ -84,6 +73,27 @@ def _one(dist_dir: Path, suffix: str) -> Path:
             f"expected exactly one *{suffix} in {dist_dir}, found {len(matches)}"
         )
     return matches[0]
+
+
+def _source_package_files(package: str, module: str, source_root: Path) -> set[str]:
+    package_dir = (
+        source_root
+        / "packages"
+        / "python"
+        / package
+        / "src"
+        / "agent_topology"
+        / module
+    )
+    if not package_dir.is_dir():
+        raise ValueError(f"package source directory does not exist: {package_dir}")
+    return {
+        path.relative_to(package_dir).as_posix()
+        for path in package_dir.rglob("*")
+        if path.is_file()
+        and "__pycache__" not in path.parts
+        and path.suffix not in {".pyc", ".pyo"}
+    }
 
 
 def _inspect_wheel(
@@ -164,9 +174,12 @@ def _inspect_sdist(
         raise ValueError(f"{sdist.name} does not contain its package tests")
 
 
-def inspect_artifacts(package: str, version: str, dist_dir: Path) -> dict[str, Any]:
+def inspect_artifacts(
+    package: str, version: str, dist_dir: Path, source_root: Path = Path(".")
+) -> dict[str, Any]:
     """Validate and describe the two artifacts for ``package``."""
     config = PACKAGES[package]
+    expected = _source_package_files(package, config["module"], source_root)
     wheel = _one(dist_dir, ".whl")
     sdist = _one(dist_dir, ".tar.gz")
     _inspect_wheel(
@@ -174,14 +187,14 @@ def inspect_artifacts(package: str, version: str, dist_dir: Path) -> dict[str, A
         distribution=config["distribution"],
         module=config["module"],
         version=version,
-        expected=config["wheel_files"],
+        expected=expected,
     )
     _inspect_sdist(
         sdist,
         distribution=config["distribution"],
         module=config["module"],
         version=version,
-        expected=config["wheel_files"],
+        expected=expected,
     )
     artifacts = []
     for path in (wheel, sdist):
