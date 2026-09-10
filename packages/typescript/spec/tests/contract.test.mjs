@@ -1,0 +1,224 @@
+import assert from "node:assert/strict";
+import { readdir, readFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
+import { test } from "node:test";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import * as spec from "../dist/index.js";
+
+const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const fixturesRoot = resolve(packageRoot, "../../../conformance/fixtures");
+
+async function expectedDocuments() {
+  const cases = await readdir(fixturesRoot, { withFileTypes: true });
+  return Promise.all(
+    cases
+      .filter((entry) => entry.isDirectory())
+      .map(async (entry) => ({
+        name: entry.name,
+        document: JSON.parse(
+          await readFile(
+            resolve(fixturesRoot, entry.name, "expected.json"),
+            "utf8",
+          ),
+        ),
+      })),
+  );
+}
+
+test("the deliberate runtime API is the only public root surface", () => {
+  assert.deepEqual(Object.keys(spec).sort(), [
+    "STRUCTURE_HASH_ALGORITHM",
+    "STRUCTURE_HASH_ALGORITHM_VERSION",
+    "TopologyValidationError",
+    "assertTopologyDocument",
+    "canonicalStringify",
+    "canonicalizeDocument",
+    "computeStructureHash",
+    "finalizeDocument",
+    "isTopologyDocument",
+    "loadSchema",
+    "validateDocument",
+  ]);
+});
+
+test("every shared expected document validates and has byte-stable hash parity", async () => {
+  for (const { name, document } of await expectedDocuments()) {
+    const result = spec.validateDocument(document);
+    assert.equal(result.valid, true, `${name}: ${JSON.stringify(result)}`);
+    assert.equal(
+      spec.canonicalStringify(document),
+      JSON.stringify(document),
+      `${name}: expected documents are stored in canonical key and collection order`,
+    );
+    assert.deepEqual(
+      spec.computeStructureHash(document),
+      document.structureHash,
+      `${name}: structure hash`,
+    );
+  }
+});
+
+test("canonical bytes and hashes agree with the Python contract implementation", async () => {
+  const cases = await expectedDocuments();
+  const pythonProject = resolve(packageRoot, "../../python/spec");
+  const script = [
+    "import json, sys",
+    "from agent_topology.spec import canonical_json, compute_structure_hash",
+    "documents = json.load(sys.stdin)",
+    "json.dump([{'canonical': canonical_json(document), 'hash': compute_structure_hash(document)} for document in documents], sys.stdout, separators=(',', ':'))",
+  ].join("; ");
+  const result = spawnSync(
+    "uv",
+    ["run", "--project", pythonProject, "python", "-c", script],
+    {
+      encoding: "utf8",
+      input: JSON.stringify(cases.map(({ document }) => document)),
+    },
+  );
+  assert.equal(result.status, 0, result.stderr);
+  const evidence = JSON.parse(result.stdout);
+
+  cases.forEach(({ name, document }, index) => {
+    assert.equal(
+      spec.canonicalStringify(document),
+      evidence[index].canonical,
+      name,
+    );
+    assert.deepEqual(
+      spec.computeStructureHash(document),
+      evidence[index].hash,
+      name,
+    );
+  });
+});
+
+test("canonicalization is immutable and ignores descriptive data when hashing", () => {
+  /** @type {import("../dist/index.js").TopologyDocument} */
+  const document = {
+    topologyVersion: "0.1",
+    provenance: {
+      generatedAt: "2026-09-10T19:00:00Z",
+      producer: { name: "test", version: "1" },
+      framework: { name: "test", version: "1" },
+    },
+    producerLimitations: [],
+    structureHash: {
+      algorithm: "sha256",
+      algorithmVersion: "1",
+      value: "0".repeat(64),
+    },
+    graphs: [
+      {
+        id: "main",
+        name: "before",
+        structure: {
+          nodes: [{ id: "b", interrupts: ["before", "after"] }, { id: "a" }],
+          edges: [],
+          joins: [{ id: "join", sources: ["b", "a"], target: "b" }],
+          entryNodeIds: ["b", "a"],
+          exitNodeIds: ["b"],
+        },
+      },
+    ],
+    completeness: { status: "complete", gaps: [] },
+  };
+  const original = structuredClone(document);
+  const canonical = spec.canonicalizeDocument(document);
+  assert.deepEqual(document, original);
+  const canonicalGraph = canonical.graphs[0];
+  assert.ok(canonicalGraph);
+  assert.deepEqual(
+    canonicalGraph.structure.nodes.map((node) => node.id),
+    ["a", "b"],
+  );
+  assert.deepEqual(canonicalGraph.structure.nodes[1]?.interrupts, [
+    "after",
+    "before",
+  ]);
+  assert.deepEqual(canonicalGraph.structure.joins[0]?.sources, ["a", "b"]);
+
+  const changed = structuredClone(document);
+  const changedGraph = changed.graphs[0];
+  assert.ok(changedGraph);
+  changedGraph.name = "after";
+  changed["x-example"] = { presentation: ["right", "left"] };
+  assert.deepEqual(
+    spec.computeStructureHash(document),
+    spec.computeStructureHash(changed),
+  );
+});
+
+test("validation enforces extensions, references, and completeness", () => {
+  /** @type {import("../dist/index.js").TopologyDocument} */
+  const valid = {
+    topologyVersion: "0.1",
+    provenance: {
+      generatedAt: "2026-09-10T19:00:00Z",
+      producer: { name: "test", version: "1" },
+      framework: { name: "test", version: "1" },
+    },
+    producerLimitations: [],
+    structureHash: {
+      algorithm: "sha256",
+      algorithmVersion: "1",
+      value: "0".repeat(64),
+    },
+    graphs: [
+      {
+        id: "main",
+        structure: {
+          nodes: [{ id: "known" }],
+          edges: [
+            { id: "edge", source: "known", target: "known", kind: "direct" },
+          ],
+          joins: [],
+          entryNodeIds: ["known"],
+          exitNodeIds: ["known"],
+        },
+      },
+    ],
+    completeness: { status: "complete", gaps: [] },
+    "x-example": { accepted: true },
+  };
+  assert.equal(spec.validateDocument(valid).valid, true);
+
+  const invalidCore = structuredClone(valid);
+  invalidCore.unexpected = true;
+  assert.equal(spec.validateDocument(invalidCore).valid, false);
+
+  const invalidExtension = structuredClone(valid);
+  invalidExtension["x-Uppercase"] = true;
+  assert.equal(spec.validateDocument(invalidExtension).valid, false);
+
+  const document = structuredClone(valid);
+  const graph = document.graphs[0];
+  assert.ok(graph);
+  const edge = graph.structure.edges[0];
+  assert.ok(edge);
+  edge.target = "missing";
+  document.completeness.status = "incomplete";
+  const result = spec.validateDocument(document);
+  assert.equal(result.valid, false);
+  assert.deepEqual(result.errors, [
+    {
+      path: "$.graphs[0].structure.edges[0].target",
+      message: 'unknown node id "missing"',
+    },
+    {
+      path: "$.completeness.status",
+      message: 'must be "complete" when gaps contains 0 item(s)',
+    },
+  ]);
+});
+
+test("format, hash algorithm, and package versions are independent", () => {
+  const schema = /** @type {any} */ (spec.loadSchema());
+  assert.equal(schema.properties.topologyVersion.const, "0.1");
+  assert.equal(spec.STRUCTURE_HASH_ALGORITHM_VERSION, "1");
+  assert.throws(
+    () => spec.computeStructureHash(/** @type {any} */ ({}), "2"),
+    /unsupported structure hash algorithm version/,
+  );
+});

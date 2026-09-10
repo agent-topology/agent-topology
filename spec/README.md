@@ -65,6 +65,21 @@ hash and returns the canonical output without mutating its input. The distributi
 embeds the root `agent-topology.schema.json` at build time; that root file remains the
 single checked-in schema authority.
 
+TypeScript applications use the same authority through `@agent-topology/spec`:
+
+```ts
+import {
+  canonicalStringify,
+  computeStructureHash,
+  validateDocument,
+  type TopologyDocument,
+} from "@agent-topology/spec";
+```
+
+Its public types are generated from this schema during the package build. Runtime
+validation, canonical serialization, and structure hashing preserve the same
+extension, reference, completeness, byte-ordering, and hash contracts as Python.
+
 Changing collection semantics or the set of hashed properties requires a new
 algorithm version. Add a separate projection for that version, retain the old
 projection while transition output is needed, update the schema's supported

@@ -56,8 +56,8 @@ sub-package so the independently installed packages can coexist.
   packaging may copy them, but generated copies are not edited independently.
 - Packages are independently versioned and released. Repository membership does
   not imply a coordinated version number.
-- Python comes first. TypeScript consumers or packages remain deferred until the
-  Python producer has stabilised the design described in ADR 0006.
+- Python comes first. The TypeScript specification package follows the stabilised
+  Python contract; framework producer expansion remains separate work under ADR 0006.
 
 ## Public contracts and naming
 
@@ -148,6 +148,20 @@ publication refuse a dirty checkout.
 
 The Python packages are native portions of the `agent_topology` namespace.
 Never add `packages/python/*/src/agent_topology/__init__.py`.
+
+### TypeScript toolchain
+
+The `@agent-topology/spec` package supports Node.js 20 and later, uses TypeScript
+7.0.2, and validates the canonical Draft 2020-12 schema with Ajv 8.20.0. Its build
+generates public document types from the root schema and copies that schema into
+build output; generated files are not checked-in authorities.
+
+Run its checks and build its independently installable tarball from the package:
+
+```bash
+npm --prefix packages/typescript/spec run check
+npm pack ./packages/typescript/spec
+```
 
 ## Documentation and decisions
 

@@ -1,0 +1,37 @@
+{
+  "name": "@agent-topology/spec",
+  "version": "0.0.0",
+  "description": "TypeScript utilities and types for the agent-topology document contract",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "node scripts/generate-contract.mjs && tsc -p tsconfig.json",
+    "check": "npm run build && npm run format:check && tsc -p tsconfig.tests.json && node --test tests/*.test.mjs",
+    "format:check": "prettier --check \"src/**/*.ts\" \"scripts/*.mjs\" \"tests/*.mjs\" \"*.json\" \"*.md\"",
+    "prepack": "npm run build",
+    "smoke": "node scripts/smoke-install.mjs"
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.2",
+    "json-schema-to-typescript": "16.0.0",
+    "prettier": "3.9.6",
+    "typescript": "7.0.2"
+  }
+}

@@ -91,7 +91,7 @@ boundaries follow responsibility and framework, not implementation language.
 | --- | --- | --- | --- |
 | Specification and document utilities | `agent-topology-spec` on PyPI | `agent_topology.spec` | Python foundation |
 | Python LangGraph producer | `agent-topology-langgraph` on PyPI | `agent_topology.langgraph` | First producer |
-| Specification for JavaScript consumers | `@agent-topology/spec` on npm | `@agent-topology/spec` | After the Python design is stable |
+| Specification for JavaScript consumers | `@agent-topology/spec` on npm | `@agent-topology/spec` | TypeScript expansion |
 | LangGraph.js producer | `@agent-topology/langgraph` on npm | `@agent-topology/langgraph` | Deferred |
 
 PyPI distribution names are globally unique installation identifiers. The
@@ -147,7 +147,7 @@ packages/
     spec/                agent-topology-spec
     langgraph/           agent-topology-langgraph
   typescript/
-    spec/                @agent-topology/spec (deferred)
+    spec/                @agent-topology/spec
     langgraph/           @agent-topology/langgraph (deferred)
 conformance/             shared cases and producer runners
 docs/decisions/          accepted architectural decisions and router
