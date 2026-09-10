@@ -1,0 +1,125 @@
+name: Python packages
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-tests:
+    name: ${{ matrix.package }} tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [spec, langgraph]
+        python: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
+          python-version: ${{ matrix.python }}
+      - name: Test ${{ matrix.package }} distribution
+        run: >-
+          uv run --project packages/python/${{ matrix.package }} --group test
+          pytest packages/python/${{ matrix.package }}/tests
+
+  python-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
+      - run: uvx --from ruff==0.16.7 ruff format --check packages/python scripts tests
+      - run: uvx --from ruff==0.16.7 ruff check packages/python scripts tests
+      - name: Test release guards
+        run: >-
+          uv run --project packages/python/spec --group test
+          pytest tests/test_release_tools.py
+
+  artifacts:
+    name: Inspect ${{ matrix.package }} artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [spec, langgraph]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
+      - name: Build wheel and source distribution independently
+        run: uv build packages/python/${{ matrix.package }} --out-dir "${{ runner.temp }}/dist" --clear
+      - name: Inspect metadata and contents
+        run: >-
+          python scripts/verify_python_artifacts.py
+          --package ${{ matrix.package }}
+          --version 0.0.0
+          --dist-dir "${{ runner.temp }}/dist"
+      - uses: actions/upload-artifact@v5
+        with:
+          name: python-dist-${{ matrix.package }}
+          path: ${{ runner.temp }}/dist/*
+          if-no-files-found: error
+
+  clean-installations:
+    needs: artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
+          python-version: "3.14"
+      - uses: actions/download-artifact@v6
+        with:
+          name: python-dist-spec
+          path: ${{ runner.temp }}/dist/spec
+      - uses: actions/download-artifact@v6
+        with:
+          name: python-dist-langgraph
+          path: ${{ runner.temp }}/dist/langgraph
+      - name: Install spec wheel alone
+        run: |
+          uv venv "${{ runner.temp }}/spec-wheel"
+          uv pip install --python "${{ runner.temp }}/spec-wheel/bin/python" ${{ runner.temp }}/dist/spec/*.whl
+          "${{ runner.temp }}/spec-wheel/bin/python" -c "import agent_topology.spec"
+      - name: Install spec source distribution alone
+        run: |
+          uv venv "${{ runner.temp }}/spec-sdist"
+          uv pip install --python "${{ runner.temp }}/spec-sdist/bin/python" ${{ runner.temp }}/dist/spec/*.tar.gz
+          "${{ runner.temp }}/spec-sdist/bin/python" -c "import agent_topology.spec"
+      - name: Install LangGraph wheel with its local spec dependency
+        run: |
+          uv venv "${{ runner.temp }}/langgraph-wheel"
+          uv pip install --python "${{ runner.temp }}/langgraph-wheel/bin/python" --find-links "${{ runner.temp }}/dist/spec" ${{ runner.temp }}/dist/langgraph/*.whl
+          "${{ runner.temp }}/langgraph-wheel/bin/python" -c "import agent_topology.langgraph, agent_topology.spec"
+      - name: Install LangGraph source distribution with its local spec dependency
+        run: |
+          uv venv "${{ runner.temp }}/langgraph-sdist"
+          uv pip install --python "${{ runner.temp }}/langgraph-sdist/bin/python" --find-links "${{ runner.temp }}/dist/spec" ${{ runner.temp }}/dist/langgraph/*.tar.gz
+          "${{ runner.temp }}/langgraph-sdist/bin/python" -c "import agent_topology.langgraph, agent_topology.spec"
+      - name: Prove native namespace coexistence from both wheels
+        run: |
+          uv venv "${{ runner.temp }}/coexistence"
+          uv pip install --python "${{ runner.temp }}/coexistence/bin/python" ${{ runner.temp }}/dist/spec/*.whl ${{ runner.temp }}/dist/langgraph/*.whl
+          "${{ runner.temp }}/coexistence/bin/python" -c "import agent_topology.langgraph, agent_topology.spec; assert agent_topology.langgraph.__package__ != agent_topology.spec.__package__"

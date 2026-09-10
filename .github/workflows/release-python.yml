@@ -1,0 +1,274 @@
+name: Release one Python package
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Python distribution to verify and optionally publish
+        required: true
+        type: choice
+        options:
+          - spec
+          - langgraph
+      version:
+        description: PEP 440 version for the selected distribution
+        required: true
+        type: string
+      publish:
+        description: Publish the verified artifacts to PyPI
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  selection:
+    runs-on: ubuntu-latest
+    outputs:
+      distribution: ${{ steps.package.outputs.distribution }}
+      package-root: ${{ steps.package.outputs.package-root }}
+    steps:
+      - id: package
+        env:
+          SELECTED_PACKAGE: ${{ inputs.package }}
+        run: |
+          case "$SELECTED_PACKAGE" in
+            spec)
+              echo "distribution=agent-topology-spec" >> "$GITHUB_OUTPUT"
+              echo "package-root=packages/python/spec" >> "$GITHUB_OUTPUT"
+              ;;
+            langgraph)
+              echo "distribution=agent-topology-langgraph" >> "$GITHUB_OUTPUT"
+              echo "package-root=packages/python/langgraph" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "unsupported package: $SELECTED_PACKAGE" >&2
+              exit 2
+              ;;
+          esac
+
+  package-tests:
+    needs: selection
+    name: ${{ inputs.package }} tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
+          python-version: ${{ matrix.python }}
+      - run: >-
+          uv run --project ${{ needs.selection.outputs.package-root }} --group test
+          pytest ${{ needs.selection.outputs.package-root }}/tests
+
+  python-quality:
+    needs: selection
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
+      - run: >-
+          uvx --from ruff==0.16.7 ruff format --check
+          ${{ needs.selection.outputs.package-root }} scripts tests
+      - run: >-
+          uvx --from ruff==0.16.7 ruff check
+          ${{ needs.selection.outputs.package-root }} scripts tests
+      - run: >-
+          uv run --project packages/python/spec --group test
+          pytest tests/test_release_tools.py
+
+  producer-conformance:
+    needs: selection
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - if: inputs.package == 'spec'
+        run: echo "Producer conformance is not a check of agent-topology-spec."
+      - if: inputs.package == 'langgraph'
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - if: inputs.package == 'langgraph'
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
+      - if: inputs.package == 'langgraph'
+        name: Run every evidence-backed LangGraph boundary
+        env:
+          CONTRACT_FILE: packages/python/langgraph/src/agent_topology/langgraph/_compatibility.json
+        run: |
+          jq -r '.testedVersions[]' "$CONTRACT_FILE" | while read -r langgraph_version; do
+            uv run --project packages/python/langgraph --group test \
+              --with "langgraph==$langgraph_version" \
+              pytest packages/python/langgraph/tests/test_conformance.py
+          done
+
+  artifact:
+    needs: selection
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
+          python-version: "3.14"
+      - name: Build only the selected distribution at the selected version
+        env:
+          SELECTED_PACKAGE: ${{ inputs.package }}
+          SELECTED_VERSION: ${{ inputs.version }}
+        run: |
+          cp -R packages/python "${{ runner.temp }}/python"
+          uv version --project "${{ runner.temp }}/python/$SELECTED_PACKAGE" --no-sync "$SELECTED_VERSION"
+          uv build "${{ runner.temp }}/python/$SELECTED_PACKAGE" --out-dir "${{ runner.temp }}/release-dist" --clear
+          python scripts/verify_python_artifacts.py \
+            --package "$SELECTED_PACKAGE" \
+            --version "$SELECTED_VERSION" \
+            --dist-dir "${{ runner.temp }}/release-dist"
+      - name: Build the other namespace portion as installation support
+        env:
+          SELECTED_PACKAGE: ${{ inputs.package }}
+        run: |
+          if [ "$SELECTED_PACKAGE" = "spec" ]; then
+            support_package=langgraph
+          else
+            support_package=spec
+          fi
+          uv build "${{ runner.temp }}/python/$support_package" --out-dir "${{ runner.temp }}/support-dist" --clear
+      - name: Clean-install wheel and source distribution
+        env:
+          SELECTED_PACKAGE: ${{ inputs.package }}
+        run: |
+          wheel_artifacts=("${{ runner.temp }}"/release-dist/*.whl)
+          sdist_artifacts=("${{ runner.temp }}"/release-dist/*.tar.gz)
+          test "${#wheel_artifacts[@]}" -eq 1
+          test "${#sdist_artifacts[@]}" -eq 1
+          artifacts=("${wheel_artifacts[0]}" "${sdist_artifacts[0]}")
+          index=0
+          for artifact in "${artifacts[@]}"; do
+            environment="${{ runner.temp }}/install-$index"
+            uv venv "$environment"
+            if [ "$SELECTED_PACKAGE" = "langgraph" ]; then
+              uv pip install --python "$environment/bin/python" \
+                --find-links "${{ runner.temp }}/support-dist" \
+                "$artifact"
+              "$environment/bin/python" -c "import agent_topology.langgraph, agent_topology.spec"
+            else
+              uv pip install --python "$environment/bin/python" \
+                "$artifact"
+              "$environment/bin/python" -c "import agent_topology.spec"
+            fi
+            index=$((index + 1))
+          done
+      - name: Prove native namespace coexistence
+        env:
+          SELECTED_PACKAGE: ${{ inputs.package }}
+        run: |
+          uv venv "${{ runner.temp }}/coexistence"
+          uv pip install --python "${{ runner.temp }}/coexistence/bin/python" "langgraph==1.2.11"
+          uv pip install --python "${{ runner.temp }}/coexistence/bin/python" --no-deps \
+            ${{ runner.temp }}/release-dist/*.whl \
+            ${{ runner.temp }}/support-dist/*.whl
+          "${{ runner.temp }}/coexistence/bin/python" -c "import agent_topology.langgraph, agent_topology.spec"
+      - name: Confirm checkout stayed clean
+        run: git diff --exit-code && test -z "$(git status --porcelain --untracked-files=all)"
+      - uses: actions/upload-artifact@v5
+        with:
+          name: selected-python-dist
+          path: ${{ runner.temp }}/release-dist/*
+          if-no-files-found: error
+
+  authorize:
+    needs: [selection, package-tests, python-quality, producer-conformance, artifact]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v6
+        with:
+          name: selected-python-dist
+          path: ${{ runner.temp }}/bundle/dist
+      - if: inputs.package == 'spec'
+        name: Authorize the verified spec artifacts
+        run: >-
+          python scripts/release_guard.py create
+          --package spec
+          --version "${{ inputs.version }}"
+          --dist-dir "${{ runner.temp }}/bundle/dist"
+          --commit "${{ github.sha }}"
+          --receipt "${{ runner.temp }}/bundle/release-receipt.json"
+          --check artifact-inspection
+          --check clean-installation
+          --check namespace-coexistence
+          --check package-tests
+          --check python-quality
+      - if: inputs.package == 'langgraph'
+        name: Authorize the verified LangGraph artifacts
+        run: >-
+          python scripts/release_guard.py create
+          --package langgraph
+          --version "${{ inputs.version }}"
+          --dist-dir "${{ runner.temp }}/bundle/dist"
+          --commit "${{ github.sha }}"
+          --receipt "${{ runner.temp }}/bundle/release-receipt.json"
+          --check artifact-inspection
+          --check clean-installation
+          --check namespace-coexistence
+          --check package-tests
+          --check python-quality
+          --check supported-langgraph-conformance
+      - uses: actions/upload-artifact@v5
+        with:
+          name: authorized-python-release
+          path: ${{ runner.temp }}/bundle
+          if-no-files-found: error
+
+  publish:
+    if: inputs.publish
+    needs: [selection, authorize]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi-${{ needs.selection.outputs.distribution }}
+      url: https://pypi.org/project/${{ needs.selection.outputs.distribution }}/
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v6
+        with:
+          name: authorized-python-release
+          path: .release-bundle
+      - name: Refuse changed, dirty, or unchecked artifacts
+        run: >-
+          python scripts/release_guard.py check
+          --package "${{ inputs.package }}"
+          --version "${{ inputs.version }}"
+          --dist-dir .release-bundle/dist
+          --commit "${{ github.sha }}"
+          --receipt .release-bundle/release-receipt.json
+          --allow-untracked-root .release-bundle
+      - name: Publish the one authorized distribution
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: .release-bundle/dist

@@ -14,7 +14,9 @@ jobs:
     outputs:
       matrix: ${{ steps.contract.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - id: contract
         env:
           CONTRACT_FILE: packages/python/langgraph/src/agent_topology/langgraph/_compatibility.json
@@ -29,8 +31,12 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.compatibility-contract.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
       - name: Run producer conformance at LangGraph ${{ matrix.langgraph }}
         run: >-
           uv run --project packages/python/langgraph --group test
