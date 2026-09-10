@@ -1,0 +1,27 @@
+{
+  "topologyVersion": "0.1",
+  "provenance": {
+    "generatedAt": "2026-09-10T19:00:00Z",
+    "producer": {"name": "example", "version": "1"},
+    "framework": {"name": "example", "version": "1"}
+  },
+  "producerLimitations": [],
+  "structureHash": {
+    "algorithm": "sha256",
+    "algorithmVersion": "1",
+    "value": "3333333333333333333333333333333333333333333333333333333333333333"
+  },
+  "graphs": [
+    {
+      "id": "main",
+      "structure": {
+        "nodes": [{"id": "start", "vendorData": {"sentinel": true}}],
+        "edges": [],
+        "joins": [],
+        "entryNodeIds": ["start"],
+        "exitNodeIds": ["start"]
+      }
+    }
+  ],
+  "completeness": {"status": "complete", "gaps": []}
+}
