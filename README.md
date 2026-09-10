@@ -25,6 +25,29 @@ agt describe src/my_agent/graph.py:graph --out agent-topology.manifest.json
 
 That's the whole library.
 
+### Python API
+
+`agent_topology.langgraph.describe` accepts the `CompiledStateGraph` returned by
+`langgraph.graph.StateGraph.compile()` and returns the canonical public `dict`
+representation defined by `agent_topology.spec`:
+
+```python
+from agent_topology.langgraph import describe
+
+document = describe(compiled_graph)
+```
+
+Pass the keyword-only `depth` option to expand nested graphs through that many
+levels. It defaults to `0`, which leaves nested graphs opaque:
+
+```python
+document = describe(compiled_graph, depth=1)
+```
+
+Source code, uncompiled `StateGraph` builders, and runtime execution are not
+accepted by this API. Producer-specific metadata is emitted only beneath the
+`x-langgraph` extension key.
+
 The planned PyPI distributions are `agent-topology-spec` and
 `agent-topology-langgraph`, imported as `agent_topology.spec` and
 `agent_topology.langgraph`. The npm packages use the project scope directly:

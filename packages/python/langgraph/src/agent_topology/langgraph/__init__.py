@@ -1,3 +1,5 @@
-"""Reserved public namespace for the Python LangGraph producer."""
+"""Public API for describing compiled LangGraph graphs."""
 
-__all__: list[str] = []
+from ._describe import describe
+
+__all__ = ["describe"]
