@@ -67,13 +67,24 @@ export interface DescribeOptions {
   depth?: number;
 }
 
+export function supportedRangeFromTestedVersions(
+  testedVersions: readonly string[],
+): string {
+  if (testedVersions.length === 0) {
+    throw new Error("the LangGraph.js compatibility manifest is empty");
+  }
+  return testedVersions.join(" || ");
+}
+
 export function ensureSupportedLangGraphVersion(
   installedVersion: string,
 ): string {
   if (!compatibility.testedVersions.includes(installedVersion)) {
     throw new UnsupportedLangGraphVersionError({
       installedVersion,
-      supportedRange: compatibility.supportedRange,
+      supportedRange: supportedRangeFromTestedVersions(
+        compatibility.testedVersions,
+      ),
       testedVersions: compatibility.testedVersions,
     });
   }

@@ -42,3 +42,44 @@ jobs:
           uv run --project packages/python/langgraph --group test
           --with "langgraph==${{ matrix.langgraph }}"
           pytest packages/python/langgraph/tests
+
+  typescript-compatibility-contract:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.contract.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+      - id: contract
+        run: node packages/typescript/langgraph/scripts/check-compatibility.mjs --matrix >> "$GITHUB_OUTPUT"
+
+  typescript-conformance:
+    needs: typescript-compatibility-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.typescript-compatibility-contract.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: |
+            packages/typescript/spec/package-lock.json
+            packages/typescript/langgraph/package-lock.json
+      - run: npm ci --prefix packages/typescript/spec
+      - run: npm ci --prefix packages/typescript/langgraph
+      - name: Install declared LangGraph.js version ${{ matrix.langgraph }}
+        run: >-
+          npm install --prefix packages/typescript/langgraph --no-save --package-lock=false
+          "@langchain/langgraph@${{ matrix.langgraph }}"
+      - name: Run shared conformance and producer probes
+        run: npm --prefix packages/typescript/langgraph run check
