@@ -1,5 +1,6 @@
-/dist/
-/node_modules/
+dist/
+node_modules/
+/packages/typescript/spec/src/generated/
 __pycache__/
 *.pyc
 .DS_Store

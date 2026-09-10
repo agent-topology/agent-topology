@@ -106,8 +106,10 @@ accepted by this API. Producer-specific metadata is emitted only beneath the
 The Python distributions build as `agent-topology-spec` and
 `agent-topology-langgraph`, imported as `agent_topology.spec` and
 `agent_topology.langgraph`. Release automation exists, but they are not yet
-published to PyPI. The npm packages use the project scope directly:
-`@agent-topology/spec` and `@agent-topology/langgraph`.
+published to PyPI. TypeScript applications can use `@agent-topology/spec` to
+validate, canonicalize, serialize, and hash documents without a framework runtime.
+The future LangGraph.js producer uses the project scope as
+`@agent-topology/langgraph`.
 
 For maintainers, see [Architecture](ARCHITECTURE.md),
 [Conventions](CONVENTIONS.md), the
