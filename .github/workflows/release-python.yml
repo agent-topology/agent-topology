@@ -168,7 +168,7 @@ jobs:
               uv pip install --python "$environment/bin/python" \
                 --find-links "${{ runner.temp }}/support-dist" \
                 "$artifact"
-              "$environment/bin/python" -c "import agent_topology.langgraph, agent_topology.spec"
+              "$environment/bin/python" scripts/smoke_langgraph_installation.py
             else
               uv pip install --python "$environment/bin/python" \
                 "$artifact"

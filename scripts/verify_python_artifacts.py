@@ -4,9 +4,11 @@
 from __future__ import annotations
 
 import argparse
+import configparser
 import hashlib
 import json
 import tarfile
+import tomllib
 import zipfile
 from collections.abc import Iterable
 from email.parser import BytesParser
@@ -17,10 +19,17 @@ PACKAGES = {
     "spec": {
         "distribution": "agent-topology-spec",
         "module": "spec",
+        "requirements": set(),
+        "scripts": {},
     },
     "langgraph": {
         "distribution": "agent-topology-langgraph",
         "module": "langgraph",
+        "requirements": {
+            "agent-topology-spec<0.1.0,>=0.0.0",
+            "langgraph<=1.2.11,>=1.2.10",
+        },
+        "scripts": {"agt": "agent_topology.langgraph._cli:main"},
     },
 }
 
@@ -37,17 +46,25 @@ def _safe_members(names: Iterable[str], *, archive: Path) -> list[str]:
     return members
 
 
-def _metadata(raw: bytes, *, archive: Path) -> dict[str, str]:
+def _metadata(raw: bytes, *, archive: Path) -> dict[str, Any]:
     message = BytesParser().parsebytes(raw)
     required = ("Name", "Version", "Requires-Python")
     missing = [field for field in required if not message.get(field)]
     if missing:
         raise ValueError(f"{archive.name} metadata is missing: {', '.join(missing)}")
-    return {field: str(message[field]) for field in required}
+    return {
+        **{field: str(message[field]) for field in required},
+        "Requires-Dist": set(message.get_all("Requires-Dist", [])),
+    }
 
 
 def _assert_metadata(
-    metadata: dict[str, str], *, distribution: str, version: str, archive: Path
+    metadata: dict[str, Any],
+    *,
+    distribution: str,
+    version: str,
+    requirements: set[str],
+    archive: Path,
 ) -> None:
     actual_name = metadata["Name"].lower().replace("_", "-")
     if actual_name != distribution:
@@ -64,6 +81,36 @@ def _assert_metadata(
             f"{archive.name} has unexpected Requires-Python "
             f"{metadata['Requires-Python']!r}"
         )
+    if metadata["Requires-Dist"] != requirements:
+        raise ValueError(
+            f"{archive.name} has unexpected dependencies: "
+            f"{sorted(metadata['Requires-Dist'])}"
+        )
+
+
+def _assert_wheel_scripts(
+    archive: zipfile.ZipFile, members: list[str], *, scripts: dict[str, str]
+) -> None:
+    entry_points = [
+        name for name in members if name.endswith(".dist-info/entry_points.txt")
+    ]
+    if not scripts:
+        if entry_points:
+            raise ValueError(f"{archive.filename} unexpectedly publishes entry points")
+        return
+    if len(entry_points) != 1:
+        raise ValueError(
+            f"{archive.filename} must contain exactly one entry_points.txt"
+        )
+    parser = configparser.ConfigParser()
+    parser.read_string(archive.read(entry_points[0]).decode("utf-8"))
+    actual = (
+        dict(parser.items("console_scripts"))
+        if parser.has_section("console_scripts")
+        else {}
+    )
+    if actual != scripts:
+        raise ValueError(f"{archive.filename} has unexpected console scripts: {actual}")
 
 
 def _one(dist_dir: Path, suffix: str) -> Path:
@@ -97,7 +144,14 @@ def _source_package_files(package: str, module: str, source_root: Path) -> set[s
 
 
 def _inspect_wheel(
-    wheel: Path, *, distribution: str, module: str, version: str, expected: set[str]
+    wheel: Path,
+    *,
+    distribution: str,
+    module: str,
+    version: str,
+    requirements: set[str],
+    scripts: dict[str, str],
+    expected: set[str],
 ) -> None:
     with zipfile.ZipFile(wheel) as archive:
         members = _safe_members(archive.namelist(), archive=wheel)
@@ -112,8 +166,10 @@ def _inspect_wheel(
             _metadata(archive.read(metadata_members[0]), archive=wheel),
             distribution=distribution,
             version=version,
+            requirements=requirements,
             archive=wheel,
         )
+        _assert_wheel_scripts(archive, members, scripts=scripts)
 
     if "agent_topology/__init__.py" in members:
         raise ValueError(f"{wheel.name} must not own agent_topology/__init__.py")
@@ -138,7 +194,14 @@ def _inspect_wheel(
 
 
 def _inspect_sdist(
-    sdist: Path, *, distribution: str, module: str, version: str, expected: set[str]
+    sdist: Path,
+    *,
+    distribution: str,
+    module: str,
+    version: str,
+    requirements: set[str],
+    scripts: dict[str, str],
+    expected: set[str],
 ) -> None:
     with tarfile.open(sdist, "r:gz") as archive:
         members = _safe_members(
@@ -158,10 +221,22 @@ def _inspect_sdist(
             _metadata(extracted.read(), archive=sdist),
             distribution=distribution,
             version=version,
+            requirements=requirements,
             archive=sdist,
         )
 
-    root = PurePosixPath(metadata_members[0]).parts[0]
+        root = PurePosixPath(metadata_members[0]).parts[0]
+        pyproject_member = f"{root}/pyproject.toml"
+        pyproject_file = archive.extractfile(pyproject_member)
+        if pyproject_file is None:
+            raise ValueError(f"{sdist.name} is missing {pyproject_member}")
+        project = tomllib.loads(pyproject_file.read().decode("utf-8"))
+        actual_scripts = project["project"].get("scripts", {})
+        if actual_scripts != scripts:
+            raise ValueError(
+                f"{sdist.name} has unexpected console scripts: {actual_scripts}"
+            )
+
     required = {f"{root}/pyproject.toml"} | {
         f"{root}/src/agent_topology/{module}/{name}" for name in expected
     }
@@ -187,6 +262,8 @@ def inspect_artifacts(
         distribution=config["distribution"],
         module=config["module"],
         version=version,
+        requirements=config["requirements"],
+        scripts=config["scripts"],
         expected=expected,
     )
     _inspect_sdist(
@@ -194,6 +271,8 @@ def inspect_artifacts(
         distribution=config["distribution"],
         module=config["module"],
         version=version,
+        requirements=config["requirements"],
+        scripts=config["scripts"],
         expected=expected,
     )
     artifacts = []
