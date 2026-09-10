@@ -1,0 +1,35 @@
+{
+  "name": "@agent-topology/langgraph",
+  "version": "0.0.0",
+  "description": "Describe compiled LangGraph.js graphs as canonical agent-topology documents",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "npm run build && npm run format:check && tsc -p tsconfig.tests.json && node --test tests/*.test.mjs",
+    "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.json\" \"tests/*.mjs\" \"*.json\" \"*.md\"",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@agent-topology/spec": "file:../spec",
+    "@langchain/langgraph": "1.4.14"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.2",
+    "prettier": "3.9.6",
+    "typescript": "7.0.2"
+  }
+}
