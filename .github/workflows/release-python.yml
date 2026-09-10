@@ -135,6 +135,8 @@ jobs:
           SELECTED_VERSION: ${{ inputs.version }}
         run: |
           cp -R packages/python "${{ runner.temp }}/python"
+          mkdir -p "${{ runner.temp }}/spec"
+          cp spec/agent-topology.schema.json "${{ runner.temp }}/spec/"
           uv version --project "${{ runner.temp }}/python/$SELECTED_PACKAGE" --no-sync "$SELECTED_VERSION"
           uv build "${{ runner.temp }}/python/$SELECTED_PACKAGE" --out-dir "${{ runner.temp }}/release-dist" --clear
           python scripts/verify_python_artifacts.py \
@@ -172,7 +174,7 @@ jobs:
             else
               uv pip install --python "$environment/bin/python" \
                 "$artifact"
-              "$environment/bin/python" -c "import agent_topology.spec"
+              "$environment/bin/python" scripts/smoke_spec_install.py
             fi
             index=$((index + 1))
           done

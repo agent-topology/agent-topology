@@ -8,6 +8,7 @@ from ._canonical import (
     compute_structure_hash,
     finalize_document,
 )
+from ._validation import load_schema, validate_document
 
 __all__ = [
     "STRUCTURE_HASH_ALGORITHM",
@@ -16,4 +17,6 @@ __all__ = [
     "canonicalize_document",
     "compute_structure_hash",
     "finalize_document",
+    "load_schema",
+    "validate_document",
 ]

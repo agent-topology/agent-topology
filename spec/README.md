@@ -43,9 +43,27 @@ extensions, labels, descriptive metadata, and the document's existing hash. A
 multi-source join is hashed in the `joins` collection, so it cannot collapse to
 the same input as separate incoming edges.
 
-The Python spec package exposes `canonicalize_document`, `canonical_json`,
-`compute_structure_hash`, and `finalize_document`. `finalize_document` computes
-the hash and returns the canonical output without mutating its input.
+Install the Python contract utilities independently of any producer:
+
+```bash
+python3 -m pip install agent-topology-spec
+```
+
+The native namespace import exposes schema loading, validation, canonicalisation,
+and hashing without importing or installing LangGraph:
+
+```python
+from agent_topology.spec import load_schema, validate_document
+
+schema = load_schema()
+errors = validate_document(document)
+```
+
+The package also exposes `canonicalize_document`, `canonical_json`,
+`compute_structure_hash`, and `finalize_document`. `finalize_document` computes the
+hash and returns the canonical output without mutating its input. The distribution
+embeds the root `agent-topology.schema.json` at build time; that root file remains the
+single checked-in schema authority.
 
 Changing collection semantics or the set of hashed properties requires a new
 algorithm version. Add a separate projection for that version, retain the old
