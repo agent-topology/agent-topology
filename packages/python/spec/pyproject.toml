@@ -8,6 +8,7 @@ version = "0.0.0"
 description = "Python utilities for the agent-topology document contract"
 requires-python = ">=3.11,<3.15"
 license = "MIT"
+dependencies = ["jsonschema==4.26.0"]
 
 [dependency-groups]
 test = ["pytest==9.1.1"]
@@ -16,7 +17,10 @@ test = ["pytest==9.1.1"]
 packages = ["src/agent_topology"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/agent_topology", "tests", "pyproject.toml"]
+include = ["src/agent_topology", "tests", "hatch_build.py", "pyproject.toml"]
+
+[tool.hatch.build.hooks.custom]
+path = "hatch_build.py"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

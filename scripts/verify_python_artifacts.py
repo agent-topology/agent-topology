@@ -19,12 +19,14 @@ PACKAGES = {
     "spec": {
         "distribution": "agent-topology-spec",
         "module": "spec",
-        "requirements": set(),
+        "generated_files": {"agent-topology.schema.json"},
+        "requirements": {"jsonschema==4.26.0"},
         "scripts": {},
     },
     "langgraph": {
         "distribution": "agent-topology-langgraph",
         "module": "langgraph",
+        "generated_files": set(),
         "requirements": {
             "agent-topology-spec<0.1.0,>=0.0.0",
             "langgraph<=1.2.11,>=1.2.10",
@@ -254,7 +256,10 @@ def inspect_artifacts(
 ) -> dict[str, Any]:
     """Validate and describe the two artifacts for ``package``."""
     config = PACKAGES[package]
-    expected = _source_package_files(package, config["module"], source_root)
+    expected = (
+        _source_package_files(package, config["module"], source_root)
+        | config["generated_files"]
+    )
     wheel = _one(dist_dir, ".whl")
     sdist = _one(dist_dir, ".tar.gz")
     _inspect_wheel(

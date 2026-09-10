@@ -1,8 +1,39 @@
 import subprocess
 import sys
+from importlib.metadata import requires
 from pathlib import Path
 
 import agent_topology.spec
+
+
+def _minimal_document() -> dict:
+    return {
+        "topologyVersion": "0.1",
+        "provenance": {
+            "generatedAt": "2026-09-10T19:00:00Z",
+            "producer": {"name": "test", "version": "1.0"},
+            "framework": {"name": "test", "version": "1.0"},
+        },
+        "producerLimitations": [],
+        "structureHash": {
+            "algorithm": "sha256",
+            "algorithmVersion": "1",
+            "value": "0" * 64,
+        },
+        "graphs": [
+            {
+                "id": "main",
+                "structure": {
+                    "nodes": [{"id": "node"}],
+                    "edges": [],
+                    "joins": [],
+                    "entryNodeIds": ["node"],
+                    "exitNodeIds": ["node"],
+                },
+            }
+        ],
+        "completeness": {"status": "complete", "gaps": []},
+    }
 
 
 def test_spec_owns_only_its_namespace_portion() -> None:
@@ -28,6 +59,17 @@ def test_importing_spec_does_not_import_langgraph() -> None:
     assert result.returncode == 0, result.stderr
 
 
+def test_spec_distribution_does_not_depend_on_langgraph() -> None:
+    dependencies = requires("agent-topology-spec") or []
+
+    assert not any("langgraph" in dependency.lower() for dependency in dependencies)
+
+
+def test_packaged_schema_validates_a_document() -> None:
+    assert agent_topology.spec.load_schema()["$schema"].endswith("2020-12/schema")
+    assert agent_topology.spec.validate_document(_minimal_document()) == []
+
+
 def test_canonical_utilities_are_public() -> None:
     assert agent_topology.spec.__all__ == [
         "STRUCTURE_HASH_ALGORITHM",
@@ -36,4 +78,6 @@ def test_canonical_utilities_are_public() -> None:
         "canonicalize_document",
         "compute_structure_hash",
         "finalize_document",
+        "load_schema",
+        "validate_document",
     ]

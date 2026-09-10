@@ -102,12 +102,12 @@ jobs:
         run: |
           uv venv "${{ runner.temp }}/spec-wheel"
           uv pip install --python "${{ runner.temp }}/spec-wheel/bin/python" ${{ runner.temp }}/dist/spec/*.whl
-          "${{ runner.temp }}/spec-wheel/bin/python" -c "import agent_topology.spec"
+          "${{ runner.temp }}/spec-wheel/bin/python" scripts/smoke_spec_install.py
       - name: Install spec source distribution alone
         run: |
           uv venv "${{ runner.temp }}/spec-sdist"
           uv pip install --python "${{ runner.temp }}/spec-sdist/bin/python" ${{ runner.temp }}/dist/spec/*.tar.gz
-          "${{ runner.temp }}/spec-sdist/bin/python" -c "import agent_topology.spec"
+          "${{ runner.temp }}/spec-sdist/bin/python" scripts/smoke_spec_install.py
       - name: Install LangGraph wheel with its local spec dependency
         run: |
           uv venv "${{ runner.temp }}/langgraph-wheel"
