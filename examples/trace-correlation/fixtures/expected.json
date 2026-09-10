@@ -1,0 +1,214 @@
+{
+  "correlationVersion": "1",
+  "events": [
+    {
+      "eventId": "event-001",
+      "kind": "node.completed",
+      "match": {
+        "graphId": "approval",
+        "id": "plan",
+        "kind": "node"
+      },
+      "status": "matched"
+    },
+    {
+      "eventId": "event-002",
+      "kind": "tool.completed",
+      "reason": "no-topology-node-has-this-qualified-identity",
+      "status": "unmatched"
+    },
+    {
+      "candidates": [
+        {
+          "graphId": "approval",
+          "id": "review",
+          "kind": "node"
+        },
+        {
+          "graphId": "shadow",
+          "id": "review",
+          "kind": "node"
+        }
+      ],
+      "eventId": "event-003",
+      "kind": "node.completed",
+      "reason": "trace-event-omits-graph-identity",
+      "status": "ambiguous"
+    },
+    {
+      "eventId": "event-004",
+      "kind": "graph.completed",
+      "reason": "trace-event-has-no-node-identity",
+      "status": "insufficient"
+    }
+  ],
+  "summary": {
+    "ambiguous": 1,
+    "insufficient": 1,
+    "matched": 1,
+    "unmatched": 1,
+    "unobservedTopologyElements": 8
+  },
+  "topologyElements": [
+    {
+      "element": {
+        "graphId": "approval",
+        "id": "__end__",
+        "kind": "node"
+      },
+      "evidence": {
+        "confidence": "insufficient",
+        "gapCodes": [
+          "unknown-routing-targets"
+        ],
+        "reason": "graph-has-topology-gaps"
+      },
+      "status": "unobserved"
+    },
+    {
+      "element": {
+        "graphId": "approval",
+        "id": "__start__",
+        "kind": "node"
+      },
+      "evidence": {
+        "confidence": "insufficient",
+        "gapCodes": [
+          "unknown-routing-targets"
+        ],
+        "reason": "graph-has-topology-gaps"
+      },
+      "status": "unobserved"
+    },
+    {
+      "element": {
+        "graphId": "approval",
+        "id": "archive",
+        "kind": "node"
+      },
+      "evidence": {
+        "confidence": "insufficient",
+        "gapCodes": [
+          "unknown-routing-targets"
+        ],
+        "reason": "graph-has-topology-gaps"
+      },
+      "status": "unobserved"
+    },
+    {
+      "element": {
+        "graphId": "approval",
+        "id": "plan",
+        "kind": "node"
+      },
+      "status": "observed"
+    },
+    {
+      "element": {
+        "graphId": "approval",
+        "id": "review",
+        "kind": "node"
+      },
+      "evidence": {
+        "confidence": "insufficient",
+        "eventIds": [
+          "event-003"
+        ],
+        "reason": "ambiguous-trace-evidence"
+      },
+      "status": "unobserved"
+    },
+    {
+      "element": {
+        "graphId": "shadow",
+        "id": "__end__",
+        "kind": "node"
+      },
+      "evidence": {
+        "confidence": "absent",
+        "reason": "no-matching-trace-evidence"
+      },
+      "status": "unobserved"
+    },
+    {
+      "element": {
+        "graphId": "shadow",
+        "id": "__start__",
+        "kind": "node"
+      },
+      "evidence": {
+        "confidence": "absent",
+        "reason": "no-matching-trace-evidence"
+      },
+      "status": "unobserved"
+    },
+    {
+      "element": {
+        "graphId": "shadow",
+        "id": "archive",
+        "kind": "node"
+      },
+      "evidence": {
+        "confidence": "absent",
+        "reason": "no-matching-trace-evidence"
+      },
+      "status": "unobserved"
+    },
+    {
+      "element": {
+        "graphId": "shadow",
+        "id": "review",
+        "kind": "node"
+      },
+      "evidence": {
+        "confidence": "insufficient",
+        "eventIds": [
+          "event-003"
+        ],
+        "reason": "ambiguous-trace-evidence"
+      },
+      "status": "unobserved"
+    }
+  ],
+  "topologyEvidence": {
+    "completeness": {
+      "gaps": [
+        {
+          "code": "unknown-routing-targets",
+          "element": {
+            "graphId": "approval",
+            "id": "plan",
+            "kind": "node"
+          },
+          "message": "Not every destination of this router could be determined."
+        }
+      ],
+      "status": "incomplete"
+    },
+    "producerLimitations": [
+      {
+        "code": "dynamic-interrupts",
+        "message": "Interrupts raised inside node bodies cannot be observed statically."
+      }
+    ],
+    "structureHash": {
+      "algorithm": "sha256",
+      "algorithmVersion": "1",
+      "value": "6f105e74159c638fa2ab8f4e34e3b46da7f1545db6a3ae9091f50505c0dd405c"
+    }
+  },
+  "traceProvenance": {
+    "framework": {
+      "name": "langgraph",
+      "version": "1.2.11"
+    },
+    "generator": "examples/trace-correlation/generate_fixtures.py",
+    "kind": "sanitized-langgraph-execution",
+    "sanitization": [
+      "removed run identifiers and timestamps",
+      "replaced application payloads with deterministic literals",
+      "omitted graph identity from one node event to retain ambiguity"
+    ],
+    "scenario": "approval-flow routes plan to review"
+  }
+}

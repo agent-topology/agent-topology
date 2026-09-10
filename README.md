@@ -150,6 +150,17 @@ Three things need the internal shape and none of them can get it today:
 
 Each one currently reimplements framework-specific introspection.
 
+## First proven consumer
+
+The repository's [topology-to-trace correlation example](examples/trace-correlation/README.md)
+replays deterministic, sanitized evidence from a real LangGraph execution against a
+canonical topology document. It distinguishes matched, unmatched, unobserved,
+ambiguous, and insufficient evidence while preserving topology gaps and producer
+limitations. Replay is offline and uses only Python's standard library.
+
+This evidence does not expand the project into rendering, policy verdicts, or path
+coverage; those remain outside the scope described below.
+
 ---
 
 ## Scope
