@@ -1,0 +1,38 @@
+name: LangGraph compatibility
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  compatibility-contract:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.contract.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: contract
+        env:
+          CONTRACT_FILE: packages/python/langgraph/src/agent_topology/langgraph/_compatibility.json
+        run: |
+          echo "matrix=$(jq -c '{langgraph: .testedVersions}' "$CONTRACT_FILE")" >> "$GITHUB_OUTPUT"
+
+  conformance:
+    needs: compatibility-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.compatibility-contract.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+      - name: Run producer conformance at LangGraph ${{ matrix.langgraph }}
+        run: >-
+          uv run --project packages/python/langgraph --group test
+          --with "langgraph==${{ matrix.langgraph }}"
+          pytest packages/python/langgraph/tests

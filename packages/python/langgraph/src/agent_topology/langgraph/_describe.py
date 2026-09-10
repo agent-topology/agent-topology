@@ -12,6 +12,7 @@ from agent_topology.spec import finalize_document
 from langgraph.graph import END, START
 from langgraph.graph.state import CompiledStateGraph
 
+from ._compatibility import ensure_supported_langgraph_version
 from ._exceptions import IncompleteTopologyError
 
 _PRODUCER_LIMITATIONS = [
@@ -175,6 +176,8 @@ def describe(
         The canonical public document representation from ``agent_topology.spec``.
 
     Raises:
+        UnsupportedLangGraphVersionError: If the installed LangGraph release has
+            not passed this producer's conformance suite.
         TypeError: If ``compiled_graph`` is not a compiled LangGraph state graph,
             if ``depth`` is not an integer, or if ``strict`` is not a boolean.
         ValueError: If ``depth`` is negative.
@@ -182,6 +185,8 @@ def describe(
             contains one or more graph-specific gaps. The exception's ``document``
             attribute contains the canonical incomplete document.
     """
+    langgraph_version = ensure_supported_langgraph_version()
+
     if not isinstance(compiled_graph, CompiledStateGraph):
         raise TypeError(
             "compiled_graph must be a CompiledStateGraph returned by "
@@ -244,7 +249,7 @@ def describe(
             },
             "framework": {
                 "name": "langgraph",
-                "version": _distribution_version("langgraph"),
+                "version": langgraph_version,
             },
             "source": {"kind": "compiled-object"},
         },
