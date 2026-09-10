@@ -1,0 +1,70 @@
+{
+  "completeness": {
+    "gaps": [],
+    "status": "complete"
+  },
+  "graphs": [
+    {
+      "id": "main",
+      "structure": {
+        "edges": [
+          {
+            "id": "edge:__start__:write:direct:1",
+            "kind": "direct",
+            "source": "__start__",
+            "target": "write"
+          },
+          {
+            "id": "edge:write:__end__:direct:1",
+            "kind": "direct",
+            "source": "write",
+            "target": "__end__"
+          }
+        ],
+        "entryNodeIds": [
+          "__start__"
+        ],
+        "exitNodeIds": [
+          "__end__"
+        ],
+        "joins": [],
+        "nodes": [
+          {
+            "id": "__end__"
+          },
+          {
+            "id": "__start__"
+          },
+          {
+            "id": "write",
+            "interrupts": [
+              "before"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "producerLimitations": [],
+  "provenance": {
+    "framework": {
+      "name": "conformance-fixture",
+      "version": "1"
+    },
+    "generatedAt": "2000-01-01T00:00:00Z",
+    "producer": {
+      "name": "agent-topology-conformance",
+      "version": "1"
+    },
+    "source": {
+      "kind": "conformance-fixture",
+      "locator": "interrupt-before"
+    }
+  },
+  "structureHash": {
+    "algorithm": "sha256",
+    "algorithmVersion": "1",
+    "value": "8ade0b21e872d211b66ae58c017bb6de3e125e011616c419491fa3515dbd9364"
+  },
+  "topologyVersion": "0.1"
+}

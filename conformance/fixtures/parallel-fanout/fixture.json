@@ -1,0 +1,10 @@
+{
+  "nodes": [{"id": "fork"}, {"id": "left"}, {"id": "right"}],
+  "directEdges": [
+    {"source": "$start", "target": "fork"},
+    {"source": "fork", "target": "left"},
+    {"source": "fork", "target": "right"},
+    {"source": "left", "target": "$end"},
+    {"source": "right", "target": "$end"}
+  ]
+}

@@ -32,7 +32,13 @@ def _distribution_version(distribution: str) -> str:
         return "0.0.0"
 
 
-def _node_document(node_id: str, node: Any) -> dict[str, Any]:
+def _node_document(
+    node_id: str,
+    node: Any,
+    *,
+    interrupt_before: set[str],
+    interrupt_after: set[str],
+) -> dict[str, Any]:
     result: dict[str, Any] = {
         "id": node_id,
         "x-langgraph": {"sentinel": node_id in {START, END}},
@@ -40,6 +46,16 @@ def _node_document(node_id: str, node: Any) -> dict[str, Any]:
     name = getattr(node, "name", None)
     if isinstance(name, str) and name:
         result["x-langgraph"]["name"] = name
+    interrupts = [
+        location
+        for location, configured in (
+            ("before", interrupt_before),
+            ("after", interrupt_after),
+        )
+        if node_id in configured or ("*" in configured and node_id not in {START, END})
+    ]
+    if interrupts:
+        result["interrupts"] = interrupts
     return result
 
 
@@ -180,8 +196,16 @@ def describe(
 
     drawable = compiled_graph.get_graph(xray=depth)
     node_ids = [str(node_id) for node_id in drawable.nodes]
+    interrupt_before = set(map(str, compiled_graph.interrupt_before_nodes))
+    interrupt_after = set(map(str, compiled_graph.interrupt_after_nodes))
     nodes = [
-        _node_document(str(node_id), node) for node_id, node in drawable.nodes.items()
+        _node_document(
+            str(node_id),
+            node,
+            interrupt_before=interrupt_before,
+            interrupt_after=interrupt_after,
+        )
+        for node_id, node in drawable.nodes.items()
     ]
 
     if depth == 0:

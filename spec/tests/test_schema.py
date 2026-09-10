@@ -11,6 +11,7 @@ from jsonschema import Draft202012Validator
 
 SPEC_DIR = Path(__file__).parents[1]
 DOCUMENTS_DIR = Path(__file__).with_name("documents")
+CONFORMANCE_FIXTURES_DIR = SPEC_DIR.parent / "conformance" / "fixtures"
 SCHEMA = json.loads(
     (SPEC_DIR / "agent-topology.schema.json").read_text(encoding="utf-8")
 )
@@ -29,6 +30,14 @@ class SchemaTests(unittest.TestCase):
     def test_valid_documents(self) -> None:
         for path in sorted((DOCUMENTS_DIR / "valid").glob("*.json")):
             with self.subTest(document=path.name):
+                document = json.loads(path.read_text(encoding="utf-8"))
+                self.assertEqual(VALIDATOR_MODULE.validate_document(document, SCHEMA), [])
+
+    def test_conformance_expected_documents(self) -> None:
+        expected_paths = sorted(CONFORMANCE_FIXTURES_DIR.glob("*/expected.json"))
+        self.assertEqual(len(expected_paths), 8)
+        for path in expected_paths:
+            with self.subTest(fixture=path.parent.name):
                 document = json.loads(path.read_text(encoding="utf-8"))
                 self.assertEqual(VALIDATOR_MODULE.validate_document(document, SCHEMA), [])
 

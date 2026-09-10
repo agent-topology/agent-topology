@@ -1,0 +1,8 @@
+{
+  "nodes": [{"id": "first"}, {"id": "second"}],
+  "directEdges": [
+    {"source": "$start", "target": "first"},
+    {"source": "first", "target": "second"},
+    {"source": "second", "target": "$end"}
+  ]
+}

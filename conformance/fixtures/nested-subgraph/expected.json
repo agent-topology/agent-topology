@@ -1,0 +1,67 @@
+{
+  "completeness": {
+    "gaps": [],
+    "status": "complete"
+  },
+  "graphs": [
+    {
+      "id": "main",
+      "structure": {
+        "edges": [
+          {
+            "id": "edge:__start__:nested:direct:1",
+            "kind": "direct",
+            "source": "__start__",
+            "target": "nested"
+          },
+          {
+            "id": "edge:nested:__end__:direct:1",
+            "kind": "direct",
+            "source": "nested",
+            "target": "__end__"
+          }
+        ],
+        "entryNodeIds": [
+          "__start__"
+        ],
+        "exitNodeIds": [
+          "__end__"
+        ],
+        "joins": [],
+        "nodes": [
+          {
+            "id": "__end__"
+          },
+          {
+            "id": "__start__"
+          },
+          {
+            "id": "nested"
+          }
+        ]
+      }
+    }
+  ],
+  "producerLimitations": [],
+  "provenance": {
+    "framework": {
+      "name": "conformance-fixture",
+      "version": "1"
+    },
+    "generatedAt": "2000-01-01T00:00:00Z",
+    "producer": {
+      "name": "agent-topology-conformance",
+      "version": "1"
+    },
+    "source": {
+      "kind": "conformance-fixture",
+      "locator": "nested-subgraph"
+    }
+  },
+  "structureHash": {
+    "algorithm": "sha256",
+    "algorithmVersion": "1",
+    "value": "405323b5a06db1fe358b1094077c442785ec605e065655dda192b424b9663b50"
+  },
+  "topologyVersion": "0.1"
+}

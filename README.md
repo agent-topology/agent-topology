@@ -196,20 +196,24 @@ rules are summarized in the [contract README](spec/README.md).
 
 ```
 conformance/fixtures/
-├── linear-three-node/
-│   ├── source.py
+├── linear-flow/
+│   ├── fixture.json
 │   └── expected.json
-├── conditional-branch/
-├── retry-loop/
+├── conditional-routing/
+├── loop/
 ├── parallel-fanout/
 ├── nested-subgraph/
-└── interrupt-before-write/
+├── interrupt-before/
+├── unknown-routing-targets/
+└── multi-source-join/
 ```
 
 Every producer runs the same fixtures. **This is how the format stays one format** —
 without it, each producer drifts into its own dialect and the spec becomes a suggestion.
 
-Fixtures are data, not test code. They outlive any implementation.
+Fixtures are data, not test code. Producer-specific runners construct native framework
+objects from the shared `fixture.json` recipes and compare core topology meaning with
+the shared `expected.json` documents. They outlive any implementation.
 
 ---
 
