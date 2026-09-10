@@ -103,15 +103,18 @@ Source code, uncompiled `StateGraph` builders, and runtime execution are not
 accepted by this API. Producer-specific metadata is emitted only beneath the
 `x-langgraph` extension key.
 
-The planned PyPI distributions are `agent-topology-spec` and
+The Python distributions build as `agent-topology-spec` and
 `agent-topology-langgraph`, imported as `agent_topology.spec` and
-`agent_topology.langgraph`. The npm packages use the project scope directly:
+`agent_topology.langgraph`. Release automation exists, but they are not yet
+published to PyPI. The npm packages use the project scope directly:
 `@agent-topology/spec` and `@agent-topology/langgraph`.
 
 For maintainers, see [Architecture](ARCHITECTURE.md),
 [Conventions](CONVENTIONS.md), the
 [architecture decision router](docs/decisions/DECISIONS.md), and the
-[issue-planning model](docs/ISSUE-PLANNING.md).
+[issue-planning model](docs/ISSUE-PLANNING.md). The
+[Foundation retrospective](docs/retrospectives/0001-foundation-usable-python-producer.md)
+records what this first implementation demonstrated and what remains provisional.
 
 ---
 
@@ -212,7 +215,7 @@ If no, it's an extension.
 
 | Framework        | Status                |
 | ---------------- | --------------------- |
-| LangGraph        | in progress           |
+| LangGraph        | Foundation implemented (1.2.10–1.2.11) |
 | LangChain (LCEL) | planned               |
 | others           | contributions welcome |
 

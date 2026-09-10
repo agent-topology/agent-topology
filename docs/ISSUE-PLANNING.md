@@ -25,13 +25,19 @@ A milestone answers “what must be true for this release outcome?” It is not 
 bucket for everything worked on during a date range. Give it exit conditions,
 and assign an issue only when closing that issue advances those conditions.
 
-The first useful milestone should be `Foundation — usable Python producer`, with
-exit conditions such as installable PyPI distributions, a conforming LangGraph
-producer, meaningful completeness, deterministic output/hash behaviour, and a
-documented `agt describe` path. This is pre-`0.1` foundation work: the README's
-`0.1` outcome still requires evidence from two real producers. Do not put the
-deferred TypeScript producer in the foundation milestone merely because the npm
-namespace exists.
+The first milestone, `Foundation — usable Python producer`, used exit conditions
+covering installable distribution artifacts, a conforming LangGraph producer,
+meaningful completeness, deterministic output/hash behaviour, and a documented
+`agt describe` path. Its [retrospective](retrospectives/0001-foundation-usable-python-producer.md)
+distinguishes artifact installation from registry publication and executable
+evidence from issue closure. This remains pre-`0.1` work: the README's `0.1`
+outcome still requires evidence from two real producers.
+
+Name the evidence class required by an exit condition. A passing local test,
+shared conformance fixture, clean artifact installation, non-publishing release
+run, registry publication, and real consumer result prove different things.
+After children close, verify the parent outcome against those stated proofs;
+closed counts alone do not establish it.
 
 ### Epic
 
@@ -148,10 +154,11 @@ Create the milestone and Epics first. Create Features only for independently
 valuable slices, then add Tasks just before implementation so early guesses do
 not harden into a stale backlog.
 
-## First-cut hierarchy
+## Foundation delivery hierarchy
 
-The initial live hierarchy is below. Refine Features into Tasks only after the
-package build tools and CLI ownership decision are known.
+The delivered hierarchy is below. Feature #17 was refined just in time into the
+minimum two Tasks after the package build tools were selected. The retrospective
+records the resulting sequence and decomposition lessons.
 
 Live tracking:
 

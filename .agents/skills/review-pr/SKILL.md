@@ -48,37 +48,51 @@ exists elsewhere. Cite `file:line` for anything you flag.
 
 ## 3. Repo gates
 
-Check each explicitly against `AGENTS.md` and report per item:
+Check each explicitly against `AGENTS.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`,
+and the routed ADRs, and report per item:
 
-- **Security boundary** — no real credentials in source, fixtures, logs, errors,
-  snapshots, docs, or agent context; no plaintext secret values in findings or
-  diagnostics; the core still side-effect free (no network, telemetry, secret
-  storage, or environment-dependent behavior).
-- **Architecture** — detection still separate from policy enforcement; the
-  public API still runtime-neutral; browser and Node.js compatibility intact.
-- **Tests** — deterministic tests added for detector, redaction,
-  overlap-resolution, or policy behavior changes. New false-positive /
-  false-negative tradeoffs stated.
-- **Governance** — ADRs under `docs/decisions` with `scope: workspace` (never
-  `_notes/decisions`); `_notes/GOVERNANCE.md` policy when that file exists.
+- **Package direction** — the specification does not import a producer or
+  framework, producers depend inward on the specification, and independently
+  released namespace portions do not collide.
+- **Document contract** — framework-only facts remain under `x-*`, limitations
+  remain distinct from element-local gaps, and canonicalisation/hash changes use
+  the correct format or algorithm-version decision.
+- **Tests and conformance** — the smallest useful deterministic fixture or
+  focused package test covers the behavior, and supported LangGraph claims have
+  boundary evidence.
+- **Governance** — material architecture choices have a routed proposed or
+  superseding ADR; README and conventions do not silently reverse accepted ADRs.
 
-Run the gate yourself rather than trusting the PR's green tick:
+Run the authoritative commands from `CONVENTIONS.md` rather than trusting the
+PR's green tick. For the current Python Foundation:
 
 ```bash
-rtk npm run ci
-rtk cargo test && rtk cargo clippy   # when crates/ is touched
+rtk uv run --project packages/python/spec --group test pytest packages/python/spec/tests
+rtk uv run --project packages/python/spec --group test pytest spec/tests
+rtk uv run --project packages/python/spec --group test python -m pytest tests/test_release_tools.py
+rtk uv run --project packages/python/langgraph --group test pytest packages/python/langgraph/tests
+rtk uvx --from ruff==0.16.7 ruff format --check packages/python scripts tests
+rtk uvx --from ruff==0.16.7 ruff check packages/python scripts tests
 ```
+
+When packaging or release files change, also build and inspect both archive
+formats, exercise clean installations and namespace coexistence, and run the
+supported LangGraph compatibility matrix.
 
 ## 4. Wrap-up before close
 
 The work that is easy to forget and expensive to add after the merge:
 
-- `CHANGELOG.md` entry for anything user-visible.
-- An ADR when the PR settled a decision, plus `rtk npm run decisions:validate`.
-- Docs touched by the change — `README.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`,
-  and the sibling `secret-scan.wiki` checkout when it is affected.
+- Release notes or a changelog entry when the repository has an established
+  destination and the change is user-visible.
+- A routed ADR when the PR settles a material architecture decision, with the
+  decision router and assembled architecture updated after acceptance.
+- Relevant public, architecture, convention, contract, conformance, and
+  issue-planning documentation updated with the behavior they own.
 - The PR body closes its issue (`Closes #<ISSUE_NUMBER>`).
 - The commit message `ghpr` generated actually describes the change.
+- The final report records the reviewed commit SHA, acceptance-criteria mapping,
+  CI state, and documentation/ADR assessment so the review can be audited later.
 
 Apply the fixes and the wrap-up locally, on the PR's branch, with ordinary
 descriptive commit messages — the `wip: #<N>` rule belongs to `resolve-issue`

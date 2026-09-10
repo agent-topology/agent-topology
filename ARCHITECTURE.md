@@ -6,10 +6,11 @@ framework producer observes a compiled graph, normalises what it can see, and
 states what it could not see; consumers correlate or present that result without
 changing its meaning.
 
-This document describes the intended architecture. The repository currently
-contains the canonical schema, its validation examples, project documentation,
-and accepted decisions; the package layout below is the target for
-implementation, not a claim that the Python distributions already exist.
+This document describes the intended architecture and its Foundation
+implementation. The repository contains the canonical schema and fixtures, the
+Python specification and LangGraph distributions, the Foundation CLI, release
+automation, project documentation, and accepted decisions. Registry publication
+is a separate release operation and has not occurred.
 
 ## System context
 
