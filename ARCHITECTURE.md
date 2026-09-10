@@ -104,9 +104,17 @@ agt describe ./graph.py --out topology.json
 agt diff topology.json topology.new.json
 ```
 
-The package that owns command dispatch and the extension mechanism for commands
-other than `describe` must be decided before CLI implementation. The accepted
-decision fixes the command name, not that ownership model.
+For Foundation, `agent-topology-langgraph` alone publishes the `agt` executable
+and dispatches `describe` directly to its producer. Installing
+`agent-topology-spec` alone does not expose `agt`, and no plugin or producer
+discovery mechanism is part of the CLI. Future producer packages may coexist as
+imports but must not publish a colliding `agt` console script.
+
+`agt diff` is classified as a future producer-neutral document-consumer command
+and remains outside Foundation. Scheduling it, or requiring one command to
+select among multiple installed producers, triggers migration of the executable
+to a dedicated CLI distribution rather than adding producer-neutral dispatch to
+the LangGraph package. See ADR 0007.
 
 ## Dependency direction
 
@@ -165,11 +173,7 @@ an ADR before implementation.
 
 ## Open architectural questions
 
-- Which Python package owns the `agt` executable and how additional producers
-  contribute commands.
-- Whether document diffing belongs in the spec package, a consumer package, or
-  a later dedicated CLI package.
 - The first structurally different framework used to test the v0 core boundary.
 
-These are intentionally not settled here; `ARCHITECTURE.md` records accepted
+This is intentionally not settled here; `ARCHITECTURE.md` records accepted
 architecture and visible seams, while ADRs own new choices and rationale.

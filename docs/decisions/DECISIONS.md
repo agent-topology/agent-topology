@@ -18,6 +18,7 @@ authority for why a choice was made and when it may be revisited.
 | Diagram data, renderers, visual output, or what conformance compares | [ADR 0004](0004-rendering-is-not-part-of-the-core-document.md) |
 | Core versus `x-*` extensions, vendor neutrality, v0 status, or the evidence required from a second framework | [ADR 0005](0005-vendor-neutrality-is-provisional-at-v0.md) |
 | Monorepo/package boundaries, Python versus TypeScript, independent releases, published names/imports, or the `agt` command name | [ADR 0006](0006-repository-layout-and-language-boundaries.md) |
+| Ownership of the `agt` executable, `describe` dispatch, CLI producer discovery, command collisions, or `agt diff` ownership | [ADR 0007](0007-langgraph-owns-the-foundation-cli.md) |
 
 For a change spanning several rows, read every routed ADR. Common paths are:
 
@@ -25,6 +26,7 @@ For a change spanning several rows, read every routed ADR. Common paths are:
 - new producer: 0001 → 0002 → 0005 → 0006
 - renderer or visual consumer: 0001 → 0002 → 0004
 - packaging or release automation: 0003 → 0006
+- CLI command or ownership change: 0001 → 0006 → 0007
 
 ## Decision index
 
@@ -36,6 +38,7 @@ For a change spanning several rows, read every routed ADR. Common paths are:
 | [0004](0004-rendering-is-not-part-of-the-core-document.md) | Accepted | Keep rendering outside the core document and conformance contract. |
 | [0005](0005-vendor-neutrality-is-provisional-at-v0.md) | Accepted | Treat the core as provisional until a structurally different framework tests it. |
 | [0006](0006-repository-layout-and-language-boundaries.md) | Accepted | Use independently versioned, framework-named packages with explicit published names and `agt` as the short CLI name. |
+| [0007](0007-langgraph-owns-the-foundation-cli.md) | Accepted | Let the LangGraph distribution alone publish the Foundation `agt describe` command and defer a unified CLI until evidence requires one. |
 
 ## Adding or changing a decision
 
