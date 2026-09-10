@@ -1,0 +1,44 @@
+{
+  "topologyVersion": "0.1",
+  "provenance": {
+    "generatedAt": "2026-09-10T19:00:00Z",
+    "producer": {"name": "agent-topology-langgraph", "version": "0.0.4"},
+    "framework": {"name": "langgraph", "version": "1.2.11"},
+    "x-langgraph": {"runtime": "python"}
+  },
+  "producerLimitations": [],
+  "structureHash": {
+    "algorithm": "sha256",
+    "algorithmVersion": "1",
+    "value": "1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "graphs": [
+    {
+      "id": "main",
+      "structure": {
+        "nodes": [
+          {"id": "router", "x-langgraph": {"sentinel": false}},
+          {"id": "known"}
+        ],
+        "edges": [
+          {"id": "known-path", "source": "router", "target": "known", "kind": "conditional"}
+        ],
+        "joins": [],
+        "entryNodeIds": ["router"],
+        "exitNodeIds": ["known"]
+      },
+      "x-langgraph": {"compiled": true}
+    }
+  ],
+  "completeness": {
+    "status": "incomplete",
+    "gaps": [
+      {
+        "code": "unknown-routing-targets",
+        "message": "Not every destination of this router could be determined.",
+        "element": {"graphId": "main", "kind": "node", "id": "router"}
+      }
+    ]
+  },
+  "x-example.consumer": {"correlationId": "trace-1"}
+}

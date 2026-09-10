@@ -1,0 +1,49 @@
+{
+  "topologyVersion": "0.1",
+  "provenance": {
+    "generatedAt": "2026-09-10T19:00:00Z",
+    "producer": {
+      "name": "agent-topology-example",
+      "version": "0.3.2"
+    },
+    "framework": {
+      "name": "example-framework",
+      "version": "7.1"
+    }
+  },
+  "producerLimitations": [
+    {
+      "code": "dynamic-node-bodies",
+      "message": "Behavior inside node bodies is not statically observable."
+    }
+  ],
+  "structureHash": {
+    "algorithm": "sha256",
+    "algorithmVersion": "1",
+    "value": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "graphs": [
+    {
+      "id": "main",
+      "name": "minimal",
+      "structure": {
+        "nodes": [
+          {"id": "start", "type": "entry"},
+          {"id": "work", "type": "task", "interrupts": ["before"]},
+          {"id": "end", "type": "exit"}
+        ],
+        "edges": [
+          {"id": "start-work", "source": "start", "target": "work", "kind": "direct"},
+          {"id": "work-end", "source": "work", "target": "end", "kind": "direct"}
+        ],
+        "joins": [],
+        "entryNodeIds": ["start"],
+        "exitNodeIds": ["end"]
+      }
+    }
+  ],
+  "completeness": {
+    "status": "complete",
+    "gaps": []
+  }
+}

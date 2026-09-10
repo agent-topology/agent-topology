@@ -7,9 +7,9 @@ states what it could not see; consumers correlate or present that result without
 changing its meaning.
 
 This document describes the intended architecture. The repository currently
-contains the project documentation and accepted decisions; the package layout
-below is the target for implementation, not a claim that those packages already
-exist.
+contains the canonical schema, its validation examples, project documentation,
+and accepted decisions; the package layout below is the target for
+implementation, not a claim that the Python distributions already exist.
 
 ## System context
 

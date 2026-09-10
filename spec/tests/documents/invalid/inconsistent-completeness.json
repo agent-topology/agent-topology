@@ -1,0 +1,36 @@
+{
+  "topologyVersion": "0.1",
+  "provenance": {
+    "generatedAt": "2026-09-10T19:00:00Z",
+    "producer": {"name": "example", "version": "1"},
+    "framework": {"name": "example", "version": "1"}
+  },
+  "producerLimitations": [],
+  "structureHash": {
+    "algorithm": "sha256",
+    "algorithmVersion": "1",
+    "value": "4444444444444444444444444444444444444444444444444444444444444444"
+  },
+  "graphs": [
+    {
+      "id": "main",
+      "structure": {
+        "nodes": [{"id": "router"}],
+        "edges": [],
+        "joins": [],
+        "entryNodeIds": ["router"],
+        "exitNodeIds": []
+      }
+    }
+  ],
+  "completeness": {
+    "status": "complete",
+    "gaps": [
+      {
+        "code": "unknown-routing-targets",
+        "message": "Targets are unknown.",
+        "element": {"graphId": "main", "kind": "node", "id": "router"}
+      }
+    ]
+  }
+}

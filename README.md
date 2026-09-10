@@ -102,13 +102,15 @@ These belong in **vendor extensions**, not the core.
 
 ### Extensions
 
-Namespaced keys carry anything the core doesn't:
+Namespaced keys carry anything the core doesn't. For example, this document
+fragment adds producer-specific graph data:
 
 ```jsonc
 {
   "topologyVersion": "0.1",
   "graphs": [
     {
+      "id": "issue-resolver",
       "name": "issue-resolver",
       "structure": { "nodes": [], "edges": [] },
       "x-yourtool": { "whatever": "you need" },
@@ -145,6 +147,10 @@ be small. If it needs configuration, the format is probably wrong.
 
 `conformance/fixtures/` holds the ground truth. Each case is a graph description and the
 document a correct producer must emit.
+
+The provisional v0.1 contract is defined by the single canonical
+[JSON Schema](spec/agent-topology.schema.json); its extension and validation
+rules are summarized in the [contract README](spec/README.md).
 
 ```
 conformance/fixtures/
