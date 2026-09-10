@@ -111,6 +111,27 @@ Choose build backends, formatters, linters, test runners, and supported runtime
 versions when the first package is scaffolded. Record the selected commands here
 after they exist; do not invent commands in advance.
 
+### Python toolchain
+
+Python distributions use Hatchling 1.32.0 and support Python 3.11 through 3.14.
+Each distribution owns its own `pyproject.toml`, source root, dependency group,
+and build artifact. The repository uses Ruff 0.16.7 for Python formatting and
+linting and pytest 9.1.1 for tests.
+
+Run the package checks independently:
+
+```bash
+uv build packages/python/spec --out-dir dist/spec --clear
+uv build packages/python/langgraph --out-dir dist/langgraph --clear
+uv run --project packages/python/spec --group test pytest packages/python/spec/tests
+uv run --project packages/python/langgraph --group test pytest packages/python/langgraph/tests
+uvx --from ruff==0.16.7 ruff format --check packages/python
+uvx --from ruff==0.16.7 ruff check packages/python
+```
+
+The Python packages are native portions of the `agent_topology` namespace.
+Never add `packages/python/*/src/agent_topology/__init__.py`.
+
 ## Documentation and decisions
 
 The README explains user-facing purpose and limits. Architecture describes the

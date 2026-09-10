@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling==1.32.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agent-topology-langgraph"
+version = "0.0.0"
+description = "LangGraph producer for agent-topology documents"
+requires-python = ">=3.11,<3.15"
+license = "MIT"
+
+[dependency-groups]
+test = ["pytest==9.1.1"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agent_topology"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/agent_topology", "tests", "pyproject.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
