@@ -23,7 +23,7 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "agent-topology-spec", directory = "../spec" },
-    { name = "langgraph", specifier = "==1.2.11" },
+    { name = "langgraph", specifier = ">=1.2.10,<=1.2.11" },
 ]
 
 [package.metadata.requires-dev]

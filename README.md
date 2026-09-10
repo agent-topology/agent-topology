@@ -37,6 +37,12 @@ from agent_topology.langgraph import describe
 document = describe(compiled_graph)
 ```
 
+The LangGraph producer supports only releases with explicit conformance evidence.
+The current tested range is 1.2.10 through 1.2.11; `describe` raises
+`UnsupportedLangGraphVersionError` with an installation command before inspecting a
+graph on any other release. The compatibility manifest drives the CI boundary matrix,
+so widening package metadata also requires adding a tested release.
+
 Pass the keyword-only `depth` option to expand nested graphs through that many
 levels. It defaults to `0`, which leaves nested graphs opaque:
 

@@ -1,9 +1,12 @@
+import json
+import tomllib
 from copy import deepcopy
 from pathlib import Path
 from typing import Literal, TypedDict
 
 import agent_topology.langgraph
 import pytest
+from agent_topology.langgraph import _compatibility
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Command
@@ -20,8 +23,52 @@ def _step(_state: _State) -> dict[str, str]:
 def test_langgraph_owns_only_its_namespace_portion() -> None:
     package_dir = Path(agent_topology.langgraph.__file__).parent
 
-    assert agent_topology.langgraph.__all__ == ["IncompleteTopologyError", "describe"]
+    assert agent_topology.langgraph.__all__ == [
+        "IncompleteTopologyError",
+        "UnsupportedLangGraphVersionError",
+        "describe",
+    ]
     assert not (package_dir.parent / "__init__.py").exists()
+
+
+def test_package_metadata_matches_evidence_backed_compatibility_contract() -> None:
+    package_root = Path(__file__).parents[1]
+    project = tomllib.loads(
+        (package_root / "pyproject.toml").read_text(encoding="utf-8")
+    )
+    contract = json.loads(
+        (
+            Path(agent_topology.langgraph.__file__).parent / "_compatibility.json"
+        ).read_text(encoding="utf-8")
+    )
+
+    langgraph_dependency = next(
+        dependency
+        for dependency in project["project"]["dependencies"]
+        if dependency.startswith("langgraph")
+    )
+    assert langgraph_dependency == f"langgraph{contract['metadataSpecifier']}"
+    assert contract["testedVersions"] == ["1.2.10", "1.2.11"]
+
+
+@pytest.mark.parametrize("installed_version", ["1.2.9", "1.2.12"])
+def test_describe_rejects_langgraph_versions_outside_tested_range(
+    installed_version: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(_compatibility, "version", lambda _name: installed_version)
+
+    with pytest.raises(
+        agent_topology.langgraph.UnsupportedLangGraphVersionError,
+        match=(
+            rf"Unsupported LangGraph version {installed_version}.*"
+            r'python -m pip install "langgraph>=1.2.10,<=1.2.11"'
+        ),
+    ) as caught:
+        agent_topology.langgraph.describe(_compile_minimal_graph())
+
+    assert caught.value.installed_version == installed_version
+    assert caught.value.supported_specifier == ">=1.2.10,<=1.2.11"
+    assert caught.value.tested_versions == ("1.2.10", "1.2.11")
 
 
 def _compile_minimal_graph() -> CompiledStateGraph:
