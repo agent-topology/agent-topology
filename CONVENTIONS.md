@@ -126,8 +126,9 @@ uv build packages/python/spec --out-dir dist/spec --clear
 uv build packages/python/langgraph --out-dir dist/langgraph --clear
 uv run --project packages/python/spec --group test pytest packages/python/spec/tests
 uv run --project packages/python/langgraph --group test pytest packages/python/langgraph/tests
+uv run --project packages/python/spec --group test python -m pytest tests/test_release_tools.py tests/test_public_docs.py
 uvx --from ruff==0.16.7 ruff format --check packages/python
-uvx --from ruff==0.16.7 ruff check packages/python
+uvx --from ruff==0.16.7 ruff check packages/python scripts tests
 ```
 
 CI builds and inspects each wheel and source distribution independently, then
