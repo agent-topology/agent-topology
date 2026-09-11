@@ -207,6 +207,8 @@ jobs:
           --tarball "$(find "${{ runner.temp }}/release-bundle" -name '*.tgz')"
           --receipt "${{ runner.temp }}/release-bundle/release-receipt.json"
       - name: Publish the one authorized package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: >-
           npm publish "$(find "${{ runner.temp }}/release-bundle" -name '*.tgz')"
           --access public --provenance --tag "${{ needs.selection.outputs.npm-tag }}"
