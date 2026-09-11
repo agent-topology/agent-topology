@@ -70,7 +70,7 @@ jobs:
         run: >-
           python scripts/verify_python_artifacts.py
           --package ${{ matrix.package }}
-          --version 0.0.0
+          --version 0.1.0
           --dist-dir "${{ runner.temp }}/dist"
       - uses: actions/upload-artifact@v5
         with:
