@@ -184,9 +184,36 @@ jobs:
           path: ${{ runner.temp }}/release-dist
           if-no-files-found: error
 
+  registry-preflight:
+    needs: [selection, qualify]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - if: inputs.package == 'langgraph'
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - if: inputs.package == 'langgraph'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+      - if: inputs.package == 'langgraph'
+        uses: actions/download-artifact@v6
+        with:
+          name: authorized-npm-release
+          path: ${{ runner.temp }}/release-dist
+      - if: inputs.package == 'langgraph'
+        name: Verify the published spec peer on the public registry before the producer can publish
+        env:
+          SPEC_VERSION: ${{ needs.selection.outputs.spec-version }}
+        run: >-
+          node scripts/verify_npm_registry_peer.mjs
+          --spec-version "$SPEC_VERSION"
+          --producer-tarball "$(find "${{ runner.temp }}/release-dist" -name '*.tgz')"
+
   publish:
     if: inputs.publish
-    needs: [selection, qualify]
+    needs: [selection, qualify, registry-preflight]
     runs-on: ubuntu-latest
     environment: npm-public-preview
     permissions:

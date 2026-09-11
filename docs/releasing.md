@@ -26,7 +26,18 @@ below. The current candidate is [0.1.0-beta.2](releases/v0.1.0-beta.2.md).
    specification version.
 3. Publish `@agent-topology/spec`, then `@agent-topology/langgraph`, with
    `.github/workflows/release-npm.yml`. The producer must name its specification peer
-   version.
+   version. Before the producer can reach `npm publish`, the workflow's
+   `registry-preflight` job reads that exact prepared peer, confirms the exact
+   version (never a moving dist-tag) is already public on the npm registry, and
+   clean-installs it from the registry together with the already-qualified
+   producer tarball — no workspace links and no locally built support
+   tarball — then runs a minimal public-API smoke against that combination.
+   This is why the specification package must publish first: the preflight
+   fails closed (missing peer, registry query failure, or smoke failure) and
+   blocks the `publish` job before any upload, for both `publish=false` dry
+   runs and `publish=true` runs. It is a publication-only check and does not
+   replace or relax the offline/local candidate qualification the `qualify`
+   job already performs from locally built tarballs.
 4. Install every exact version from its public registry in a clean environment and
    repeat the public smoke paths. Record the source commit, filenames, registry URLs,
    provenance, and digests in the GitHub release notes.

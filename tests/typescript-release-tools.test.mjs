@@ -11,6 +11,11 @@ import {
   makeReceipt,
   verifyWorktree,
 } from "../scripts/verify_typescript_release.mjs";
+import {
+  RegistryPreflightError,
+  fetchPublishedSpecVersion,
+  verifyResolvedSpecVersion,
+} from "../scripts/verify_npm_registry_peer.mjs";
 
 const checks = [
   "artifact-inspection",
@@ -191,4 +196,149 @@ test("release input must be the exact commit and a clean checkout", () => {
   } finally {
     rmSync(root, { recursive: true });
   }
+});
+
+function packument(versions) {
+  return {
+    versions: Object.fromEntries(
+      versions.map((version) => [version, { version }]),
+    ),
+  };
+}
+
+test("registry peer resolution accepts only the exact published version", async () => {
+  const resolved = await fetchPublishedSpecVersion({
+    version: "0.1.0-beta.2",
+    fetchImpl: async () => ({
+      status: 200,
+      ok: true,
+      json: async () => packument(["0.1.0-beta.1", "0.1.0-beta.2"]),
+    }),
+  });
+  assert.equal(resolved, "0.1.0-beta.2");
+});
+
+test("registry peer resolution fails closed on a missing peer", async () => {
+  await assert.rejects(
+    fetchPublishedSpecVersion({
+      version: "0.1.0-beta.2",
+      fetchImpl: async () => ({ status: 404, ok: false }),
+    }),
+    (error) => {
+      assert.ok(error instanceof RegistryPreflightError);
+      assert.equal(error.reason, "missing-peer");
+      return true;
+    },
+  );
+});
+
+test("registry peer resolution fails closed on a registry failure", async () => {
+  await assert.rejects(
+    fetchPublishedSpecVersion({
+      version: "0.1.0-beta.2",
+      fetchImpl: async () => {
+        throw new Error("getaddrinfo ENOTFOUND registry.npmjs.org");
+      },
+    }),
+    (error) => {
+      assert.ok(error instanceof RegistryPreflightError);
+      assert.equal(error.reason, "registry-failure");
+      return true;
+    },
+  );
+  await assert.rejects(
+    fetchPublishedSpecVersion({
+      version: "0.1.0-beta.2",
+      fetchImpl: async () => ({ status: 500, ok: false }),
+    }),
+    (error) => {
+      assert.ok(error instanceof RegistryPreflightError);
+      assert.equal(error.reason, "registry-failure");
+      return true;
+    },
+  );
+});
+
+test("registry peer resolution refuses a moving dist-tag that resolves elsewhere", async () => {
+  await assert.rejects(
+    fetchPublishedSpecVersion({
+      version: "0.1.0-beta.2",
+      fetchImpl: async () => ({
+        status: 200,
+        ok: true,
+        json: async () => packument(["0.1.0-beta.1", "0.1.0-beta.3"]),
+      }),
+    }),
+    (error) => {
+      assert.ok(error instanceof RegistryPreflightError);
+      assert.equal(error.reason, "missing-peer");
+      assert.match(error.message, /moving dist-tag/);
+      return true;
+    },
+  );
+});
+
+test("clean install must resolve the exact qualified spec peer, not a substitute", () => {
+  const root = mkdtempSync(resolve(tmpdir(), "npm-registry-install-test-"));
+  try {
+    const specDir = resolve(root, "node_modules/@agent-topology/spec");
+    execFileSync("mkdir", ["-p", specDir]);
+    writeFileSync(
+      resolve(specDir, "package.json"),
+      JSON.stringify({ name: "@agent-topology/spec", version: "0.1.0-beta.2" }),
+    );
+
+    verifyResolvedSpecVersion({
+      projectDir: root,
+      specVersion: "0.1.0-beta.2",
+    });
+    assert.throws(
+      () =>
+        verifyResolvedSpecVersion({
+          projectDir: root,
+          specVersion: "0.1.0-beta.3",
+        }),
+      (error) => {
+        assert.ok(error instanceof RegistryPreflightError);
+        assert.equal(error.reason, "missing-peer");
+        return true;
+      },
+    );
+  } finally {
+    rmSync(root, { recursive: true });
+  }
+});
+
+test("release-npm.yml gates producer publication on a registry preflight even for dry runs", () => {
+  const release = workflow("release-npm.yml");
+  const preflightJob = release.indexOf("\n  registry-preflight:");
+  const qualifyJob = release.indexOf("\n  qualify:");
+  const publishJob = release.indexOf("\n  publish:");
+  const preflightStep = release.indexOf("verify_npm_registry_peer.mjs");
+  const publishNeeds = release.indexOf(
+    "needs: [selection, qualify, registry-preflight]",
+  );
+
+  assert.ok(
+    preflightJob > qualifyJob,
+    "registry-preflight must follow qualify",
+  );
+  assert.ok(
+    publishJob > preflightJob,
+    "publish must follow registry-preflight",
+  );
+  assert.ok(
+    preflightStep > preflightJob && preflightStep < publishJob,
+    "the registry preflight script must run inside the registry-preflight job",
+  );
+  assert.ok(
+    publishNeeds > preflightJob,
+    "publish must depend on the registry-preflight job so a fail-closed result blocks the upload",
+  );
+  assert.ok(
+    !/registry-preflight:[\s\S]*?if:\s*inputs\.publish/.test(
+      release.slice(preflightJob, publishJob),
+    ),
+    "registry-preflight must run even when publish=false so dry runs still qualify the candidate",
+  );
 });
