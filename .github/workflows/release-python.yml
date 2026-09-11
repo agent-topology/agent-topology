@@ -288,6 +288,20 @@ jobs:
           --commit "${{ github.sha }}"
           --receipt .release-bundle/release-receipt.json
           --allow-untracked-root .release-bundle
+      - if: inputs.package == 'langgraph'
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
+          python-version: "3.14"
+      - if: inputs.package == 'langgraph'
+        name: Verify the published spec from the public registry before publishing
+        run: |
+          uv venv "${{ runner.temp }}/registry-preflight"
+          wheel_artifacts=(.release-bundle/dist/*.whl)
+          test "${#wheel_artifacts[@]}" -eq 1
+          python3 scripts/verify_spec_registry.py \
+            --python "${{ runner.temp }}/registry-preflight/bin/python" \
+            --wheel "${wheel_artifacts[0]}"
       - name: Publish the one authorized distribution
         uses: pypa/gh-action-pypi-publish@release/v1
         with:

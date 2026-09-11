@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import tomllib
 from pathlib import Path
 
@@ -21,6 +22,81 @@ def prepared_package(ecosystem: str, package: str) -> dict:
         path = ROOT / "packages/typescript" / package / "package.json"
         project = json.loads(path.read_text(encoding="utf-8"))
     return project
+
+
+_PRERELEASE_ORDER = {"a": 0, "b": 1, "rc": 2}
+
+_VERSION_OPERATORS = {
+    "==": lambda left, right: left == right,
+    "!=": lambda left, right: left != right,
+    ">=": lambda left, right: left >= right,
+    "<=": lambda left, right: left <= right,
+    ">": lambda left, right: left > right,
+    "<": lambda left, right: left < right,
+}
+
+
+def _version_key(version: str) -> tuple[tuple[int, ...], tuple[int, int]]:
+    """Order a release segment and an optional a/b/rc pre-release suffix.
+
+    Covers only the PEP 440 shapes this repo actually issues (dotted release
+    numbers with an optional single pre-release suffix); it is not a general
+    PEP 440 parser.
+    """
+    match = re.fullmatch(
+        r"(?P<release>\d+(?:\.\d+)*)(?:(?P<label>a|b|rc)(?P<num>\d+))?", version
+    )
+    if match is None:
+        raise ValueError(f"unsupported version format: {version!r}")
+    release = tuple(int(part) for part in match["release"].split("."))
+    label = match["label"]
+    pre = (
+        (_PRERELEASE_ORDER[label], int(match["num"]))
+        if label is not None
+        else (len(_PRERELEASE_ORDER), 0)
+    )
+    return release, pre
+
+
+def _satisfies_specifier(version: str, specifier: str) -> bool:
+    key = _version_key(version)
+    for clause in specifier.split(","):
+        match = re.fullmatch(r"\s*(==|!=|>=|<=|>|<)\s*(.+?)\s*", clause)
+        if match is None:
+            raise ValueError(f"unsupported specifier clause: {clause!r}")
+        operator, bound = match.groups()
+        if not _VERSION_OPERATORS[operator](key, _version_key(bound)):
+            return False
+    return True
+
+
+def _dependency_specifier(project: dict, name: str) -> str:
+    for dependency in project["dependencies"]:
+        match = re.fullmatch(rf"{re.escape(name)}([<>=!].+)", dependency)
+        if match:
+            return match.group(1)
+    raise ValueError(f"{project['name']} does not declare a {name} dependency")
+
+
+def resolve_producer_spec_version(package: str) -> str:
+    """Resolve the prepared spec version a registry preflight should pin to.
+
+    For ``langgraph``, confirms the prepared spec version satisfies the
+    producer's committed dependency requirement first, so a preflight never
+    pins to a version the producer does not actually accept, and never lets
+    the registry choose an arbitrary latest version instead.
+    """
+    spec_version = prepared_package("python", "spec")["version"]
+    if package == "spec":
+        return spec_version
+    producer = prepared_package("python", package)
+    specifier = _dependency_specifier(producer, "agent-topology-spec")
+    if not _satisfies_specifier(spec_version, specifier):
+        raise ValueError(
+            f"prepared agent-topology-spec version {spec_version!r} does not satisfy "
+            f"{producer['name']}'s requirement {specifier!r}"
+        )
+    return spec_version
 
 
 def check_version_copies() -> None:

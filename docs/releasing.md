@@ -23,7 +23,9 @@ below. The current candidate is [0.1.0-beta.2](releases/v0.1.0-beta.2.md).
    registry.
 2. Publish `agent-topology-spec`, then `agent-topology-langgraph`, with
    `.github/workflows/release-python.yml`. The producer must name a compatible
-   specification version.
+   specification version. Before the `publish` job for `agent-topology-langgraph`
+   uploads any artifact, it runs a registry preflight (below) that fails the
+   run rather than publish an artifact against an unverified spec dependency.
 3. Publish `@agent-topology/spec`, then `@agent-topology/langgraph`, with
    `.github/workflows/release-npm.yml`. The producer must name its specification peer
    version.
@@ -107,6 +109,47 @@ metadata without rewriting support package versions or peers.
 Update the current candidate notes. Historical beta.1 records and installation
 guides intentionally selecting published versions are not version-bump targets.
 Neither the topology format nor hash algorithm version changes for a package bump.
+
+## Producer registry preflight (Python)
+
+For [Task #79](https://github.com/agent-topology/agent-topology/issues/79), the
+`publish` job for `agent-topology-langgraph` runs `scripts/verify_spec_registry.py`
+before the `pypa/gh-action-pypi-publish` step, so a broken or unpublished spec
+dependency fails the workflow instead of shipping a producer artifact next to
+it. This is a **publication-only** check: it runs only when `inputs.package ==
+'langgraph'`, inside the `publish` job, which itself only runs with
+`publish=true`. Qualification with `publish=false` and spec-only releases never
+reach it, so it never depends on an unpublished `0.1.0b2` spec — the `authorize`
+job's clean-installation check keeps using the locally built support wheel, as
+it always has.
+
+Spec-first ordering: the script resolves the intended spec version from the
+prepared source (`scripts/check_release_source.py`'s
+`resolve_producer_spec_version`, reusing the same `prepared_package` reader as
+dispatch validation) and confirms it satisfies the producer's committed
+`agent-topology-spec` dependency bound *before* any registry call — the prepared
+spec's own version, never an arbitrary latest version the registry happens to
+report. Only then does it, in a fresh isolated `uv venv` with no `--find-links`,
+workspace, or editable source:
+
+1. Install exactly that spec version from public PyPI.
+2. Confirm the installed distribution actually reports that version.
+3. Install the qualified, already-authorized producer wheel into the same
+   environment.
+4. Run `scripts/smoke_langgraph_installation.py`, the same public smoke path
+   the clean-installation check exercises, against the registry-backed install.
+
+Any of these failing — an unsatisfied local requirement, a registry install
+that never succeeds, mismatched installed metadata, or a failed smoke run —
+raises before the publish step runs, so nothing is uploaded.
+
+**Retry behavior:** the registry install (step 1) retries with backoff (three
+attempts by default) before failing, because a "version not found" result
+immediately after publishing the spec can mean the public index has not caught
+up yet, not that the version was rejected — the same ambiguity the recovery
+guidance below already warns about. Every other failure (the local requirement
+check, the metadata check, the producer install, the smoke run) fails
+immediately; retrying those cannot change their outcome.
 
 ## Python producer environment protection
 
