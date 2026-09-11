@@ -29,3 +29,6 @@ verification. Maintainers follow the
 [release and partial-publication recovery guide](docs/releasing.md). Public support
 is best-effort through GitHub Issues, with security reports handled through the
 private channel described in [SECURITY.md](SECURITY.md).
+
+`agent-topology-spec==0.1.0b1` is now available from PyPI. The other three packages
+remain pending, so the coordinated public preview is still unreleased.
