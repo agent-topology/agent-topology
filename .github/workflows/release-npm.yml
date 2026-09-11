@@ -1,0 +1,199 @@
+name: Release one npm package
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: npm package to verify and optionally publish
+        required: true
+        type: choice
+        options:
+          - spec
+          - langgraph
+      version:
+        description: SemVer version for the selected package
+        required: true
+        type: string
+      spec-version:
+        description: Compatible @agent-topology/spec version (required for langgraph)
+        required: false
+        type: string
+      publish:
+        description: Publish through the protected public-preview environment
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  selection:
+    runs-on: ubuntu-latest
+    outputs:
+      package-name: ${{ steps.select.outputs.package-name }}
+      spec-version: ${{ steps.select.outputs.spec-version }}
+    steps:
+      - id: select
+        env:
+          PACKAGE: ${{ inputs.package }}
+          VERSION: ${{ inputs.version }}
+          SPEC_VERSION: ${{ inputs.spec-version }}
+        run: |
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+            echo "version must be SemVer: $VERSION" >&2
+            exit 2
+          fi
+          case "$PACKAGE" in
+            spec)
+              echo "package-name=@agent-topology/spec" >> "$GITHUB_OUTPUT"
+              echo "spec-version=$VERSION" >> "$GITHUB_OUTPUT"
+              ;;
+            langgraph)
+              if ! [[ "$SPEC_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+                echo "spec-version is required and must be SemVer for langgraph" >&2
+                exit 2
+              fi
+              echo "package-name=@agent-topology/langgraph" >> "$GITHUB_OUTPUT"
+              echo "spec-version=$SPEC_VERSION" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+
+  qualify:
+    needs: selection
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            packages/typescript/spec/package-lock.json
+            packages/typescript/langgraph/package-lock.json
+      - run: npm ci --prefix packages/typescript/spec
+      - run: npm ci --prefix packages/typescript/langgraph
+      - name: Run package tests and quality checks
+        env:
+          PACKAGE: ${{ inputs.package }}
+        run: |
+          npm --prefix "packages/typescript/$PACKAGE" run check
+          packages/typescript/spec/node_modules/.bin/prettier --check \
+            scripts/*.mjs tests/*.mjs .github/workflows/typescript-packages.yml \
+            .github/workflows/release-npm.yml
+          node --test tests/typescript-release-tools.test.mjs
+      - name: Build versioned package copies without changing source
+        env:
+          PACKAGE: ${{ inputs.package }}
+          VERSION: ${{ inputs.version }}
+          SPEC_VERSION: ${{ needs.selection.outputs.spec-version }}
+        run: |
+          npm --prefix packages/typescript/spec run build
+          npm --prefix packages/typescript/langgraph run build
+          mkdir -p "${{ runner.temp }}/release-source"
+          cp -R packages/typescript/spec "${{ runner.temp }}/release-source/spec"
+          cp -R packages/typescript/langgraph "${{ runner.temp }}/release-source/langgraph"
+          npm pkg set --prefix "${{ runner.temp }}/release-source/spec" "version=$SPEC_VERSION"
+          npm pkg set --prefix "${{ runner.temp }}/release-source/langgraph" "peerDependencies.@agent-topology/spec=$SPEC_VERSION"
+          if [ "$PACKAGE" = "langgraph" ]; then
+            npm pkg set --prefix "${{ runner.temp }}/release-source/langgraph" "version=$VERSION"
+          fi
+          mkdir -p "${{ runner.temp }}/release-dist" "${{ runner.temp }}/support-dist"
+          npm pack "${{ runner.temp }}/release-source/$PACKAGE" --ignore-scripts \
+            --json --pack-destination "${{ runner.temp }}/release-dist" > "${{ runner.temp }}/selected.json"
+          if [ "$PACKAGE" = "spec" ]; then
+            support=langgraph
+          else
+            support=spec
+          fi
+          npm pack "${{ runner.temp }}/release-source/$support" --ignore-scripts \
+            --json --pack-destination "${{ runner.temp }}/support-dist" > "${{ runner.temp }}/support.json"
+          echo "TARBALL=${{ runner.temp }}/release-dist/$(jq -r '.[0].filename' "${{ runner.temp }}/selected.json")" >> "$GITHUB_ENV"
+          echo "SUPPORT_TARBALL=${{ runner.temp }}/support-dist/$(jq -r '.[0].filename' "${{ runner.temp }}/support.json")" >> "$GITHUB_ENV"
+      - name: Inspect selected and support artifacts
+        env:
+          PACKAGE: ${{ inputs.package }}
+          VERSION: ${{ inputs.version }}
+          SPEC_VERSION: ${{ needs.selection.outputs.spec-version }}
+        run: |
+          node scripts/verify_typescript_release.mjs inspect \
+            --package "$PACKAGE" --version "$VERSION" --spec-version "$SPEC_VERSION" --tarball "$TARBALL"
+          if [ "$PACKAGE" = "spec" ]; then
+            node scripts/verify_typescript_release.mjs inspect \
+              --package langgraph --version 0.0.0 --spec-version "$SPEC_VERSION" --tarball "$SUPPORT_TARBALL"
+          else
+            node scripts/verify_typescript_release.mjs inspect \
+              --package spec --version "$SPEC_VERSION" --spec-version "$SPEC_VERSION" --tarball "$SUPPORT_TARBALL"
+          fi
+      - name: Clean-install each tarball and both together
+        env:
+          PACKAGE: ${{ inputs.package }}
+        run: |
+          if [ "$PACKAGE" = "spec" ]; then
+            spec_tarball="$TARBALL"
+            langgraph_tarball="$SUPPORT_TARBALL"
+          else
+            spec_tarball="$SUPPORT_TARBALL"
+            langgraph_tarball="$TARBALL"
+          fi
+          node scripts/smoke_typescript_installation.mjs \
+            --spec-tarball "$spec_tarball" --langgraph-tarball "$langgraph_tarball"
+      - name: Confirm checkout stayed clean
+        run: git diff --exit-code && test -z "$(git status --porcelain --untracked-files=all)"
+      - name: Bind qualification to commit and artifact digest
+        env:
+          PACKAGE: ${{ inputs.package }}
+          VERSION: ${{ inputs.version }}
+          SPEC_VERSION: ${{ needs.selection.outputs.spec-version }}
+        run: |
+          if [ "$PACKAGE" = "spec" ]; then
+            checks=artifact-inspection,clean-installation,package-tests,typescript-quality
+          else
+            checks=artifact-inspection,clean-installation,package-tests,supported-langgraph-conformance,typescript-quality
+          fi
+          node scripts/verify_typescript_release.mjs create \
+            --package "$PACKAGE" --version "$VERSION" --spec-version "$SPEC_VERSION" \
+            --commit "${{ github.sha }}" --tarball "$TARBALL" --checks "$checks" \
+            --receipt "${{ runner.temp }}/release-dist/release-receipt.json"
+      - uses: actions/upload-artifact@v5
+        with:
+          name: authorized-npm-release
+          path: ${{ runner.temp }}/release-dist
+          if-no-files-found: error
+
+  publish:
+    if: inputs.publish
+    needs: [selection, qualify]
+    runs-on: ubuntu-latest
+    environment: npm-public-preview
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@v6
+        with:
+          name: authorized-npm-release
+          path: ${{ runner.temp }}/release-bundle
+      - name: Refuse changed, dirty, or unchecked release input
+        env:
+          PACKAGE: ${{ inputs.package }}
+          VERSION: ${{ inputs.version }}
+        run: >-
+          node scripts/verify_typescript_release.mjs check
+          --package "$PACKAGE"
+          --version "$VERSION"
+          --commit "${{ github.sha }}"
+          --tarball "$(find "${{ runner.temp }}/release-bundle" -name '*.tgz')"
+          --receipt "${{ runner.temp }}/release-bundle/release-receipt.json"
+      - name: Publish the one authorized package
+        run: npm publish "$(find "${{ runner.temp }}/release-bundle" -name '*.tgz')" --access public --provenance

@@ -1,0 +1,156 @@
+name: TypeScript packages
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-tests:
+    name: ${{ matrix.package }} tests (Node.js ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [spec, langgraph]
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: packages/typescript/${{ matrix.package }}/package-lock.json
+      - run: npm ci --prefix packages/typescript/${{ matrix.package }}
+      - run: npm --prefix packages/typescript/${{ matrix.package }} run check
+
+  typescript-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: packages/typescript/spec/package-lock.json
+      - run: npm ci --prefix packages/typescript/spec
+      - name: Check release tooling and workflow formatting
+        run: >-
+          packages/typescript/spec/node_modules/.bin/prettier --check
+          scripts/*.mjs tests/*.mjs .github/workflows/typescript-packages.yml
+          .github/workflows/release-npm.yml
+      - run: node --test tests/typescript-release-tools.test.mjs
+
+  artifacts:
+    name: Inspect ${{ matrix.package }} npm artifact
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [spec, langgraph]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: packages/typescript/${{ matrix.package }}/package-lock.json
+      - run: npm ci --prefix packages/typescript/${{ matrix.package }}
+      - name: Pack the package independently
+        id: pack
+        env:
+          PACKAGE: ${{ matrix.package }}
+        run: |
+          npm pack "./packages/typescript/$PACKAGE" \
+            --json --pack-destination "${{ runner.temp }}" > "${{ runner.temp }}/pack.json"
+          echo "filename=$(jq -r '.[0].filename' "${{ runner.temp }}/pack.json")" >> "$GITHUB_OUTPUT"
+      - name: Inspect exact contents and npm metadata
+        env:
+          PACKAGE: ${{ matrix.package }}
+          TARBALL: ${{ runner.temp }}/${{ steps.pack.outputs.filename }}
+        run: >-
+          node scripts/verify_typescript_release.mjs inspect
+          --package "$PACKAGE"
+          --version 0.0.0
+          --spec-version 0.0.0
+          --tarball "$TARBALL"
+      - uses: actions/upload-artifact@v5
+        with:
+          name: npm-dist-${{ matrix.package }}
+          path: ${{ runner.temp }}/${{ steps.pack.outputs.filename }}
+          if-no-files-found: error
+
+  clean-installations:
+    needs: artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v6
+        with:
+          pattern: npm-dist-*
+          path: ${{ runner.temp }}/npm-dist
+          merge-multiple: true
+      - name: Install each package and both packages in clean projects
+        run: >-
+          node scripts/smoke_typescript_installation.mjs
+          --spec-tarball "$(find "${{ runner.temp }}/npm-dist" -name 'agent-topology-spec-*.tgz')"
+          --langgraph-tarball "$(find "${{ runner.temp }}/npm-dist" -name 'agent-topology-langgraph-*.tgz')"
+
+  authorize:
+    needs: [package-tests, typescript-quality, artifacts, clean-installations]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        package: [spec, langgraph]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v6
+        with:
+          name: npm-dist-${{ matrix.package }}
+          path: ${{ runner.temp }}/bundle
+      - if: matrix.package == 'spec'
+        run: >-
+          node scripts/verify_typescript_release.mjs create
+          --package spec
+          --version 0.0.0
+          --commit "${{ github.sha }}"
+          --tarball "$(find "${{ runner.temp }}/bundle" -name '*.tgz')"
+          --checks artifact-inspection,clean-installation,package-tests,typescript-quality
+          --receipt "${{ runner.temp }}/bundle/release-receipt.json"
+      - if: matrix.package == 'langgraph'
+        run: >-
+          node scripts/verify_typescript_release.mjs create
+          --package langgraph
+          --version 0.0.0
+          --spec-version 0.0.0
+          --commit "${{ github.sha }}"
+          --tarball "$(find "${{ runner.temp }}/bundle" -name '*.tgz')"
+          --checks artifact-inspection,clean-installation,package-tests,supported-langgraph-conformance,typescript-quality
+          --receipt "${{ runner.temp }}/bundle/release-receipt.json"
+      - uses: actions/upload-artifact@v5
+        with:
+          name: authorized-npm-${{ matrix.package }}
+          path: ${{ runner.temp }}/bundle
+          if-no-files-found: error
