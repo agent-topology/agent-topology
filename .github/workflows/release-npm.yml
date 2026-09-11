@@ -87,6 +87,9 @@ jobs:
           version: "0.12.1"
       - run: npm ci --prefix packages/typescript/spec
       - run: npm ci --prefix packages/typescript/langgraph
+      - if: inputs.package == 'langgraph'
+        name: Build the local specification for producer checks
+        run: npm --prefix packages/typescript/spec run build
       - name: Run package tests and quality checks
         env:
           PACKAGE: ${{ inputs.package }}

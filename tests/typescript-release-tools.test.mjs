@@ -62,6 +62,15 @@ test("TypeScript evidence jobs provision their cross-language inputs", () => {
   const packageInstallTarget = packages.indexOf(
     "npm ci --prefix packages/typescript/${{ matrix.package }}",
   );
+  const releaseInstallSpec = release.indexOf(
+    "npm ci --prefix packages/typescript/spec",
+  );
+  const releaseBuildSpec = release.indexOf(
+    "Build the local specification for producer checks",
+  );
+  const releasePackageChecks = release.indexOf(
+    "Run package tests and quality checks",
+  );
 
   assert.ok(
     packages.includes("uses: astral-sh/setup-uv@v10.0.1"),
@@ -88,6 +97,15 @@ test("TypeScript evidence jobs provision their cross-language inputs", () => {
   assert.ok(
     packageInstallTarget > packageBuildSpec,
     "package producer must install after the local spec has build output",
+  );
+  assert.ok(releaseInstallSpec >= 0, "release spec install step is missing");
+  assert.ok(
+    releaseBuildSpec > releaseInstallSpec,
+    "release qualification must build the local spec after installing it",
+  );
+  assert.ok(
+    releasePackageChecks > releaseBuildSpec,
+    "release producer checks must run after the local spec build",
   );
 });
 
