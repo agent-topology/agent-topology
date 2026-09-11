@@ -9,12 +9,14 @@ from urllib.parse import unquote
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
+RELEASE_NOTES = ROOT / "docs/releases/v0.1.0-beta.1.md"
 PUBLIC_DOCS = (
     ROOT / "README.md",
     ROOT / "CHANGELOG.md",
     ROOT / "CONTRIBUTING.md",
     ROOT / "SECURITY.md",
     ROOT / "docs/releasing.md",
+    RELEASE_NOTES,
 )
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^]]+\]\(([^)]+)\)")
 
@@ -88,3 +90,36 @@ def test_readme_installation_and_compatibility_match_package_metadata() -> None:
     assert typescript_spec["engines"]["node"] == ">=20"
     assert typescript_producer["engines"]["node"] == ">=20"
     assert typescript_producer["dependencies"]["@langchain/langgraph"] == "1.4.14"
+
+
+def test_public_preview_release_notes_match_package_metadata() -> None:
+    release_notes = RELEASE_NOTES.read_text(encoding="utf-8")
+    with (ROOT / "packages/python/spec/pyproject.toml").open("rb") as source:
+        python_spec = tomllib.load(source)["project"]
+    with (ROOT / "packages/python/langgraph/pyproject.toml").open("rb") as source:
+        python_producer = tomllib.load(source)["project"]
+    typescript_spec = json.loads(
+        (ROOT / "packages/typescript/spec/package.json").read_text(encoding="utf-8")
+    )
+    typescript_producer = json.loads(
+        (ROOT / "packages/typescript/langgraph/package.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    for package in (
+        python_spec,
+        python_producer,
+        typescript_spec,
+        typescript_producer,
+    ):
+        assert package["name"] in release_notes
+        assert package["version"] in release_notes
+
+    assert "v0.1.0-beta.1" in release_notes
+    assert "Python 3.11–3.14" in release_notes
+    assert "LangGraph 1.2.10–1.2.11" in release_notes
+    assert "Node.js 20+" in release_notes
+    assert "LangGraph.js 1.4.14" in release_notes
+    assert "`agt describe`" in release_notes
+    assert "Python `agent-topology-langgraph` distribution" in release_notes

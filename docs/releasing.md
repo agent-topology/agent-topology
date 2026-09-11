@@ -36,6 +36,11 @@ The protected workflows publish one selected package at a time. A successful run
 one package does not authorize another package and does not prove the four-package
 preview complete.
 
+The completed initial publication and its public-registry verification are recorded in
+the [v0.1.0-beta.1 release notes](releases/v0.1.0-beta.1.md). Use that record as the
+GitHub Release body so the coordinated tag, registry artifacts, qualification receipts,
+source commits, and user-visible compatibility claims remain together.
+
 ## Recovering a partial publication
 
 If the sequence stops after any package is published:
