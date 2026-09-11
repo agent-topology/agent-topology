@@ -3,9 +3,10 @@
 **A derived, descriptive manifest for the internal shape of an agent workflow.**
 
 Status: **0.1 public preview** — provisional and pre-1.0. The four packages are
-published independently, so registry availability may be partial until a coordinated
-GitHub release is announced. See the [0.1 contract](docs/0.1-contract.md),
-[changelog](CHANGELOG.md), and [Roadmap](#roadmap).
+available from their public registries and remain independently versioned. See the
+[v0.1.0-beta.1 release notes](docs/releases/v0.1.0-beta.1.md),
+[0.1 contract](docs/0.1-contract.md), [changelog](CHANGELOG.md), and
+[Roadmap](#roadmap).
 
 ---
 
@@ -31,14 +32,13 @@ That's the whole library.
 ## Installation
 
 The public preview has four distinct installation paths. Pin the ecosystem-native
-`beta.1` version when evaluating the initial release; if a registry does not yet list
-it, that package's publication step is still pending.
+`beta.1` version when evaluating the initial release.
 
-| Package                             | Install                                                                  |
-| ----------------------------------- | ------------------------------------------------------------------------ |
-| Python document utilities           | `python -m pip install "agent-topology-spec==0.1.0b1"`                               |
-| Python LangGraph producer and `agt` | `python -m pip install "agent-topology-langgraph==0.1.0b1"`                          |
-| TypeScript document utilities       | `npm install @agent-topology/spec@0.1.0-beta.1`                                      |
+| Package                             | Install                                                                                |
+| ----------------------------------- | -------------------------------------------------------------------------------------- |
+| Python document utilities           | `python -m pip install "agent-topology-spec==0.1.0b1"`                                 |
+| Python LangGraph producer and `agt` | `python -m pip install "agent-topology-langgraph==0.1.0b1"`                            |
+| TypeScript document utilities       | `npm install @agent-topology/spec@0.1.0-beta.1`                                        |
 | TypeScript LangGraph.js producer    | `npm install @agent-topology/spec@0.1.0-beta.1 @agent-topology/langgraph@0.1.0-beta.1` |
 
 The Python distributions install into the native namespace and are imported as
@@ -147,14 +147,14 @@ CLI; `agt` remains owned by the Python Foundation producer.
 All four packages are built, qualified, and published as independent operations.
 Repository CI inspects their exact public contents and metadata, installs the
 artifacts in clean projects, and binds qualification to the source commit and artifact
-digests. During the initial rollout, check the relevant registry before installing;
-the coordinated announcement waits for all four. Maintainers use the
-[release and partial-publication recovery guide](docs/releasing.md).
+digests. The [v0.1.0-beta.1 release notes](docs/releases/v0.1.0-beta.1.md)
+record the public artifacts, qualification receipts, and source commits. Maintainers
+use the [release and partial-publication recovery guide](docs/releasing.md).
 
 ### Compatibility matrix
 
-| Package                           | Runtime          | Framework compatibility |
-| --------------------------------- | ---------------- | ----------------------- |
+| Package                                  | Runtime          | Framework compatibility |
+| ---------------------------------------- | ---------------- | ----------------------- |
 | `agent-topology-spec` 0.1.0b1            | Python 3.11–3.14 | No framework dependency |
 | `agent-topology-langgraph` 0.1.0b1       | Python 3.11–3.14 | LangGraph 1.2.10–1.2.11 |
 | `@agent-topology/spec` 0.1.0-beta.1      | Node.js 20+      | No framework dependency |

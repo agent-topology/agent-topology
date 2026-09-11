@@ -5,7 +5,7 @@ This file records user-visible changes to the independently versioned
 the structure-hash algorithm, and repository membership does not promise that
 future package versions will move together.
 
-## v0.1.0-beta.1 public preview — unreleased
+## v0.1.0-beta.1 public preview — 2026-09-11
 
 The initial public preview provides:
 
@@ -30,6 +30,7 @@ verification. Maintainers follow the
 is best-effort through GitHub Issues, with security reports handled through the
 private channel described in [SECURITY.md](SECURITY.md).
 
-`agent-topology-spec==0.1.0b1` and `agent-topology-langgraph==0.1.0b1` are now
-available from PyPI. The two npm packages remain pending, so the coordinated public
-preview is still unreleased.
+All four packages are available from their public registries and passed clean-install,
+public-API, provenance, and integrity reconciliation. The coordinated tag, package
+source commits, artifact digests, compatibility ranges, and verified commands are in
+the [v0.1.0-beta.1 release notes](docs/releases/v0.1.0-beta.1.md).
