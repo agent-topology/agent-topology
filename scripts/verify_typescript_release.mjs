@@ -40,6 +40,7 @@ const PACKAGES = {
   langgraph: {
     name: "@agent-topology/langgraph",
     root: "packages/typescript/langgraph",
+    repositoryDirectory: "packages/typescript/langgraph",
     files: [
       "package/README.md",
       "package/dist/compatibility.json",
