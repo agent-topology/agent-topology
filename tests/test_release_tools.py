@@ -1,10 +1,16 @@
 import json
 import re
+import subprocess
 from pathlib import Path
 
 import pytest
 
-from scripts import check_release_source, release_guard, verify_python_artifacts
+from scripts import (
+    check_release_source,
+    release_guard,
+    verify_python_artifacts,
+    verify_spec_registry,
+)
 
 
 @pytest.mark.parametrize("ecosystem", ["python", "npm"])
@@ -47,6 +53,190 @@ def test_release_refuses_an_unprepared_spec_peer() -> None:
             ref="refs/heads/rc/0.1.0-beta.2",
             spec_version="9.9.9",
         )
+
+
+def test_resolve_producer_spec_version_accepts_the_prepared_source() -> None:
+    spec_version = check_release_source.prepared_package("python", "spec")["version"]
+    assert (
+        check_release_source.resolve_producer_spec_version("langgraph") == spec_version
+    )
+    assert check_release_source.resolve_producer_spec_version("spec") == spec_version
+
+
+def test_resolve_producer_spec_version_rejects_an_unsatisfied_requirement(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_prepared_package(ecosystem: str, package: str) -> dict:
+        if package == "spec":
+            return {"name": "agent-topology-spec", "version": "0.1.0b2"}
+        return {
+            "name": "agent-topology-langgraph",
+            "dependencies": ["agent-topology-spec>=0.2.0,<0.4.0"],
+        }
+
+    monkeypatch.setattr(check_release_source, "prepared_package", fake_prepared_package)
+    with pytest.raises(ValueError, match="does not satisfy"):
+        check_release_source.resolve_producer_spec_version("langgraph")
+
+
+@pytest.mark.parametrize(
+    ("version", "specifier", "expected"),
+    [
+        ("0.1.0b2", ">=0.1.0b2,<0.2.0", True),
+        ("0.1.0b1", ">=0.1.0b2,<0.2.0", False),
+        ("0.2.0", ">=0.1.0b2,<0.2.0", False),
+        ("0.1.0", ">=0.1.0b2,<0.2.0", True),
+        ("1.2.11", ">=1.2.10,<=1.2.11", True),
+        ("1.2.12", ">=1.2.10,<=1.2.11", False),
+    ],
+)
+def test_satisfies_specifier_orders_prereleases_before_their_release(
+    version: str, specifier: str, expected: bool
+) -> None:
+    assert check_release_source._satisfies_specifier(version, specifier) is expected
+
+
+class _RecordingRunner:
+    """A fake registry: scripted results per call, recording every command."""
+
+    def __init__(self, results: list[subprocess.CompletedProcess]) -> None:
+        self._results = list(results)
+        self.commands: list[list[str]] = []
+
+    def __call__(self, command: list[str]) -> subprocess.CompletedProcess:
+        self.commands.append(command)
+        return self._results.pop(0)
+
+
+def _completed(returncode: int, *, stdout: str = "", stderr: str = "") -> object:
+    return subprocess.CompletedProcess(
+        args=[], returncode=returncode, stdout=stdout, stderr=stderr
+    )
+
+
+def test_registry_preflight_installs_spec_before_the_producer_then_smokes(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(
+        verify_spec_registry, "resolve_producer_spec_version", lambda _pkg: "0.1.0b2"
+    )
+    runner = _RecordingRunner(
+        [
+            _completed(0),  # pip install spec pin
+            _completed(0, stdout="0.1.0b2\n"),  # metadata check
+            _completed(0),  # pip install producer wheel
+            _completed(0),  # public smoke
+        ]
+    )
+    wheel = tmp_path / "agent_topology_langgraph-0.1.0b2-py3-none-any.whl"
+
+    verify_spec_registry.run_preflight("python", wheel, runner=runner)
+
+    assert len(runner.commands) == 4
+    assert runner.commands[0][:5] == [
+        "uv",
+        "pip",
+        "install",
+        "--python",
+        "python",
+    ]
+    assert runner.commands[0][-1] == "agent-topology-spec==0.1.0b2"
+    assert runner.commands[2][-1] == str(wheel)
+    assert runner.commands[3][-1].endswith("scripts/smoke_langgraph_installation.py")
+
+
+def test_registry_preflight_retries_a_not_yet_propagated_version_then_succeeds() -> (
+    None
+):
+    """A "version not found" result right after publishing can be index lag,
+    not rejection, so it is retried rather than treated as permanent."""
+    sleeps: list[float] = []
+    runner = _RecordingRunner(
+        [
+            _completed(
+                1,
+                stderr=(
+                    "error: No solution found when resolving dependencies:\n"
+                    "  Because there is no version of agent-topology-spec==0.1.0b2 "
+                    "and you require agent-topology-spec==0.1.0b2, we can conclude "
+                    "that your requirements are unsatisfiable."
+                ),
+            ),
+            _completed(0),
+        ]
+    )
+
+    verify_spec_registry.install_pinned_spec(
+        "python", "0.1.0b2", runner=runner, sleep=sleeps.append
+    )
+
+    assert len(runner.commands) == 2
+    assert sleeps == [2.0]
+
+
+def test_registry_preflight_reports_a_persistently_missing_version() -> None:
+    error = (
+        "error: No solution found when resolving dependencies:\n"
+        "  Because there is no version of agent-topology-spec==0.1.0b2 and you "
+        "require agent-topology-spec==0.1.0b2, we can conclude that your "
+        "requirements are unsatisfiable."
+    )
+    runner = _RecordingRunner([_completed(1, stderr=error) for _ in range(3)])
+
+    with pytest.raises(RuntimeError, match="failed after 3 attempts") as excinfo:
+        verify_spec_registry.install_pinned_spec(
+            "python", "0.1.0b2", runner=runner, sleep=lambda _seconds: None
+        )
+
+    assert "no version of agent-topology-spec==0.1.0b2" in str(excinfo.value)
+    assert len(runner.commands) == 3
+
+
+def test_registry_preflight_reports_a_persistent_registry_failure() -> None:
+    error = (
+        "error: Request failed after 3 retries in 11.3s\n"
+        "  Caused by: Failed to fetch: "
+        "`https://pypi.org/simple/agent-topology-spec/`\n"
+        "  Caused by: client error (Connect)\n"
+        "  Caused by: dns error"
+    )
+    runner = _RecordingRunner([_completed(2, stderr=error) for _ in range(3)])
+
+    with pytest.raises(RuntimeError, match="failed after 3 attempts") as excinfo:
+        verify_spec_registry.install_pinned_spec(
+            "python", "0.1.0b2", runner=runner, sleep=lambda _seconds: None
+        )
+
+    assert "dns error" in str(excinfo.value)
+    assert len(runner.commands) == 3
+
+
+def test_registry_preflight_rejects_incompatible_installed_metadata() -> None:
+    runner = _RecordingRunner([_completed(0, stdout="0.1.0b1\n")])
+
+    with pytest.raises(RuntimeError, match="incompatible metadata"):
+        verify_spec_registry.verify_installed_spec_version(
+            "python", "0.1.0b2", runner=runner
+        )
+
+
+def test_registry_preflight_never_touches_the_registry_for_an_unsatisfied_requirement(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    def fake_resolve(_package: str) -> str:
+        raise ValueError("prepared agent-topology-spec version does not satisfy ...")
+
+    monkeypatch.setattr(
+        verify_spec_registry, "resolve_producer_spec_version", fake_resolve
+    )
+    runner = _RecordingRunner([])
+
+    with pytest.raises(ValueError, match="does not satisfy"):
+        verify_spec_registry.run_preflight(
+            "python", tmp_path / "producer.whl", runner=runner
+        )
+
+    assert runner.commands == []
 
 
 @pytest.mark.parametrize("name", ["release-python.yml", "release-npm.yml"])
