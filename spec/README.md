@@ -43,11 +43,16 @@ extensions, labels, descriptive metadata, and the document's existing hash. A
 multi-source join is hashed in the `joins` collection, so it cannot collapse to
 the same input as separate incoming edges.
 
-Install the Python contract utilities independently of any producer:
+The Python contract utilities are independently installable from a local checkout
+without any producer:
 
 ```bash
-python3 -m pip install agent-topology-spec
+python3 -m pip install ./packages/python/spec
 ```
+
+The eventual public-registry command will be
+`python3 -m pip install agent-topology-spec`, but the distribution has not been
+published to PyPI yet. Public registry installation is milestone 5 work.
 
 The native namespace import exposes schema loading, validation, canonicalisation,
 and hashing without importing or installing LangGraph:

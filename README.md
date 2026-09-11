@@ -2,7 +2,8 @@
 
 **A derived, descriptive manifest for the internal shape of an agent workflow.**
 
-Status: `draft` — the format is not stable. See [Roadmap](#roadmap).
+Status: **0.1 contract candidate** — provisional, pre-1.0, and not yet published to
+PyPI or npm. See the [0.1 contract](docs/0.1-contract.md) and [Roadmap](#roadmap).
 
 ---
 
@@ -122,11 +123,13 @@ The TypeScript producer currently supports LangGraph.js 1.4.14 and refuses other
 versions before graph inspection with an actionable installation command. It has no
 CLI; `agt` remains owned by the Python Foundation producer.
 
-Both npm packages can be packed and qualified independently without publication.
+Both npm packages exist in this repository and can be packed and qualified
+independently without publication.
 Repository CI inspects their exact public contents and metadata, installs the
 tarballs in clean projects, and binds qualification to the source commit and artifact
 digests. Registry publication remains behind the protected public-preview release
-environment.
+environment and is planned for milestone 5. None of the four packages is available
+from its public registry yet; use repository-local builds for evaluation.
 
 For maintainers, see [Architecture](ARCHITECTURE.md),
 [Conventions](CONVENTIONS.md), the
@@ -318,7 +321,9 @@ Beyond that, if adoption exists: write the specification document, register a
 provisional well-known URI under RFC 8615, and only then discuss a generic name.
 Names are earned, not claimed.
 
-**The format will change before 0.1.** Do not build on it yet.
+**The 0.1 candidate is provisional.** Pre-1.0 changes follow the explicit format,
+hash-algorithm, and package-version policy in the
+[0.1 contract](docs/0.1-contract.md); do not treat it as a v1 stability promise.
 
 ---
 
