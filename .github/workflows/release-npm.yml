@@ -32,6 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       package-name: ${{ steps.select.outputs.package-name }}
+      npm-tag: ${{ steps.select.outputs.npm-tag }}
       spec-version: ${{ steps.select.outputs.spec-version }}
     steps:
       - id: select
@@ -44,6 +45,13 @@ jobs:
             echo "version must be SemVer: $VERSION" >&2
             exit 2
           fi
+          npm_tag=latest
+          if [[ "$VERSION" == *-* ]]; then
+            prerelease="${VERSION#*-}"
+            prerelease="${prerelease%%+*}"
+            npm_tag="${prerelease%%.*}"
+          fi
+          echo "npm-tag=$npm_tag" >> "$GITHUB_OUTPUT"
           case "$PACKAGE" in
             spec)
               echo "package-name=@agent-topology/spec" >> "$GITHUB_OUTPUT"
@@ -199,4 +207,6 @@ jobs:
           --tarball "$(find "${{ runner.temp }}/release-bundle" -name '*.tgz')"
           --receipt "${{ runner.temp }}/release-bundle/release-receipt.json"
       - name: Publish the one authorized package
-        run: npm publish "$(find "${{ runner.temp }}/release-bundle" -name '*.tgz')" --access public --provenance
+        run: >-
+          npm publish "$(find "${{ runner.temp }}/release-bundle" -name '*.tgz')"
+          --access public --provenance --tag "${{ needs.selection.outputs.npm-tag }}"
