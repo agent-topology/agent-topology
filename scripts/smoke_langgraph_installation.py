@@ -7,6 +7,7 @@ import json
 import subprocess
 import sys
 import tempfile
+from importlib.metadata import version
 from pathlib import Path
 
 import agent_topology.langgraph
@@ -26,6 +27,10 @@ def main() -> None:
     document = agent_topology.langgraph.describe(_minimal_graph())
     assert document["topologyVersion"] == "0.1"
     assert document["provenance"]["producer"]["name"] == "agent-topology-langgraph"
+
+    assert document["provenance"]["producer"]["version"] == version(
+        "agent-topology-langgraph"
+    )
 
     with tempfile.TemporaryDirectory() as directory:
         temporary = Path(directory)

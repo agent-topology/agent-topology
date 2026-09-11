@@ -48,8 +48,11 @@ source commits, and user-visible compatibility claims remain together.
 
 `main` is the integration branch. Create `rc/<version>` from the reviewed
 integration commit when stabilizing a release, for example
-`rc/0.1.0-beta.2`. Prepare package versions, lockfiles, producer provenance
-versions, compatible spec dependencies, release checks, and candidate notes there.
+`rc/0.1.0-beta.2`. Prepare package manifests, lockfiles, compatible spec
+dependencies, and candidate notes there. Each package manifest owns its version. Python producer provenance
+reads installed distribution metadata (or its own pyproject.toml in a source
+checkout); the npm producer reads its packaged package.json. CI artifact checks
+and support-package selection read these prepared manifests.
 Send release fixes through PRs targeting that branch. Keep unrelated development
 out of the candidate and merge release corrections back into main through a PR.
 
@@ -80,6 +83,30 @@ The missing beta.1 tag was restored on 2026-09-11 at
 notes in PR #74. The four package source trees match the qualified ancestor
 commits listed in the beta.1 notes. This retrospective tag does not claim that
 the artifacts were rebuilt from that merge or create a GitHub Release.
+
+### Preparing package versions
+
+Change only the independently selected package versions in their pyproject.toml
+or package.json. Update the producer's spec dependency or peer only when its
+compatibility selection changes; never copy the producer version into the spec.
+Regenerate both Python locks with `uv lock --project packages/python/spec` and
+`uv lock --project packages/python/langgraph`. Regenerate npm locks with
+`npm install --package-lock-only --prefix packages/typescript/spec` and the
+equivalent command for `packages/typescript/langgraph`; the producer lock also
+records the linked local spec version.
+
+Run release-tool tests (including the minimal independent-bump fixtures) and
+`uv lock --check` for both Python projects, then npm clean installs and package
+checks. Lock version guards reject stale root and linked-package copies.
+Inspect each built artifact against prepared metadata and run clean-install
+smokes to compare emitted provenance with the installed package version.
+Dependency-name boundaries, runtime bounds, public exports, and file contents
+remain independent artifact assertions. Release workflows package committed
+metadata without rewriting support package versions or peers.
+
+Update the current candidate notes. Historical beta.1 records and installation
+guides intentionally selecting published versions are not version-bump targets.
+Neither the topology format nor hash algorithm version changes for a package bump.
 
 ## Python producer environment protection
 

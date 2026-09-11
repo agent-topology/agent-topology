@@ -7,6 +7,7 @@ import argparse
 import configparser
 import hashlib
 import json
+import re
 import tarfile
 import tomllib
 import zipfile
@@ -20,17 +21,12 @@ PACKAGES = {
         "distribution": "agent-topology-spec",
         "module": "spec",
         "generated_files": {"agent-topology.schema.json"},
-        "requirements": {"jsonschema==4.26.0"},
         "scripts": {},
     },
     "langgraph": {
         "distribution": "agent-topology-langgraph",
         "module": "langgraph",
         "generated_files": set(),
-        "requirements": {
-            "agent-topology-spec<0.2.0,>=0.1.0b2",
-            "langgraph<=1.2.11,>=1.2.10",
-        },
         "scripts": {"agt": "agent_topology.langgraph._cli:main"},
     },
 }
@@ -83,7 +79,15 @@ def _assert_metadata(
             f"{archive.name} has unexpected Requires-Python "
             f"{metadata['Requires-Python']!r}"
         )
-    if metadata["Requires-Dist"] != requirements:
+
+    def normalized(requirement: str) -> tuple[str, ...]:
+        # Hatchling sorts comma-separated bounds in generated metadata.
+        name, bounds = re.split(r"(?=[<>=!~])", requirement, maxsplit=1)
+        return (name, *sorted(bounds.split(",")))
+
+    if {normalized(item) for item in metadata["Requires-Dist"]} != {
+        normalized(item) for item in requirements
+    }:
         raise ValueError(
             f"{archive.name} has unexpected dependencies: "
             f"{sorted(metadata['Requires-Dist'])}"
@@ -280,10 +284,25 @@ def _inspect_sdist(
 
 
 def inspect_artifacts(
-    package: str, version: str, dist_dir: Path, source_root: Path = Path(".")
+    package: str, version: str | None, dist_dir: Path, source_root: Path = Path(".")
 ) -> dict[str, Any]:
     """Validate and describe the two artifacts for ``package``."""
     config = PACKAGES[package]
+    project = tomllib.loads(
+        (source_root / "packages/python" / package / "pyproject.toml").read_text()
+    )["project"]
+    if version is None:
+        version = project["version"]
+    if project["name"] != config["distribution"] or project["version"] != version:
+        raise ValueError("artifact selection differs from prepared manifest")
+    requirements = set(project["dependencies"])
+    # Package boundaries are independent assertions, not copied from the artifact.
+    names = {re.split(r"[<>=!~]", item, maxsplit=1)[0] for item in requirements}
+    expected_names = (
+        {"jsonschema"} if package == "spec" else {"agent-topology-spec", "langgraph"}
+    )
+    if names != expected_names:
+        raise ValueError("prepared dependencies violate package boundaries")
     expected = (
         _source_package_files(package, config["module"], source_root)
         | config["generated_files"]
@@ -295,7 +314,7 @@ def inspect_artifacts(
         distribution=config["distribution"],
         module=config["module"],
         version=version,
-        requirements=config["requirements"],
+        requirements=requirements,
         scripts=config["scripts"],
         expected=expected,
     )
@@ -304,7 +323,7 @@ def inspect_artifacts(
         distribution=config["distribution"],
         module=config["module"],
         version=version,
-        requirements=config["requirements"],
+        requirements=requirements,
         scripts=config["scripts"],
         expected=expected,
     )
@@ -327,7 +346,9 @@ def inspect_artifacts(
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--package", choices=sorted(PACKAGES), required=True)
-    parser.add_argument("--version", required=True)
+    parser.add_argument(
+        "--version", help="Expected version (defaults to prepared manifest)"
+    )
     parser.add_argument("--dist-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
