@@ -107,8 +107,11 @@ def test_readme_installation_and_compatibility_match_package_metadata() -> None:
     assert typescript_producer["dependencies"]["@langchain/langgraph"] == "1.4.14"
 
 
-def test_public_preview_release_notes_match_package_metadata() -> None:
-    release_notes = RELEASE_NOTES.read_text(encoding="utf-8")
+@pytest.mark.parametrize(
+    "path", [RELEASE_NOTES, ROOT / "docs/guides/upgrading-beta.2.md"]
+)
+def test_public_preview_release_notes_match_package_metadata(path: Path) -> None:
+    release_notes = path.read_text(encoding="utf-8")
     with (ROOT / "packages/python/spec/pyproject.toml").open("rb") as source:
         python_spec = tomllib.load(source)["project"]
     with (ROOT / "packages/python/langgraph/pyproject.toml").open("rb") as source:
@@ -136,5 +139,44 @@ def test_public_preview_release_notes_match_package_metadata() -> None:
     assert "LangGraph 1.2.10–1.2.11" in release_notes
     assert "Node.js 20+" in release_notes
     assert "LangGraph.js 1.4.14" in release_notes
-    assert "`agt describe`" in release_notes
-    assert "Python `agent-topology-langgraph` distribution" in release_notes
+    if path == RELEASE_NOTES:
+        assert "`agt describe`" in release_notes
+        assert "Python `agent-topology-langgraph` distribution" in release_notes
+    assert "not published" in release_notes
+    assert (
+        f"@agent-topology/spec@{typescript_producer['peerDependencies']['@agent-topology/spec']}"
+        in release_notes
+    )
+    assert (
+        next(
+            dep
+            for dep in python_producer["dependencies"]
+            if dep.startswith("agent-topology-spec")
+        )
+        in release_notes
+    )
+
+
+@pytest.mark.parametrize("name", ["python", "typescript"])
+def test_quickstarts_keep_published_install_selections(name: str) -> None:
+    document = (ROOT / f"docs/getting-started/{name}.md").read_text()
+    install = re.findall(r"```bash\n(.*?)\n```", document, re.DOTALL)[0]
+    expected = PUBLISHED_PYTHON_VERSION if name == "python" else PUBLISHED_NPM_VERSION
+    assert expected in install
+    assert "0.1.0b2" not in install
+    assert "0.1.0-beta.2" not in install
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "releases/v0.1.0-beta.2.md",
+        "getting-started/python.md",
+        "getting-started/typescript.md",
+        "guides/troubleshooting.md",
+        "reference/api.md",
+        "README.md",
+    ],
+)
+def test_migration_guide_is_discoverable(name: str) -> None:
+    assert "guides/upgrading-beta.2.md" in (ROOT / "docs" / name).read_text()

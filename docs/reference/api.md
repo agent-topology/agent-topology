@@ -1,5 +1,8 @@
 # API reference
 
+See the [beta.1 to beta.2 upgrade guide](../guides/upgrading-beta.2.md) for candidate
+package selections, hash baselines, and expanded-subgraph migration.
+
 [Documentation home](../README.md) · [Compatibility](compatibility.md)
 
 The two ecosystems share a document contract and idiomatic APIs. JSON field names

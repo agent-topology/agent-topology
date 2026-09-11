@@ -1,12 +1,16 @@
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 
 import { Annotation, END, START, StateGraph } from "@langchain/langgraph";
-import { canonicalStringify, validateDocument } from "@agent-topology/spec";
+import {
+  canonicalStringify,
+  computeStructureHash,
+  validateDocument,
+} from "@agent-topology/spec";
 
 import * as producer from "../dist/index.js";
 import { UnsupportedLangGraphVersionError, describe } from "../dist/index.js";
@@ -319,4 +323,45 @@ test("validates options and rejects uncompiled graph builders", async () => {
     describe(/** @type {any} */ (new StateGraph(State))),
     /CompiledStateGraph returned by StateGraph\.compile/,
   );
+});
+
+test("documented beta.2 migration retains gaps before consumer failure", () => {
+  const packageRoot = fileURLToPath(new URL("../", import.meta.url));
+  const directory = mkdtempSync(join(packageRoot, ".docs-migration-"));
+  try {
+    const guide = readFileSync(
+      new URL("../../../../docs/guides/upgrading-beta.2.md", import.meta.url),
+      "utf8",
+    );
+    const snippets = [...guide.matchAll(/```javascript\n([\s\S]*?)\n```/g)];
+    assert.equal(snippets.length, 1);
+    const source = snippets[0]?.[1];
+    assert.ok(source);
+    writeFileSync(join(directory, "upgrade.mjs"), source);
+    const result = spawnSync(process.execPath, ["upgrade.mjs"], {
+      cwd: directory,
+      encoding: "utf8",
+    });
+    assert.equal(result.status, 1, result.stderr);
+    assert.match(result.stderr, /Incomplete topology:/);
+    const validation = validateDocument(JSON.parse(result.stdout));
+    assert.ok(validation.valid);
+    const document = validation.document;
+    assert.equal(document.topologyVersion, "0.1");
+    assert.equal(document.structureHash.algorithmVersion, "1");
+    assert.deepEqual(document.structureHash, computeStructureHash(document));
+    assert.equal(document.completeness.status, "incomplete");
+    assert.deepEqual(
+      document.completeness.gaps.map((gap) => gap.code),
+      ["expanded-subgraph-metadata"],
+    );
+    assert.deepEqual(document.completeness.gaps[0]?.element, {
+      graphId: "main",
+      kind: "graph",
+      id: "main",
+    });
+    assert.ok(document.producerLimitations.length > 0);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });

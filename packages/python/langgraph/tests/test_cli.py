@@ -7,7 +7,11 @@ from pathlib import Path
 
 import pytest
 from agent_topology.langgraph import _cli
-from agent_topology.spec import canonical_json, validate_document
+from agent_topology.spec import (
+    canonical_json,
+    compute_structure_hash,
+    validate_document,
+)
 
 
 def _write_graph(path: Path, *, incomplete: bool = False) -> None:
@@ -204,3 +208,32 @@ def test_unwritable_output_has_its_own_status(
 
     assert result == _cli.ExitCode.OUTPUT_WRITE
     assert "output write error" in capsys.readouterr().err
+
+
+def test_documented_beta2_migration_retains_strict_document(capsys) -> None:
+    guide = (
+        Path(__file__).resolve().parents[4] / "docs/guides/upgrading-beta.2.md"
+    ).read_text(encoding="utf-8")
+    snippets = re.findall(r"```python\n(.*?)\n```", guide, re.DOTALL)
+    assert len(snippets) == 1
+    namespace = {}
+    exec(compile(snippets[0], "upgrade.py", "exec"), namespace)
+    document = json.loads(capsys.readouterr().out)
+    assert document == namespace["document"]
+    assert validate_document(document) == []
+    assert document["topologyVersion"] == "0.1"
+    assert document["structureHash"]["algorithmVersion"] == "1"
+    assert document["structureHash"] == compute_structure_hash(document)
+    assert document["completeness"]["status"] == "incomplete"
+    assert [gap["code"] for gap in document["completeness"]["gaps"]] == [
+        "expanded-subgraph-metadata"
+    ]
+    assert document["completeness"]["gaps"][0]["element"] == {
+        "graphId": "main",
+        "kind": "graph",
+        "id": "main",
+    }
+    opaque = namespace["describe"](namespace["graph"], strict=True)
+    assert opaque["completeness"] == {"status": "complete", "gaps": []}
+    assert opaque["producerLimitations"] == document["producerLimitations"]
+    assert opaque["producerLimitations"]
