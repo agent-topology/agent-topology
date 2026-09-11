@@ -12,6 +12,8 @@ authoritative until it is superseded.
 
 ## Contents
 
+- `0.1-contract-reconciliation.md` records the evidence-source review and
+  classifies every mismatch considered for the 0.1 contract candidate.
 - `catalog.yaml` is the machine-readable index, grouped by framework,
   implementation language, and exact release.
 - `frameworks/<framework>/<language>/<version>/` holds a version dossier and

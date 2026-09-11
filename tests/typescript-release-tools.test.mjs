@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   checkReceipt,
@@ -17,6 +18,61 @@ const checks = [
   "package-tests",
   "typescript-quality",
 ];
+
+function workflow(name) {
+  return readFileSync(
+    resolve(
+      fileURLToPath(new URL("..", import.meta.url)),
+      `.github/workflows/${name}`,
+    ),
+    "utf8",
+  );
+}
+
+test("TypeScript evidence jobs provision their cross-language inputs", () => {
+  const compatibility = workflow("langgraph-compatibility.yml");
+  const packages = workflow("typescript-packages.yml");
+  const installSpec = compatibility.indexOf(
+    "npm ci --prefix packages/typescript/spec",
+  );
+  const buildSpec = compatibility.indexOf(
+    "npm --prefix packages/typescript/spec run build",
+  );
+  const installProducer = compatibility.indexOf(
+    "npm ci --prefix packages/typescript/langgraph",
+  );
+
+  assert.ok(installSpec >= 0, "compatibility spec install step is missing");
+  assert.ok(
+    buildSpec > installSpec,
+    "compatibility spec must build after its dependencies install",
+  );
+  assert.ok(
+    installProducer > buildSpec,
+    "compatibility producer must install after the local spec has build output",
+  );
+
+  const packageInstallSpec = packages.indexOf(
+    "npm ci --prefix packages/typescript/spec",
+  );
+  const packageBuildSpec = packages.indexOf(
+    "npm --prefix packages/typescript/spec run build",
+  );
+  const packageInstallTarget = packages.indexOf(
+    "npm ci --prefix packages/typescript/${{ matrix.package }}",
+  );
+
+  assert.ok(
+    packages.includes("uses: astral-sh/setup-uv@v10.0.1"),
+    "package tests must install uv for the Python parity oracle",
+  );
+  assert.ok(packageInstallSpec >= 0, "package spec install step is missing");
+  assert.ok(packageBuildSpec > packageInstallSpec);
+  assert.ok(
+    packageInstallTarget > packageBuildSpec,
+    "package producer must install after the local spec has build output",
+  );
+});
 
 test("receipt binds package, version, commit, checks, and artifact digest", () => {
   const root = mkdtempSync(resolve(tmpdir(), "npm-receipt-test-"));
