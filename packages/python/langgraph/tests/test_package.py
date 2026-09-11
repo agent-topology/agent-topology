@@ -52,7 +52,8 @@ def test_package_metadata_matches_evidence_backed_compatibility_contract() -> No
         dependency for dependency in dependencies if dependency.startswith("langgraph")
     )
     assert project["project"]["name"] == "agent-topology-langgraph"
-    assert spec_dependency == "agent-topology-spec>=0.0.0,<0.1.0"
+    assert project["project"]["version"] == "0.1.0"
+    assert spec_dependency == "agent-topology-spec>=0.1.0,<0.2.0"
     assert langgraph_dependency == f"langgraph{contract['metadataSpecifier']}"
     assert contract["testedVersions"] == ["1.2.10", "1.2.11"]
 

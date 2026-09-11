@@ -99,8 +99,8 @@ jobs:
         run: >-
           node scripts/verify_typescript_release.mjs inspect
           --package "$PACKAGE"
-          --version 0.0.0
-          --spec-version 0.0.0
+          --version 0.1.0
+          --spec-version 0.1.0
           --tarball "$TARBALL"
       - uses: actions/upload-artifact@v5
         with:
@@ -149,7 +149,7 @@ jobs:
         run: >-
           node scripts/verify_typescript_release.mjs create
           --package spec
-          --version 0.0.0
+          --version 0.1.0
           --commit "${{ github.sha }}"
           --tarball "$(find "${{ runner.temp }}/bundle" -name '*.tgz')"
           --checks artifact-inspection,clean-installation,package-tests,typescript-quality
@@ -158,8 +158,8 @@ jobs:
         run: >-
           node scripts/verify_typescript_release.mjs create
           --package langgraph
-          --version 0.0.0
-          --spec-version 0.0.0
+          --version 0.1.0
+          --spec-version 0.1.0
           --commit "${{ github.sha }}"
           --tarball "$(find "${{ runner.temp }}/bundle" -name '*.tgz')"
           --checks artifact-inspection,clean-installation,package-tests,supported-langgraph-conformance,typescript-quality
