@@ -79,6 +79,10 @@ test("TypeScript evidence jobs provision their cross-language inputs", () => {
     release.includes('--tag "${{ needs.selection.outputs.npm-tag }}"'),
     "npm publication must provide the selected distribution tag",
   );
+  assert.ok(
+    release.includes("NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}"),
+    "npm publication must receive the protected environment token",
+  );
   assert.ok(packageInstallSpec >= 0, "package spec install step is missing");
   assert.ok(packageBuildSpec > packageInstallSpec);
   assert.ok(
