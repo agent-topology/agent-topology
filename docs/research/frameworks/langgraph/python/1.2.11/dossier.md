@@ -2,10 +2,10 @@
 
 ## Scope
 
-This is the initial research baseline for the Python LangGraph producer. It
-links official documentation and immutable upstream source to the topology
-questions that agent-topology must answer. Source findings are not yet treated
-as behavioural verification; minimum probes are the next step.
+This is the source baseline for the Python LangGraph producer. It links official
+documentation and immutable upstream source to the topology questions that
+agent-topology must answer. The producer tests and shared conformance fixtures
+provide the corresponding behavioural verification.
 
 The exact release is `langgraph==1.2.11`, tag `1.2.11`, resolved to commit
 `644815f9e5bc52ad8f7a5227a456227e9c3e639b`. GitHub records the release on
@@ -20,21 +20,22 @@ not expose. Any dependency on a builder attribute or another non-contractual
 surface therefore needs its own compatibility evidence. Upstream semver is not
 a replacement for that evidence.
 
-The initial supported range stays at exactly 1.2.11. A later version is added
-only after the same minimum probes and conformance cases pass on it.
+The research baseline is 1.2.11. The supported range is 1.2.10 through 1.2.11
+because both exact releases pass the same producer and shared-conformance matrix.
+A version outside that range is added only after the same checks pass on it.
 
 ## Initial source findings
 
-| Topology question | 1.2.11 source finding | State |
-| --- | --- | --- |
-| Where are nodes stored? | `StateGraph.nodes` is a mapping of node names to node specifications. | source-verified |
-| Where are ordinary edges stored? | `StateGraph.edges` is a set of source-target pairs. | source-verified |
-| Is a multi-source join distinguishable? | `StateGraph.waiting_edges` stores a tuple of sources with one target, separately from ordinary edges. | source-verified |
-| Where are conditional routes stored? | `StateGraph.branches` stores branch specifications by source and branch name. | source-verified |
-| Can a compiled graph reach the builder? | `compile()` passes `builder=self`; `CompiledStateGraph` stores it as `builder`. | source-verified |
-| Is drawable graph extraction public? | `Pregel.get_graph()` publicly returns a drawable representation. | source-verified |
-| Are subgraphs enumerable? | `Pregel.get_subgraphs()` publicly yields immediate or recursive subgraphs. | source-verified |
-| Are static interrupts declared at compile time? | `StateGraph.compile()` accepts `interrupt_before` and `interrupt_after`. | source-verified |
+| Topology question                               | 1.2.11 source finding                                                                                 | State           |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------- | --------------- |
+| Where are nodes stored?                         | `StateGraph.nodes` is a mapping of node names to node specifications.                                 | source-verified |
+| Where are ordinary edges stored?                | `StateGraph.edges` is a set of source-target pairs.                                                   | source-verified |
+| Is a multi-source join distinguishable?         | `StateGraph.waiting_edges` stores a tuple of sources with one target, separately from ordinary edges. | source-verified |
+| Where are conditional routes stored?            | `StateGraph.branches` stores branch specifications by source and branch name.                         | source-verified |
+| Can a compiled graph reach the builder?         | `compile()` passes `builder=self`; `CompiledStateGraph` stores it as `builder`.                       | source-verified |
+| Is drawable graph extraction public?            | `Pregel.get_graph()` publicly returns a drawable representation.                                      | source-verified |
+| Are subgraphs enumerable?                       | `Pregel.get_subgraphs()` publicly yields immediate or recursive subgraphs.                            | source-verified |
+| Are static interrupts declared at compile time? | `StateGraph.compile()` accepts `interrupt_before` and `interrupt_after`.                              | source-verified |
 
 The exact source links for these findings live in
 [`catalog.yaml`](../../../../catalog.yaml). Keeping the structured links in one file
@@ -64,24 +65,20 @@ path map or suitable return type hint may be drawn as capable of reaching any
 node. That is a visualization assumption, not proof of actual destinations.
 This must become a graph-specific gap rather than a complete-looking fan-out.
 
-## Minimum probes to add next
+## Executable evidence
 
-Each probe should construct only the graph needed to answer its question and
-should record both builder state and public drawable output.
+The producer tests construct the minimum compiled graphs needed to inspect the
+builder and drawable surfaces: a linear graph; declared and undeclared routes;
+`Command[Literal[...]]` destinations; a multi-source join contrasted with
+independent incoming edges; nested graphs at two depths; and static before/after
+interrupts. The shared runner independently constructs all eight language-neutral
+fixture recipes and compares canonical core output with the single expected
+documents under `conformance/fixtures`.
 
-1. one node with `START` and `END`;
-2. three nodes connected linearly;
-3. a conditional branch with an explicit path map;
-4. a conditional branch with `Command[Literal[...]]` destinations;
-5. a conditional branch with undeclared destinations;
-6. one multi-source edge compared with independent incoming edges;
-7. one immediate subgraph and one nested subgraph;
-8. one `interrupt_before` and one `interrupt_after` declaration.
-
-Probe results should update the corresponding catalog entry from
-`source-verified` to `verified` and link the smallest applicable conformance
-fixture. A failed or lossy observation is still a useful result and should be
-recorded as a limitation or graph-specific gap rather than hidden.
+The compatibility workflow derives its Python matrix from the producer's
+`_compatibility.json` manifest and runs that complete suite at 1.2.10 and 1.2.11.
+A failed or lossy observation remains useful evidence: it must be recorded as a
+producer limitation or graph-specific gap rather than hidden by normalization.
 
 ## Official entry points
 

@@ -12,29 +12,43 @@ frameworks:
         baseline:
           version: 1.2.11
           requirement: "langgraph==1.2.11"
-          status: source-verified
+          status: verified
           rationale: >-
-            Use one exact version until every claimed topology surface has a
-            checked-in minimum probe. ADR 0003 requires untested framework
-            versions to be refused rather than silently accepted.
+            Keep 1.2.11 as the research baseline while qualifying the adjacent
+            1.2.10 boundary through the same producer tests and shared fixtures.
+            ADR 0003 requires every accepted version to have executable evidence.
 
         support:
-          testedRequirement: "langgraph==1.2.11"
+          testedRequirement: "langgraph>=1.2.10,<=1.2.11"
           policy: >-
             Expand only when the candidate version passes the producer's
-            complete probe and conformance matrix. Upstream semantic-versioning
+            complete tests and shared conformance matrix. Upstream semantic-versioning
             compatibility does not by itself cover producer access to
             framework internals.
 
         releases:
+          "1.2.10":
+            status: verified
+            tag: 1.2.10
+            commit: 41341457342327166d72fc11952ab28fb61ec0bf
+            releasedAt: 2026-07-28
+            releaseUrl: https://github.com/langchain-ai/langgraph/releases/tag/1.2.10
+            packageUrl: https://pypi.org/project/langgraph/1.2.10/
+            sourceRoot: >-
+              https://github.com/langchain-ai/langgraph/tree/41341457342327166d72fc11952ab28fb61ec0bf/libs/langgraph/langgraph
+            probe: packages/python/langgraph/tests/test_package.py
+            conformance: packages/python/langgraph/tests/test_conformance.py
+
           "1.2.11":
-            status: source-verified
+            status: verified
             tag: 1.2.11
             commit: 644815f9e5bc52ad8f7a5227a456227e9c3e639b
             releasedAt: 2026-08-11
             releaseUrl: https://github.com/langchain-ai/langgraph/releases/tag/1.2.11
             packageUrl: https://pypi.org/project/langgraph/1.2.11/
             dossier: frameworks/langgraph/python/1.2.11/dossier.md
+            probe: packages/python/langgraph/tests/test_package.py
+            conformance: packages/python/langgraph/tests/test_conformance.py
 
             documentation:
               discoveryIndex:
@@ -64,29 +78,30 @@ frameworks:
 
             topologySurfaces:
               compiledBuilder:
-                status: source-verified
+                status: verified
                 symbol: langgraph.graph.state.CompiledStateGraph.builder
                 sourceUrl: >-
                   https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/graph/state.py#L1245-L1316
                 finding: >-
                   StateGraph.compile passes builder=self, and
-                  CompiledStateGraph stores that builder. Whether this is a
-                  supported producer dependency remains to be decided after
-                  probes and compatibility testing.
-                probe: pending
+                  CompiledStateGraph stores that builder. The supported producer
+                  range is bounded by the compatibility manifest and matrix.
+                probe: packages/python/langgraph/tests/test_package.py
+                fixture: linear-flow
 
               nodesAndOrdinaryEdges:
-                status: source-verified
+                status: verified
                 symbol: langgraph.graph.state.StateGraph
                 sourceUrl: >-
                   https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/graph/state.py#L188-L195
                 finding: >-
                   The builder keeps nodes in nodes and ordinary directed edges
                   in edges.
-                probe: pending
+                probe: packages/python/langgraph/tests/test_package.py
+                fixture: linear-flow
 
               multiSourceEdges:
-                status: source-verified
+                status: verified
                 symbol: langgraph.graph.state.StateGraph.waiting_edges
                 sourceUrl: >-
                   https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/graph/state.py#L860-L906
@@ -94,11 +109,11 @@ frameworks:
                   add_edge with multiple sources stores one tuple of sources
                   and one target in waiting_edges, separately from ordinary
                   edges.
-                probe: pending
-                fixture: pending
+                probe: packages/python/langgraph/tests/test_package.py
+                fixture: multi-source-join
 
               conditionalEdges:
-                status: source-verified
+                status: verified
                 symbol: langgraph.graph.state.StateGraph.add_conditional_edges
                 sourceUrl: >-
                   https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/graph/state.py#L908-L950
@@ -107,42 +122,42 @@ frameworks:
                   map or return type hint, drawable output may assume every
                   node is reachable; the producer must not present that
                   assumption as known routing.
-                probe: pending
-                fixture: pending
+                probe: packages/python/langgraph/tests/test_package.py
+                fixture: conditional-routing, unknown-routing-targets, loop
 
               drawableGraph:
-                status: source-verified
+                status: verified
                 symbol: langgraph.pregel.main.Pregel.get_graph
                 sourceUrl: >-
                   https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/pregel/main.py#L792-L817
                 finding: >-
-                  get_graph is a public method returning a drawable graph. A
-                  probe must determine which execution semantics it preserves
-                  or normalises.
-                probe: pending
+                  get_graph is a public method returning a drawable graph. The
+                  producer tests compare it with builder state where drawing
+                  can flatten joins or invent unknown routing targets.
+                probe: packages/python/langgraph/tests/test_package.py
+                fixture: nested-subgraph, multi-source-join, unknown-routing-targets
 
               subgraphs:
-                status: source-verified
+                status: verified
                 symbol: langgraph.pregel.main.Pregel.get_subgraphs
                 sourceUrl: >-
                   https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/pregel/main.py#L1005-L1039
                 finding: >-
                   get_subgraphs publicly yields immediate subgraphs and
                   optionally recurses through nested Pregel graphs.
-                probe: pending
-                fixture: pending
+                probe: packages/python/langgraph/tests/test_package.py
+                fixture: nested-subgraph
 
               interrupts:
-                status: source-verified
+                status: verified
                 symbol: langgraph.graph.state.StateGraph.compile
                 sourceUrl: >-
                   https://github.com/langchain-ai/langgraph/blob/644815f9e5bc52ad8f7a5227a456227e9c3e639b/libs/langgraph/langgraph/graph/state.py#L1087-L1124
                 finding: >-
                   compile accepts interrupt_before and interrupt_after
-                  declarations. Their reliable representation after
-                  compilation still needs a probe.
-                probe: pending
-                fixture: pending
+                  declarations, which remain observable on the compiled graph.
+                probe: packages/python/langgraph/tests/test_package.py
+                fixture: interrupt-before
 
       typescript:
         ecosystem: npm

@@ -76,6 +76,8 @@ jobs:
             packages/typescript/spec/package-lock.json
             packages/typescript/langgraph/package-lock.json
       - run: npm ci --prefix packages/typescript/spec
+      - name: Build the local specification dependency
+        run: npm --prefix packages/typescript/spec run build
       - run: npm ci --prefix packages/typescript/langgraph
       - name: Install declared LangGraph.js version ${{ matrix.langgraph }}
         run: >-

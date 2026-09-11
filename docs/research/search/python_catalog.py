@@ -34,14 +34,12 @@ def langgraph_1_2_11_compiled_builder() -> ResearchSurface:
         version="1.2.11",
         concept="compiled builder",
         upstream_symbol="langgraph.graph.state.CompiledStateGraph.builder",
-        evidence_state="source-verified",
+        evidence_state="verified",
         catalog_key=(
             "frameworks.langgraph.implementations.python.releases.1.2.11."
             "topologySurfaces.compiledBuilder"
         ),
-        research_question=(
-            "Is builder access stable enough for a narrowly pinned producer?"
-        ),
+        research_question="Which exact versions passed the compatibility matrix?",
     )
 
 
@@ -53,14 +51,12 @@ def langgraph_1_2_11_nodes_and_edges() -> ResearchSurface:
         version="1.2.11",
         concept="nodes and ordinary directed edges",
         upstream_symbol="langgraph.graph.state.StateGraph",
-        evidence_state="source-verified",
+        evidence_state="verified",
         catalog_key=(
             "frameworks.langgraph.implementations.python.releases.1.2.11."
             "topologySurfaces.nodesAndOrdinaryEdges"
         ),
-        research_question=(
-            "Does public drawable output preserve the same nodes and edges?"
-        ),
+        research_question="How do builder declarations compare with drawable output?",
     )
 
 
@@ -72,15 +68,12 @@ def langgraph_1_2_11_multi_source_edges() -> ResearchSurface:
         version="1.2.11",
         concept="multi-source join waiting edge",
         upstream_symbol="langgraph.graph.state.StateGraph.waiting_edges",
-        evidence_state="source-verified",
+        evidence_state="verified",
         catalog_key=(
             "frameworks.langgraph.implementations.python.releases.1.2.11."
             "topologySurfaces.multiSourceEdges"
         ),
-        research_question=(
-            "Does get_graph preserve a multi-source join as distinct from "
-            "independent incoming edges?"
-        ),
+        research_question="How is a join kept distinct from independent edges?",
     )
 
 
@@ -92,15 +85,12 @@ def langgraph_1_2_11_conditional_edges() -> ResearchSurface:
         version="1.2.11",
         concept="conditional branch and unknown routing destinations",
         upstream_symbol="langgraph.graph.state.StateGraph.add_conditional_edges",
-        evidence_state="source-verified",
+        evidence_state="verified",
         catalog_key=(
             "frameworks.langgraph.implementations.python.releases.1.2.11."
             "topologySurfaces.conditionalEdges"
         ),
-        research_question=(
-            "How do path_map, Command Literal annotations, and undeclared "
-            "destinations differ after compilation?"
-        ),
+        research_question="How are undeclared destinations preserved as a gap?",
     )
 
 
@@ -112,7 +102,7 @@ def langgraph_1_2_11_drawable_graph() -> ResearchSurface:
         version="1.2.11",
         concept="drawable computation graph",
         upstream_symbol="langgraph.pregel.main.Pregel.get_graph",
-        evidence_state="source-verified",
+        evidence_state="verified",
         catalog_key=(
             "frameworks.langgraph.implementations.python.releases.1.2.11."
             "topologySurfaces.drawableGraph"
@@ -131,14 +121,12 @@ def langgraph_1_2_11_subgraphs() -> ResearchSurface:
         version="1.2.11",
         concept="nested subgraph enumeration",
         upstream_symbol="langgraph.pregel.main.Pregel.get_subgraphs",
-        evidence_state="source-verified",
+        evidence_state="verified",
         catalog_key=(
             "frameworks.langgraph.implementations.python.releases.1.2.11."
             "topologySurfaces.subgraphs"
         ),
-        research_question=(
-            "What remains observable for immediate and deeply nested subgraphs?"
-        ),
+        research_question="What remains observable at each requested depth?",
     )
 
 
@@ -150,14 +138,12 @@ def langgraph_1_2_11_interrupts() -> ResearchSurface:
         version="1.2.11",
         concept="static interrupt before and interrupt after nodes",
         upstream_symbol="langgraph.graph.state.StateGraph.compile",
-        evidence_state="source-verified",
+        evidence_state="verified",
         catalog_key=(
             "frameworks.langgraph.implementations.python.releases.1.2.11."
             "topologySurfaces.interrupts"
         ),
-        research_question=(
-            "Where are interrupt declarations preserved on the compiled graph?"
-        ),
+        research_question="Which static interrupt declarations remain observable?",
     )
 
 

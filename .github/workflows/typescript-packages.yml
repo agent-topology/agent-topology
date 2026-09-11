@@ -27,7 +27,16 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: npm
-          cache-dependency-path: packages/typescript/${{ matrix.package }}/package-lock.json
+          cache-dependency-path: |
+            packages/typescript/spec/package-lock.json
+            packages/typescript/${{ matrix.package }}/package-lock.json
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
+      - if: matrix.package == 'langgraph'
+        run: npm ci --prefix packages/typescript/spec
+      - if: matrix.package == 'langgraph'
+        run: npm --prefix packages/typescript/spec run build
       - run: npm ci --prefix packages/typescript/${{ matrix.package }}
       - run: npm --prefix packages/typescript/${{ matrix.package }} run check
 
@@ -67,7 +76,13 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: packages/typescript/${{ matrix.package }}/package-lock.json
+          cache-dependency-path: |
+            packages/typescript/spec/package-lock.json
+            packages/typescript/${{ matrix.package }}/package-lock.json
+      - if: matrix.package == 'langgraph'
+        run: npm ci --prefix packages/typescript/spec
+      - if: matrix.package == 'langgraph'
+        run: npm --prefix packages/typescript/spec run build
       - run: npm ci --prefix packages/typescript/${{ matrix.package }}
       - name: Pack the package independently
         id: pack
