@@ -1,5 +1,8 @@
 # Troubleshooting
 
+See the [beta.1 to beta.2 upgrade guide](../guides/upgrading-beta.2.md) for candidate
+package selections, hash baselines, and expanded-subgraph migration.
+
 [Documentation home](../README.md) · [CLI exit codes](../reference/cli.md)
 
 ## `agt` is not found

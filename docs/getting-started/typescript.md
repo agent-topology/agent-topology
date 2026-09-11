@@ -1,5 +1,8 @@
 # TypeScript / JavaScript quickstart
 
+See the [beta.1 to beta.2 upgrade guide](../guides/upgrading-beta.2.md) for candidate
+package selections, hash baselines, and expanded-subgraph migration.
+
 [Documentation home](../README.md) · [Compatibility](../reference/compatibility.md)
 
 Export a compiled LangGraph.js workflow in Node.js 20 or later. These packages

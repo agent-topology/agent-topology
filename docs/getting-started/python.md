@@ -1,5 +1,8 @@
 # Python quickstart
 
+See the [beta.1 to beta.2 upgrade guide](../guides/upgrading-beta.2.md) for candidate
+package selections, hash baselines, and expanded-subgraph migration.
+
 [Documentation home](../README.md) · [Compatibility](../reference/compatibility.md)
 
 Create a small workflow and export its topology. This example needs Python
