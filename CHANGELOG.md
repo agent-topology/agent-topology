@@ -30,5 +30,6 @@ verification. Maintainers follow the
 is best-effort through GitHub Issues, with security reports handled through the
 private channel described in [SECURITY.md](SECURITY.md).
 
-`agent-topology-spec==0.1.0b1` is now available from PyPI. The other three packages
-remain pending, so the coordinated public preview is still unreleased.
+`agent-topology-spec==0.1.0b1` and `agent-topology-langgraph==0.1.0b1` are now
+available from PyPI. The two npm packages remain pending, so the coordinated public
+preview is still unreleased.
