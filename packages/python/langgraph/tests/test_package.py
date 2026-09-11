@@ -152,6 +152,27 @@ def test_describe_exposes_nested_graph_depth() -> None:
         "__end__",
     }
     assert expanded["graphs"][0]["x-langgraph"] == {"traversalDepth": 1}
+    assert opaque["completeness"] == {"status": "complete", "gaps": []}
+    assert expanded["completeness"]["status"] == "incomplete"
+    assert expanded["completeness"]["gaps"] == [
+        {
+            "code": "expanded-subgraph-metadata",
+            "message": (
+                "Expanded child graphs expose drawable shape, but their join, "
+                "routing, and interrupt declarations are not fully inspected."
+            ),
+            "element": {"graphId": "main", "kind": "graph", "id": "main"},
+        }
+    ]
+    with pytest.raises(agent_topology.langgraph.IncompleteTopologyError) as caught:
+        agent_topology.langgraph.describe(compiled, depth=1, strict=True)
+    assert caught.value.document["completeness"] == expanded["completeness"]
+    assert (
+        agent_topology.langgraph.describe(inner, depth=1, strict=True)["completeness"][
+            "status"
+        ]
+        == "complete"
+    )
 
 
 @pytest.mark.parametrize("value", [object(), StateGraph(dict)])

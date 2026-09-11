@@ -239,6 +239,27 @@ def describe(
     if isinstance(graph_name, str) and graph_name:
         graph_document["name"] = graph_name
 
+    gaps = [
+        {
+            "code": "unknown-routing-targets",
+            "message": "Not every destination of this router could be determined.",
+            "element": {"graphId": "main", "kind": "node", "id": source},
+        }
+        for source in sorted(unknown_routers)
+    ]
+    root_node_ids = {START, END, *compiled_graph.builder.nodes}
+    if depth > 0 and any(node_id not in root_node_ids for node_id in node_ids):
+        gaps.append(
+            {
+                "code": "expanded-subgraph-metadata",
+                "message": (
+                    "Expanded child graphs expose drawable shape, but their join, "
+                    "routing, and interrupt declarations are not fully inspected."
+                ),
+                "element": {"graphId": "main", "kind": "graph", "id": "main"},
+            }
+        )
+
     document = {
         "topologyVersion": "0.1",
         "provenance": {
@@ -256,17 +277,8 @@ def describe(
         "producerLimitations": _PRODUCER_LIMITATIONS,
         "graphs": [graph_document],
         "completeness": {
-            "status": "incomplete" if unknown_routers else "complete",
-            "gaps": [
-                {
-                    "code": "unknown-routing-targets",
-                    "message": (
-                        "Not every destination of this router could be determined."
-                    ),
-                    "element": {"graphId": "main", "kind": "node", "id": source},
-                }
-                for source in sorted(unknown_routers)
-            ],
+            "status": "incomplete" if gaps else "complete",
+            "gaps": gaps,
         },
     }
     finalized = finalize_document(document)

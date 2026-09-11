@@ -15,10 +15,24 @@ PUBLIC_DOCS = (
     ROOT / "CHANGELOG.md",
     ROOT / "CONTRIBUTING.md",
     ROOT / "SECURITY.md",
-    ROOT / "docs/releasing.md",
-    RELEASE_NOTES,
+    ROOT / "ARCHITECTURE.md",
+    ROOT / "CONVENTIONS.md",
+    ROOT / "spec/README.md",
+    ROOT / "conformance/README.md",
+    *sorted((ROOT / "docs").rglob("*.md")),
+    *sorted((ROOT / "packages").glob("*/*/README.md")),
+    *sorted((ROOT / "examples").glob("*/README.md")),
 )
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^]]+\]\(([^)]+)\)")
+
+
+def test_distribution_license_notices_match_repository_license() -> None:
+    expected = (ROOT / "LICENSE").read_bytes()
+    for ecosystem in ("python", "typescript"):
+        for package in ("spec", "langgraph"):
+            assert (
+                ROOT / "packages" / ecosystem / package / "LICENSE"
+            ).read_bytes() == expected
 
 
 def _heading_anchors(document: Path) -> set[str]:
@@ -43,8 +57,9 @@ def test_public_document_links_resolve_from_checkout(document: Path) -> None:
         assert linked.is_relative_to(ROOT), (
             f"{document}: link escapes checkout: {target}"
         )
-        assert linked.is_file(), f"{document}: missing link target: {target}"
+        assert linked.exists(), f"{document}: missing link target: {target}"
         if fragment:
+            assert linked.is_file(), f"{document}: fragment on directory: {target}"
             assert fragment in _heading_anchors(linked), (
                 f"{document}: missing heading in {linked}: #{fragment}"
             )

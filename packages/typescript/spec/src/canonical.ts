@@ -81,13 +81,13 @@ export function canonicalizeDocument(
       node.interrupts?.sort();
     }
     for (const join of graph.structure.joins) {
-      join.sources.sort();
+      join.sources.sort(compareText);
     }
     graph.structure.nodes.sort(compareCanonical);
     graph.structure.edges.sort(compareCanonical);
     graph.structure.joins.sort(compareCanonical);
-    graph.structure.entryNodeIds.sort();
-    graph.structure.exitNodeIds.sort();
+    graph.structure.entryNodeIds.sort(compareText);
+    graph.structure.exitNodeIds.sort(compareText);
   }
   canonical.graphs.sort(compareCanonical);
   return ordered(canonical as JsonValue) as TopologyDocument;

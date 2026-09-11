@@ -6,11 +6,12 @@ framework producer observes a compiled graph, normalises what it can see, and
 states what it could not see; consumers correlate or present that result without
 changing its meaning.
 
-This document describes the intended architecture and its Foundation
-implementation. The repository contains the canonical schema and fixtures, the
-Python specification and LangGraph distributions, the Foundation CLI, release
-automation, project documentation, and accepted decisions. Registry publication
-is a separate release operation and has not occurred.
+This document describes the implemented public-preview architecture. The repository
+contains the canonical schema and fixtures, Python and TypeScript specification
+and LangGraph packages, the Python CLI, a trace-correlation consumer example,
+release automation, documentation, and accepted decisions. All four initial beta
+packages are recorded as published in the [release notes](docs/releases/v0.1.0-beta.1.md).
+Each subsequent package publication remains a separate release operation.
 
 ## System context
 
@@ -101,8 +102,7 @@ PyPI distribution names are globally unique installation identifiers. The
 `agt` is the command name:
 
 ```bash
-agt describe ./graph.py --out topology.json
-agt diff topology.json topology.new.json
+agt describe ./graph.py:graph --out topology.json
 ```
 
 For Foundation, `agent-topology-langgraph` alone publishes the `agt` executable
@@ -137,11 +137,10 @@ must not import a producer, and a document consumer must not require LangGraph.
 
 ## Repository shape
 
-The exact build-tool directories may be chosen during implementation, but the
-repository must preserve these logical areas:
+The repository uses these logical areas:
 
 ```text
-spec/                    canonical schema and language-neutral fixtures
+spec/                    canonical schema and document validation cases
 packages/
   python/
     spec/                agent-topology-spec
@@ -150,6 +149,7 @@ packages/
     spec/                @agent-topology/spec
     langgraph/           @agent-topology/langgraph
 conformance/             shared cases and producer runners
+docs/                    user guides, references, and maintainer documentation
 docs/decisions/          accepted architectural decisions and router
 ```
 

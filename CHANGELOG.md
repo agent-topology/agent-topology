@@ -5,6 +5,39 @@ This file records user-visible changes to the independently versioned
 the structure-hash algorithm, and repository membership does not promise that
 future package versions will move together.
 
+## Unreleased
+
+- Both LangGraph producers now record an `expanded-subgraph-metadata` gap when
+  traversal expands child nodes whose join, routing, and interrupt declarations
+  are not fully inspected. Python strict extraction rejects that incomplete view
+  and retains the document in the exception. Opaque traversal and positive-depth
+  traversal without expanded children retain their existing completeness behavior.
+  This fixes a false claim of completeness without changing the document schema
+  or hash projection.
+
+- Correct Unicode code-point ordering in the TypeScript specification's join
+  sources and entry/exit identifiers, and in LangGraph.js join IDs and gap order.
+  The original beta.1 used UTF-16 order in those places, disagreeing with Python
+  for some non-BMP identifiers. Affected canonical output and hashes change to
+  match the existing Python contract; ASCII fixtures are unchanged. This repairs
+  implementation parity, not the format or hash projection, so their versions
+  remain `0.1` and `1`. The fix requires new versions of both affected npm packages.
+- Pass Python release dispatch inputs as quoted environment-variable data rather
+  than interpolating them into shell commands.
+- Include the MIT notice in all four package artifacts, and add Python package
+  README descriptions and documentation/repository links. Artifact inspection
+  verifies the license text; source checks keep package notices aligned with the
+  repository license. These packaging changes require a new release of each package.
+- Add user documentation under `docs/`: executable Python/JavaScript quickstarts,
+  consumer examples, concepts, API/CLI references, troubleshooting, and maintainer
+  guides. Correct stale publication claims and the architecture's CLI example.
+- Expand local documentation link checks and execute quickstart and consumer
+  snippets in the producer test suites.
+
+These changes describe current source and are not part of the immutable beta.1
+registry artifacts. Package source versions remain unchanged pending release
+selection and qualification.
+
 ## v0.1.0-beta.1 public preview — 2026-09-11
 
 The initial public preview provides:
