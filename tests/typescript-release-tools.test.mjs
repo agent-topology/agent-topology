@@ -71,6 +71,14 @@ test("TypeScript evidence jobs provision their cross-language inputs", () => {
     release.includes("uses: astral-sh/setup-uv@v10.0.1"),
     "npm release qualification must install uv for the Python parity oracle",
   );
+  assert.ok(
+    release.includes("npm-tag: ${{ steps.select.outputs.npm-tag }}"),
+    "npm release selection must expose the version-derived distribution tag",
+  );
+  assert.ok(
+    release.includes('--tag "${{ needs.selection.outputs.npm-tag }}"'),
+    "npm publication must provide the selected distribution tag",
+  );
   assert.ok(packageInstallSpec >= 0, "package spec install step is missing");
   assert.ok(packageBuildSpec > packageInstallSpec);
   assert.ok(
