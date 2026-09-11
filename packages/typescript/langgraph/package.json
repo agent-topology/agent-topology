@@ -22,13 +22,17 @@
     "check": "npm run check:compatibility && npm run build && npm run format:check && tsc -p tsconfig.tests.json && node --test tests/*.test.mjs",
     "check:compatibility": "node scripts/check-compatibility.mjs",
     "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.json\" \"scripts/*.mjs\" \"tests/*.mjs\" \"*.json\" \"*.md\"",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "pack:check": "node ../../../scripts/verify_typescript_release.mjs pack --package langgraph --version 0.0.0 --spec-version 0.0.0"
   },
   "dependencies": {
-    "@agent-topology/spec": "file:../spec",
     "@langchain/langgraph": "1.4.14"
   },
+  "peerDependencies": {
+    "@agent-topology/spec": "0.0.0"
+  },
   "devDependencies": {
+    "@agent-topology/spec": "file:../spec",
     "@types/node": "22.20.2",
     "prettier": "3.9.6",
     "typescript": "7.0.2"

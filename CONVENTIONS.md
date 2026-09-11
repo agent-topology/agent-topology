@@ -168,6 +168,22 @@ npm pack ./packages/typescript/spec
 npm pack ./packages/typescript/langgraph
 ```
 
+CI packs and inspects both npm packages independently, installs the specification
+alone, installs the producer against its specification peer, and proves that both
+public APIs coexist in one clean project. `@agent-topology/langgraph` declares the
+tested LangGraph.js release as a runtime dependency and its compatible
+`@agent-topology/spec` release as a peer dependency; the local file reference is a
+development-only dependency and is never the published compatibility contract.
+
+TypeScript releases run through `release-npm.yml`. A manual run selects exactly one
+of `spec` or `langgraph`, supplies that package's SemVer version, and supplies the
+compatible specification version when releasing the producer. Leave `publish` false
+to exercise the complete qualification path without contacting npm. The qualification
+receipt binds the checks to the exact commit, package, version, tarball filename, and
+SHA-256 digest. Publishing additionally requires the protected `npm-public-preview`
+GitHub environment and revalidates the clean checkout and receipt before npm trusted
+publication with provenance.
+
 ## Documentation and decisions
 
 The README explains user-facing purpose and limits. Architecture describes the

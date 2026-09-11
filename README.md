@@ -122,6 +122,12 @@ The TypeScript producer currently supports LangGraph.js 1.4.14 and refuses other
 versions before graph inspection with an actionable installation command. It has no
 CLI; `agt` remains owned by the Python Foundation producer.
 
+Both npm packages can be packed and qualified independently without publication.
+Repository CI inspects their exact public contents and metadata, installs the
+tarballs in clean projects, and binds qualification to the source commit and artifact
+digests. Registry publication remains behind the protected public-preview release
+environment.
+
 For maintainers, see [Architecture](ARCHITECTURE.md),
 [Conventions](CONVENTIONS.md), the
 [architecture decision router](docs/decisions/DECISIONS.md), and the
