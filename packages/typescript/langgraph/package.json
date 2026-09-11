@@ -29,7 +29,7 @@
     "check:compatibility": "node scripts/check-compatibility.mjs",
     "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.json\" \"scripts/*.mjs\" \"tests/*.mjs\" \"*.json\" \"*.md\"",
     "prepack": "npm run build",
-    "pack:check": "node ../../../scripts/verify_typescript_release.mjs pack --package langgraph --version 0.1.0-beta.2 --spec-version 0.1.0-beta.2"
+    "pack:check": "node ../../../scripts/verify_typescript_release.mjs pack --package langgraph"
   },
   "dependencies": {
     "@langchain/langgraph": "1.4.14"

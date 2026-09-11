@@ -28,7 +28,7 @@
     "check": "npm run build && npm run format:check && tsc -p tsconfig.tests.json && node --test tests/*.test.mjs",
     "format:check": "prettier --check \"src/**/*.ts\" \"scripts/*.mjs\" \"tests/*.mjs\" \"*.json\" \"*.md\"",
     "prepack": "npm run build",
-    "pack:check": "node ../../../scripts/verify_typescript_release.mjs pack --package spec --version 0.1.0-beta.2",
+    "pack:check": "node ../../../scripts/verify_typescript_release.mjs pack --package spec",
     "smoke": "node scripts/smoke-install.mjs"
   },
   "dependencies": {

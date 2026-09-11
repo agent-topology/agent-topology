@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { CompiledStateGraph, END, START } from "@langchain/langgraph";
 import {
   finalizeDocument,
@@ -11,7 +13,9 @@ import {
 import compatibility from "./compatibility.json" with { type: "json" };
 import { UnsupportedLangGraphVersionError } from "./errors.js";
 
-const PRODUCER_VERSION = "0.1.0-beta.2";
+const PRODUCER_VERSION: string = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+).version;
 
 const PRODUCER_LIMITATIONS = [
   {

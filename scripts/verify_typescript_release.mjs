@@ -75,6 +75,23 @@ function tarOutput(tarball, member) {
 export function inspectTarball({ packageId, version, tarball, specVersion }) {
   const config = PACKAGES[packageId];
   assert.ok(config, `unsupported package: ${packageId}`);
+  const prepared = JSON.parse(
+    readFileSync(resolve(repositoryRoot, config.root, "package.json"), "utf8"),
+  );
+  version ??= prepared.version;
+  specVersion ??= prepared.peerDependencies?.["@agent-topology/spec"];
+  assert.equal(
+    version,
+    prepared.version,
+    "version differs from prepared manifest",
+  );
+  if (packageId === "langgraph") {
+    assert.equal(
+      specVersion,
+      prepared.peerDependencies["@agent-topology/spec"],
+      "peer differs from prepared manifest",
+    );
+  }
   const absoluteTarball = resolve(tarball);
   const files = execFileSync("tar", ["-tzf", absoluteTarball], {
     encoding: "utf8",
@@ -263,7 +280,7 @@ function main(argv) {
     });
     const receipt = makeReceipt({
       packageId: args.package,
-      version: args.version,
+      version: artifact.version,
       commit: args.commit,
       artifact,
       checks: args.checks.split(","),
