@@ -1,6 +1,6 @@
 # Python quickstart
 
-See the [beta.1 to beta.2 upgrade guide](../guides/upgrading-beta.2.md) for candidate
+See the [beta.1 to beta.2 upgrade guide](../guides/upgrading-beta.2.md) for beta.2
 package selections, hash baselines, and expanded-subgraph migration.
 
 [Documentation home](../README.md) · [Compatibility](../reference/compatibility.md)
@@ -15,7 +15,7 @@ In a new directory, create and activate a virtual environment:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install "agent-topology-langgraph==0.1.0b1"
+python -m pip install "agent-topology-langgraph==0.1.0b2"
 ```
 
 On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1` instead.

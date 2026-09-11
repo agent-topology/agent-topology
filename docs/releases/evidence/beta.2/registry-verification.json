@@ -1,0 +1,62 @@
+{
+  "commit": "cbd2f404a36834fb9ba318500b7832f03ba610da",
+  "artifacts": [
+    {
+      "filename": "agent_topology_spec-0.1.0b2-py3-none-any.whl",
+      "sha256": "14aa6083e5d32dbec527ccb9422e91d99f4415c3d3b0a30d5677f108401a8873",
+      "packageKey": "python-spec",
+      "url": "https://files.pythonhosted.org/packages/f5/1f/7654b90ad7c6ff6a2d5307f974260a3dd5bb4740e440de160c58b1bb14ad/agent_topology_spec-0.1.0b2-py3-none-any.whl",
+      "provenance": "https://pypi.org/integrity/agent-topology-spec/0.1.0b2/agent_topology_spec-0.1.0b2-py3-none-any.whl/provenance",
+      "publicationRun": 34627020832
+    },
+    {
+      "filename": "agent_topology_spec-0.1.0b2.tar.gz",
+      "sha256": "b356c04be97915ec9ee7b9b57fb18bc762eec8f1ab37ecd593f9455474568193",
+      "packageKey": "python-spec",
+      "url": "https://files.pythonhosted.org/packages/a9/32/aa351a51f6ba0cb94244e9bdd09d9160d59fb0289716fe13604decea0cdd/agent_topology_spec-0.1.0b2.tar.gz",
+      "provenance": "https://pypi.org/integrity/agent-topology-spec/0.1.0b2/agent_topology_spec-0.1.0b2.tar.gz/provenance",
+      "publicationRun": 34627020832
+    },
+    {
+      "filename": "agent_topology_langgraph-0.1.0b2-py3-none-any.whl",
+      "sha256": "a6926ef43af0a48a34ab2d29d24f3fa6d257bdd0aa0e84ee24897463ea009d16",
+      "packageKey": "python-langgraph",
+      "url": "https://files.pythonhosted.org/packages/9f/db/1d3ea035aacd159d163012d00ae7752f52584c23bc9f961a9133a358aa96/agent_topology_langgraph-0.1.0b2-py3-none-any.whl",
+      "provenance": "https://pypi.org/integrity/agent-topology-langgraph/0.1.0b2/agent_topology_langgraph-0.1.0b2-py3-none-any.whl/provenance",
+      "publicationRun": 34629144296
+    },
+    {
+      "filename": "agent_topology_langgraph-0.1.0b2.tar.gz",
+      "sha256": "69c4f5cdf80fed34539b86d5b7d86a5400648812555b1bcc6acabb84d6cf11a7",
+      "packageKey": "python-langgraph",
+      "url": "https://files.pythonhosted.org/packages/13/56/d309408dee90d7716d2d60487cb8df094ec8cc449f38c7e39063a95b175b/agent_topology_langgraph-0.1.0b2.tar.gz",
+      "provenance": "https://pypi.org/integrity/agent-topology-langgraph/0.1.0b2/agent_topology_langgraph-0.1.0b2.tar.gz/provenance",
+      "publicationRun": 34629144296
+    },
+    {
+      "filename": "agent-topology-spec-0.1.0-beta.2.tgz",
+      "name": "@agent-topology/spec",
+      "package": "spec",
+      "sha256": "373fbb08548ebcf8d62abb952b5f1e711be3d2616579cbe86e8c30f89e8aa9bc",
+      "version": "0.1.0-beta.2",
+      "packageKey": "npm-spec",
+      "url": "https://registry.npmjs.org/@agent-topology/spec/-/spec-0.1.0-beta.2.tgz",
+      "provenance": "https://registry.npmjs.org/-/npm/v1/attestations/@agent-topology%2fspec@0.1.0-beta.2",
+      "publicationRun": 34627023206
+    },
+    {
+      "filename": "agent-topology-langgraph-0.1.0-beta.2.tgz",
+      "name": "@agent-topology/langgraph",
+      "package": "langgraph",
+      "sha256": "4a13dfe6b5044ae7754708dbdf30ff0cf9f7baccabeb543ed13677311f9daeb1",
+      "version": "0.1.0-beta.2",
+      "packageKey": "npm-langgraph",
+      "url": "https://registry.npmjs.org/@agent-topology/langgraph/-/langgraph-0.1.0-beta.2.tgz",
+      "provenance": "https://registry.npmjs.org/-/npm/v1/attestations/@agent-topology%2flanggraph@0.1.0-beta.2",
+      "publicationRun": 34629146186
+    }
+  ],
+  "digestComparison": "all public artifacts match publication and qualification receipts",
+  "provenanceInspection": "registry attestation subjects/source identities inspected; independent cryptographic signature verification not performed",
+  "npmDistTag": "beta"
+}

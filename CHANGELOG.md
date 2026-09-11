@@ -7,12 +7,14 @@ future package versions will move together.
 
 ## Unreleased
 
-### 0.1.0-beta.2 candidate
+No changes recorded.
+
+## v0.1.0-beta.2 public preview — 2026-09-11
 
 Prepared on `rc/0.1.0-beta.2`: Python distributions use `0.1.0b2`, npm
 packages use `0.1.0-beta.2`, and the npm producer's spec peer uses beta.2.
-These artifacts have not been published. See the
-[candidate release notes](docs/releases/v0.1.0-beta.2.md).
+All four packages are published and verified. See the
+[release notes](docs/releases/v0.1.0-beta.2.md).
 
 - Run package CI on `rc/**` as well as main. Release dispatches require a
   RC branch and versions matching the prepared source manifests; the npm
@@ -45,9 +47,9 @@ These artifacts have not been published. See the
 - Expand local documentation link checks and execute quickstart and consumer
   snippets in the producer test suites.
 
-These changes describe current source and are not part of the immutable beta.1
-registry artifacts. Package source versions are prepared for beta.2 pending
-qualification and publication.
+These changes are part of beta.2 and are not part of the immutable beta.1
+registry artifacts. Qualification, publication and public-install evidence are
+recorded in the beta.2 release notes.
 
 ## v0.1.0-beta.1 public preview — 2026-09-11
 

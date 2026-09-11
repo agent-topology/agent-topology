@@ -1,6 +1,6 @@
 # TypeScript / JavaScript quickstart
 
-See the [beta.1 to beta.2 upgrade guide](../guides/upgrading-beta.2.md) for candidate
+See the [beta.1 to beta.2 upgrade guide](../guides/upgrading-beta.2.md) for beta.2
 package selections, hash baselines, and expanded-subgraph migration.
 
 [Documentation home](../README.md) · [Compatibility](../reference/compatibility.md)
@@ -15,7 +15,7 @@ In a new directory:
 
 ```bash
 npm init -y
-npm install @agent-topology/spec@0.1.0-beta.1 @agent-topology/langgraph@0.1.0-beta.1 @langchain/langgraph@1.4.14
+npm install @agent-topology/spec@0.1.0-beta.2 @agent-topology/langgraph@0.1.0-beta.2 @langchain/langgraph@1.4.14
 ```
 
 Install both agent-topology packages: the producer declares the specification as

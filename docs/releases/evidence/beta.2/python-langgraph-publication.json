@@ -1,0 +1,25 @@
+{
+  "artifacts": [
+    {
+      "filename": "agent_topology_langgraph-0.1.0b2-py3-none-any.whl",
+      "sha256": "a6926ef43af0a48a34ab2d29d24f3fa6d257bdd0aa0e84ee24897463ea009d16"
+    },
+    {
+      "filename": "agent_topology_langgraph-0.1.0b2.tar.gz",
+      "sha256": "69c4f5cdf80fed34539b86d5b7d86a5400648812555b1bcc6acabb84d6cf11a7"
+    }
+  ],
+  "checks": [
+    "artifact-inspection",
+    "clean-installation",
+    "namespace-coexistence",
+    "package-tests",
+    "python-quality",
+    "supported-langgraph-conformance"
+  ],
+  "commit": "cbd2f404a36834fb9ba318500b7832f03ba610da",
+  "distribution": "agent-topology-langgraph",
+  "package": "langgraph",
+  "receiptVersion": 1,
+  "version": "0.1.0b2"
+}

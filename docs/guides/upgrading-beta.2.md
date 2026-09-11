@@ -1,11 +1,9 @@
 # Upgrade from beta.1 to beta.2
 
-[Documentation home](../README.md) · [Candidate notes](../releases/v0.1.0-beta.2.md)
+[Documentation home](../README.md) · [Release notes](../releases/v0.1.0-beta.2.md)
 
-Status: **Prepared in source; not published.** Evaluate the candidate using
-[local source setup](../maintainers/development.md) or candidate artifacts.
-Keep published beta.1 installation commands until the candidate notes record
-registry verification for the packages you need.
+Status: **Published and verified.** Install the exact beta.2 versions below;
+[release notes](../releases/v0.1.0-beta.2.md) record public artifacts and verification.
 
 ## Select the packages
 
@@ -20,7 +18,7 @@ Python uses PEP 440 `0.1.0b2`; npm uses SemVer `0.1.0-beta.2`. Package versions
 are independent of document versions. Specification-only consumers need only
 their ecosystem's spec package. The Python producer installs
 `agent-topology-spec>=0.1.0b2,<0.2.0`; pin both to `0.1.0b2` to reproduce this
-candidate. The npm producer requires the exact `@agent-topology/spec@0.1.0-beta.2`
+release. The npm producer requires the exact `@agent-topology/spec@0.1.0-beta.2`
 peer: select both npm packages explicitly. Keep LangGraph.js at `1.4.14` when
 importing it directly. Verify resolved versions in your lockfile/environment;
 producers refuse framework versions outside these tested boundaries. Node packages

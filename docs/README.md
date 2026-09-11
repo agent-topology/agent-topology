@@ -35,13 +35,14 @@ standard library. It makes no path-coverage or policy-verdict claim.
 - [Shared conformance fixtures](../conformance/README.md)
 - [Initial public-preview release](releases/v0.1.0-beta.1.md)
 - [Upgrade from beta.1 to beta.2](guides/upgrading-beta.2.md)
-- [Beta.2 release candidate — not published](releases/v0.1.0-beta.2.md)
+- [Beta.2 verified release](releases/v0.1.0-beta.2.md)
 - [Changelog](../CHANGELOG.md)
 
 Documentation in the default branch describes the current source. Fixes under
-**Unreleased** in the changelog are not included in the pinned beta.1 registry
-packages. Use a release tag when you need documentation for an exact published
-artifact.
+**Unreleased** in the changelog are not included in the pinned beta.2 registry
+packages. Use the release notes for exact published artifact identities; the
+immutable release tag identifies qualified code, while publication records and
+installation guides can be updated later through documentation PRs.
 
 ## Contribute and maintain
 
