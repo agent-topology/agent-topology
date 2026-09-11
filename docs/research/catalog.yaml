@@ -147,20 +147,122 @@ frameworks:
       typescript:
         ecosystem: npm
         distribution: "@langchain/langgraph"
-        projectRole: deferred-producer-framework
+        projectRole: second-language-producer-framework
         baseline:
-          version: pending
-          requirement: pending
-          status: pending
+          version: 1.4.14
+          requirement: "@langchain/langgraph@1.4.14"
+          status: verified
           rationale: >-
-            Select an exact TypeScript baseline only when TypeScript producer
-            research begins. Python findings are not assumed to apply.
+            Use one exact release backed by TypeScript-specific source and
+            behavioural evidence. Python findings are not treated as evidence
+            for this implementation, and ADR 0003 requires untested releases
+            to be refused.
         support:
-          testedRequirement: pending
+          testedRequirement: "@langchain/langgraph@1.4.14"
           policy: >-
-            Establish support independently with TypeScript-specific source
-            evidence, minimum probes, and the shared conformance meanings.
-        releases: {}
+            Derive the package range and CI matrix from the producer's explicit
+            tested-version manifest. Add a release only after its source
+            surfaces, minimum probes, and all shared fixtures pass.
+        releases:
+          "1.4.14":
+            status: verified
+            tag: "@langchain/langgraph@1.4.14"
+            commit: 9ae75600dd84d6b2bc736e33baaf66a556d61c49
+            releasedAt: 2026-09-04
+            releaseUrl: >-
+              https://github.com/langchain-ai/langgraphjs/releases/tag/%40langchain/langgraph%401.4.14
+            packageUrl: https://www.npmjs.com/package/@langchain/langgraph/v/1.4.14
+            dossier: frameworks/langgraph/typescript/1.4.14/dossier.md
+            probe: >-
+              frameworks/langgraph/typescript/1.4.14/probes/introspection.mjs
+            sourceRoot: >-
+              https://github.com/langchain-ai/langgraphjs/tree/9ae75600dd84d6b2bc736e33baaf66a556d61c49/libs/langgraph-core/src
+
+            topologySurfaces:
+              compiledBuilder:
+                status: verified
+                symbol: CompiledStateGraph.builder
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraphjs/blob/9ae75600dd84d6b2bc736e33baaf66a556d61c49/libs/langgraph-core/src/graph/state.ts#L1529-L1545
+                declarationSourceUrl: >-
+                  https://github.com/langchain-ai/langgraphjs/blob/9ae75600dd84d6b2bc736e33baaf66a556d61c49/libs/langgraph-core/src/graph/state.ts#L1689-L1714
+                finding: >-
+                  StateGraph.compile passes builder: this and the exported
+                  CompiledStateGraph declares the corresponding builder field.
+                fixture: linear-flow
+
+              nodesAndOrdinaryEdges:
+                status: verified
+                symbol: Graph.nodes and Graph.edges
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraphjs/blob/9ae75600dd84d6b2bc736e33baaf66a556d61c49/libs/langgraph-core/src/graph/graph.ts#L280-L290
+                finding: >-
+                  The builder keeps node specifications in nodes and ordinary
+                  directed pairs in edges.
+                fixture: linear-flow
+
+              multiSourceEdges:
+                status: verified
+                symbol: StateGraph.waitingEdges
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraphjs/blob/9ae75600dd84d6b2bc736e33baaf66a556d61c49/libs/langgraph-core/src/graph/state.ts#L1241-L1272
+                finding: >-
+                  addEdge with an array of sources stores one sources-target
+                  pair in waitingEdges, separately from ordinary edges.
+                fixture: multi-source-join
+
+              conditionalEdges:
+                status: verified
+                symbol: Graph.addConditionalEdges and Branch.ends
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraphjs/blob/9ae75600dd84d6b2bc736e33baaf66a556d61c49/libs/langgraph-core/src/graph/graph.ts#L128-L157
+                registrationSourceUrl: >-
+                  https://github.com/langchain-ai/langgraphjs/blob/9ae75600dd84d6b2bc736e33baaf66a556d61c49/libs/langgraph-core/src/graph/graph.ts#L435-L496
+                finding: >-
+                  addConditionalEdges stores a Branch whose ends mapping is
+                  present only when destinations were declared. An absent
+                  mapping is therefore preserved as an unknown-routing gap.
+                fixture: conditional-routing, unknown-routing-targets, loop
+
+              commandDestinations:
+                status: verified
+                symbol: StateGraphNodeSpec.ends
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraphjs/blob/9ae75600dd84d6b2bc736e33baaf66a556d61c49/libs/langgraph-core/src/graph/state.ts#L1219-L1235
+                finding: >-
+                  Node destination declarations are retained on the builder
+                  node specification as ends.
+                fixture: conditional-routing
+
+              drawableGraph:
+                status: verified
+                symbol: Pregel.getGraphAsync
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraphjs/blob/9ae75600dd84d6b2bc736e33baaf66a556d61c49/libs/langgraph-core/src/pregel/index.ts#L769-L778
+                finding: >-
+                  getGraphAsync is the preferred asynchronous drawable-graph
+                  accessor and accepts xray traversal configuration.
+                fixture: nested-subgraph
+
+              subgraphs:
+                status: verified
+                symbol: StateGraphNodeSpec.subgraphs
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraphjs/blob/9ae75600dd84d6b2bc736e33baaf66a556d61c49/libs/langgraph-core/src/graph/state.ts#L1219-L1230
+                finding: >-
+                  A Pregel-like node action is retained in the node
+                  specification's subgraphs collection.
+                fixture: nested-subgraph
+
+              interrupts:
+                status: verified
+                symbol: Pregel.interruptBefore and Pregel.interruptAfter
+                sourceUrl: >-
+                  https://github.com/langchain-ai/langgraphjs/blob/9ae75600dd84d6b2bc736e33baaf66a556d61c49/libs/langgraph-core/src/pregel/index.ts#L526-L536
+                finding: >-
+                  Static before and after interrupt declarations are retained
+                  on the compiled Pregel graph.
+                fixture: interrupt-before
 
   langchain:
     implementations:

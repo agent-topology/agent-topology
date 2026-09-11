@@ -19,8 +19,9 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "check": "npm run build && npm run format:check && tsc -p tsconfig.tests.json && node --test tests/*.test.mjs",
-    "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.json\" \"tests/*.mjs\" \"*.json\" \"*.md\"",
+    "check": "npm run check:compatibility && npm run build && npm run format:check && tsc -p tsconfig.tests.json && node --test tests/*.test.mjs",
+    "check:compatibility": "node scripts/check-compatibility.mjs",
+    "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.json\" \"scripts/*.mjs\" \"tests/*.mjs\" \"*.json\" \"*.md\"",
     "prepack": "npm run build"
   },
   "dependencies": {

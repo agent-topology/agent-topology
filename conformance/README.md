@@ -28,5 +28,6 @@ second producer cannot reproduce them. This also excludes LangGraph diagram and
 rendering data from comparison, as required by ADR 0004.
 
 The Python LangGraph runner is
-`packages/python/langgraph/tests/test_conformance.py`. Future producers should
-read these same files and must not copy or redefine the expected documents.
+`packages/python/langgraph/tests/test_conformance.py`, and the LangGraph.js runner
+is `packages/typescript/langgraph/tests/conformance.test.mjs`. Both read these
+same files and do not copy or redefine the expected documents.
