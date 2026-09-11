@@ -11,7 +11,7 @@ import {
 import compatibility from "./compatibility.json" with { type: "json" };
 import { UnsupportedLangGraphVersionError } from "./errors.js";
 
-const PRODUCER_VERSION = "0.1.0";
+const PRODUCER_VERSION = "0.1.0-beta.1";
 
 const PRODUCER_LIMITATIONS = [
   {

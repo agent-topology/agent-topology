@@ -170,7 +170,7 @@
     "generatedAt": "2026-09-10T00:00:00Z",
     "producer": {
       "name": "agent-topology-langgraph",
-      "version": "0.1.0"
+      "version": "0.1.0b1"
     },
     "source": {
       "kind": "compiled-object",
