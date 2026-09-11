@@ -14,6 +14,7 @@ const PACKAGES = {
   spec: {
     name: "@agent-topology/spec",
     root: "packages/typescript/spec",
+    repositoryDirectory: "packages/typescript/spec",
     files: [
       "package/README.md",
       "package/dist/canonical.d.ts",
@@ -91,6 +92,13 @@ export function inspectTarball({ packageId, version, tarball, specVersion }) {
   assert.equal(manifest.version, version);
   assert.equal(manifest.type, "module");
   assert.equal(manifest.engines?.node, ">=20");
+  if (config.repositoryDirectory) {
+    assert.deepEqual(manifest.repository, {
+      type: "git",
+      url: "git+https://github.com/agent-topology/agent-topology.git",
+      directory: config.repositoryDirectory,
+    });
+  }
   assert.deepEqual(manifest.files, ["dist", "README.md"]);
   assert.deepEqual(manifest.exports, {
     ".": { types: "./dist/index.d.ts", import: "./dist/index.js" },
