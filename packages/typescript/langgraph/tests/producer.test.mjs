@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  cpSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { test } from "node:test";
@@ -319,4 +325,36 @@ test("validates options and rejects uncompiled graph builders", async () => {
     describe(/** @type {any} */ (new StateGraph(State))),
     /CompiledStateGraph returned by StateGraph\.compile/,
   );
+});
+
+test("built producer reads an independently bumped package manifest", async () => {
+  const packageRoot = fileURLToPath(new URL("../", import.meta.url));
+  const directory = mkdtempSync(join(packageRoot, ".version-fixture-"));
+  try {
+    cpSync(join(packageRoot, "dist"), join(directory, "dist"), {
+      recursive: true,
+    });
+    writeFileSync(
+      join(directory, "package.json"),
+      JSON.stringify({
+        type: "module",
+        name: "@agent-topology/langgraph",
+        version: "0.7.0-beta.3",
+      }),
+    );
+    const { describe: describeFixture } = await import(
+      join(directory, "dist/index.js")
+    );
+    const graph = new StateGraph(State)
+      .addNode("step", step)
+      .addEdge(START, "step")
+      .addEdge("step", END)
+      .compile();
+    const document = await describeFixture(graph);
+    assert.equal(document.provenance.producer.version, "0.7.0-beta.3");
+    assert.equal(document.topologyVersion, "0.1");
+    assert.equal(document.structureHash.algorithmVersion, "1");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });

@@ -1,6 +1,7 @@
 import json
 import tomllib
 from copy import deepcopy
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Literal, TypedDict
 
@@ -52,8 +53,8 @@ def test_package_metadata_matches_evidence_backed_compatibility_contract() -> No
         dependency for dependency in dependencies if dependency.startswith("langgraph")
     )
     assert project["project"]["name"] == "agent-topology-langgraph"
-    assert project["project"]["version"] == "0.1.0b2"
-    assert spec_dependency == "agent-topology-spec>=0.1.0b2,<0.2.0"
+    assert spec_dependency.startswith("agent-topology-spec>=")
+    assert spec_dependency.endswith(",<0.2.0")
     assert langgraph_dependency == f"langgraph{contract['metadataSpecifier']}"
     assert contract["testedVersions"] == ["1.2.10", "1.2.11"]
 
@@ -89,6 +90,9 @@ def _compile_minimal_graph() -> CompiledStateGraph:
 def test_describe_returns_public_spec_document() -> None:
     document = agent_topology.langgraph.describe(_compile_minimal_graph())
 
+    assert document["provenance"]["producer"]["version"] == version(
+        "agent-topology-langgraph"
+    )
     assert document["topologyVersion"] == "0.1"
     assert document["provenance"]["producer"]["name"] == "agent-topology-langgraph"
     assert document["provenance"]["framework"]["name"] == "langgraph"
@@ -362,3 +366,23 @@ def test_equivalent_declaration_order_has_canonical_structure_and_hash() -> None
     reordered_join = agent_topology.langgraph.describe(_join_graph(["right", "left"]))
     assert first_join["graphs"] == reordered_join["graphs"]
     assert first_join["structureHash"] == reordered_join["structureHash"]
+
+
+def test_source_checkout_version_uses_own_manifest(tmp_path, monkeypatch):
+    from agent_topology.langgraph import _describe
+
+    source = tmp_path / "src/agent_topology/langgraph/_describe.py"
+    source.parent.mkdir(parents=True)
+    manifest = tmp_path / "pyproject.toml"
+    manifest.write_text(
+        '[project]\nname = "agent-topology-langgraph"\nversion = "0.7.0b3"\n'
+    )
+    monkeypatch.setattr(_describe, "__file__", str(source))
+
+    def missing(_name):
+        raise PackageNotFoundError
+
+    monkeypatch.setattr(_describe, "version", missing)
+    assert _describe._distribution_version("agent-topology-langgraph") == "0.7.0b3"
+    manifest.write_text(manifest.read_text().replace("0.7.0b3", "0.8.0b1"))
+    assert _describe._distribution_version("agent-topology-langgraph") == "0.8.0b1"

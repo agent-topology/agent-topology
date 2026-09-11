@@ -121,11 +121,6 @@ jobs:
           mkdir -p "${{ runner.temp }}/release-source"
           cp -R packages/typescript/spec "${{ runner.temp }}/release-source/spec"
           cp -R packages/typescript/langgraph "${{ runner.temp }}/release-source/langgraph"
-          npm pkg set --prefix "${{ runner.temp }}/release-source/spec" "version=$SPEC_VERSION"
-          npm pkg set --prefix "${{ runner.temp }}/release-source/langgraph" "peerDependencies.@agent-topology/spec=$SPEC_VERSION"
-          if [ "$PACKAGE" = "langgraph" ]; then
-            npm pkg set --prefix "${{ runner.temp }}/release-source/langgraph" "version=$VERSION"
-          fi
           mkdir -p "${{ runner.temp }}/release-dist" "${{ runner.temp }}/support-dist"
           npm pack "${{ runner.temp }}/release-source/$PACKAGE" --ignore-scripts \
             --json --pack-destination "${{ runner.temp }}/release-dist" > "${{ runner.temp }}/selected.json"
@@ -148,7 +143,7 @@ jobs:
             --package "$PACKAGE" --version "$VERSION" --spec-version "$SPEC_VERSION" --tarball "$TARBALL"
           if [ "$PACKAGE" = "spec" ]; then
             node scripts/verify_typescript_release.mjs inspect \
-              --package langgraph --version 0.1.0-beta.2 --spec-version "$SPEC_VERSION" --tarball "$SUPPORT_TARBALL"
+              --package langgraph --tarball "$SUPPORT_TARBALL"
           else
             node scripts/verify_typescript_release.mjs inspect \
               --package spec --version "$SPEC_VERSION" --spec-version "$SPEC_VERSION" --tarball "$SUPPORT_TARBALL"

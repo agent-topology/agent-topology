@@ -74,6 +74,24 @@ try {
         'const spec = await import("@agent-topology/spec"); const producer = await import("@agent-topology/langgraph"); if (typeof spec.computeStructureHash !== "function" || typeof producer.describe !== "function") throw new Error("packages do not coexist");',
       );
     }
+    if (scenario !== "spec") {
+      run(
+        project,
+        `
+        import assert from "node:assert/strict";
+        import { readFileSync } from "node:fs";
+        import { Annotation, StateGraph, START, END } from "@langchain/langgraph";
+        import { describe } from "@agent-topology/langgraph";
+        const manifest = JSON.parse(readFileSync("node_modules/@agent-topology/langgraph/package.json", "utf8"));
+        const graph = new StateGraph(Annotation.Root({ value: Annotation }))
+          .addNode("step", state => state).addEdge(START, "step").addEdge("step", END).compile();
+        const document = await describe(graph);
+        assert.equal(document.provenance.producer.version, manifest.version);
+        assert.equal(document.topologyVersion, "0.1");
+        assert.equal(document.structureHash.algorithmVersion, "1");
+      `,
+      );
+    }
   }
   console.log(
     "spec alone, producer with its peer, and both packages together passed clean public-import smoke tests",

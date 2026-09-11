@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import tomllib
 from collections import Counter
 from datetime import UTC, datetime
 from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 from typing import Any
 
 from agent_topology.spec import finalize_document
@@ -30,7 +32,11 @@ def _distribution_version(distribution: str) -> str:
         return version(distribution)
     except PackageNotFoundError:
         # Source checkouts can import the package without installed metadata.
-        return "0.1.0b2"
+        project = Path(__file__).resolve().parents[3] / "pyproject.toml"
+        metadata = tomllib.loads(project.read_text(encoding="utf-8"))["project"]
+        if metadata["name"] != distribution:
+            raise ValueError("source manifest does not match producer distribution")
+        return metadata["version"]
 
 
 def _node_document(
