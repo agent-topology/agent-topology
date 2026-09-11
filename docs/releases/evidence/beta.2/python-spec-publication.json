@@ -1,0 +1,24 @@
+{
+  "artifacts": [
+    {
+      "filename": "agent_topology_spec-0.1.0b2-py3-none-any.whl",
+      "sha256": "14aa6083e5d32dbec527ccb9422e91d99f4415c3d3b0a30d5677f108401a8873"
+    },
+    {
+      "filename": "agent_topology_spec-0.1.0b2.tar.gz",
+      "sha256": "b356c04be97915ec9ee7b9b57fb18bc762eec8f1ab37ecd593f9455474568193"
+    }
+  ],
+  "checks": [
+    "artifact-inspection",
+    "clean-installation",
+    "namespace-coexistence",
+    "package-tests",
+    "python-quality"
+  ],
+  "commit": "cbd2f404a36834fb9ba318500b7832f03ba610da",
+  "distribution": "agent-topology-spec",
+  "package": "spec",
+  "receiptVersion": 1,
+  "version": "0.1.0b2"
+}
