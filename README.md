@@ -127,9 +127,8 @@ accepted by this API. Producer-specific metadata is emitted only beneath the
 
 The Python distributions build as `agent-topology-spec` and
 `agent-topology-langgraph`, imported as `agent_topology.spec` and
-`agent_topology.langgraph`. `agent-topology-spec==0.1.0b1` is available from
-PyPI; publication of the Python producer remains pending. TypeScript applications
-can use `@agent-topology/spec` to
+`agent_topology.langgraph`. Both `0.1.0b1` distributions are available from PyPI.
+TypeScript applications can use `@agent-topology/spec` to
 validate, canonicalize, serialize, and hash documents without a framework runtime.
 They can use the async `describe` API from `@agent-topology/langgraph` to inspect a
 compiled LangGraph.js graph:
