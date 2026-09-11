@@ -3,6 +3,11 @@
   "version": "0.1.0-beta.1",
   "description": "Describe compiled LangGraph.js graphs as canonical agent-topology documents",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agent-topology/agent-topology.git",
+    "directory": "packages/typescript/langgraph"
+  },
   "type": "module",
   "engines": {
     "node": ">=20"
