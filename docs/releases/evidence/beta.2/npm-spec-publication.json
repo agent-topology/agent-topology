@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "ecosystem": "npm",
+  "package": "spec",
+  "name": "@agent-topology/spec",
+  "version": "0.1.0-beta.2",
+  "commit": "cbd2f404a36834fb9ba318500b7832f03ba610da",
+  "checks": [
+    "artifact-inspection",
+    "clean-installation",
+    "package-tests",
+    "typescript-quality"
+  ],
+  "artifact": {
+    "filename": "agent-topology-spec-0.1.0-beta.2.tgz",
+    "name": "@agent-topology/spec",
+    "package": "spec",
+    "sha256": "373fbb08548ebcf8d62abb952b5f1e711be3d2616579cbe86e8c30f89e8aa9bc",
+    "version": "0.1.0-beta.2"
+  }
+}
