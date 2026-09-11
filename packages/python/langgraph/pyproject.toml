@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agent-topology-langgraph"
-version = "0.1.0b1"
+version = "0.1.0b2"
 description = "LangGraph producer for agent-topology documents"
 readme = "README.md"
 requires-python = ">=3.11,<3.15"
 license = "MIT"
 license-files = ["LICENSE"]
-dependencies = ["agent-topology-spec>=0.1.0b1,<0.2.0", "langgraph>=1.2.10,<=1.2.11"]
+dependencies = ["agent-topology-spec>=0.1.0b2,<0.2.0", "langgraph>=1.2.10,<=1.2.11"]
 
 [project.urls]
 Documentation = "https://github.com/agent-topology/agent-topology/blob/main/docs/README.md"

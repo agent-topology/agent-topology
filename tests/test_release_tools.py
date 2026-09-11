@@ -3,7 +3,48 @@ from pathlib import Path
 
 import pytest
 
-from scripts import release_guard, verify_python_artifacts
+from scripts import check_release_source, release_guard, verify_python_artifacts
+
+
+@pytest.mark.parametrize(
+    "ecosystem,version", [("python", "0.1.0b2"), ("npm", "0.1.0-beta.2")]
+)
+@pytest.mark.parametrize("package", ["spec", "langgraph"])
+def test_release_requires_prepared_version_and_release_branch(
+    ecosystem: str,
+    version: str,
+    package: str,
+) -> None:
+    arguments = {
+        "ref": "refs/heads/release/0.1.0-beta.2",
+        "spec_version": "0.1.0-beta.2",
+    }
+    check_release_source.validate_selection(ecosystem, package, version, **arguments)
+    with pytest.raises(ValueError, match="differs from source"):
+        check_release_source.validate_selection(
+            ecosystem, package, "9.9.9", **arguments
+        )
+    for ref in (
+        "",
+        "refs/heads/main",
+        "refs/tags/v0.1.0-beta.2",
+        "refs/heads/release/",
+    ):
+        with pytest.raises(ValueError, match="release/<version>"):
+            check_release_source.validate_selection(
+                ecosystem, package, version, ref=ref
+            )
+
+
+def test_release_refuses_an_unprepared_spec_peer() -> None:
+    with pytest.raises(ValueError, match="prepared peer"):
+        check_release_source.validate_selection(
+            "npm",
+            "langgraph",
+            "0.1.0-beta.2",
+            ref="refs/heads/release/0.1.0-beta.2",
+            spec_version="0.1.0-beta.1",
+        )
 
 
 @pytest.mark.parametrize("name", ["release-python.yml", "release-npm.yml"])

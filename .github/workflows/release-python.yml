@@ -30,6 +30,16 @@ jobs:
       distribution: ${{ steps.package.outputs.distribution }}
       package-root: ${{ steps.package.outputs.package-root }}
     steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Require prepared release source
+        env:
+          SELECTED_PACKAGE: ${{ inputs.package }}
+          SELECTED_VERSION: ${{ inputs.version }}
+        run: >-
+          python3 scripts/check_release_source.py --ecosystem python
+          --package "$SELECTED_PACKAGE" --version "$SELECTED_VERSION"
       - id: package
         env:
           SELECTED_PACKAGE: ${{ inputs.package }}

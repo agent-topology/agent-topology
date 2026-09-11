@@ -7,6 +7,17 @@ future package versions will move together.
 
 ## Unreleased
 
+### 0.1.0-beta.2 candidate
+
+Prepared on `release/0.1.0-beta.2`: Python distributions use `0.1.0b2`, npm
+packages use `0.1.0-beta.2`, and the npm producer's spec peer uses beta.2.
+These artifacts have not been published. See the
+[candidate release notes](docs/releases/v0.1.0-beta.2.md).
+
+- Run package CI on `release/**` as well as main. Release dispatches require a
+  release branch and versions matching the prepared source manifests; the npm
+  producer also requires its prepared specification peer.
+
 - Both LangGraph producers now record an `expanded-subgraph-metadata` gap when
   traversal expands child nodes whose join, routing, and interrupt declarations
   are not fully inspected. Python strict extraction rejects that incomplete view
@@ -35,8 +46,8 @@ future package versions will move together.
   snippets in the producer test suites.
 
 These changes describe current source and are not part of the immutable beta.1
-registry artifacts. Package source versions remain unchanged pending release
-selection and qualification.
+registry artifacts. Package source versions are prepared for beta.2 pending
+qualification and publication.
 
 ## v0.1.0-beta.1 public preview — 2026-09-11
 

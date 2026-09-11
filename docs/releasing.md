@@ -15,6 +15,9 @@ axes.
 
 ## Publication sequence
 
+For beta.2 and later, prepare and qualify from `release/<version>` as described
+below. The current candidate is [0.1.0-beta.2](releases/v0.1.0-beta.2.md).
+
 1. Start from the reviewed source commit and confirm both package CI workflows are
    green. Run each release workflow with `publish` disabled before contacting a
    registry.
@@ -27,7 +30,7 @@ axes.
 4. Install every exact version from its public registry in a clean environment and
    repeat the public smoke paths. Record the source commit, filenames, registry URLs,
    provenance, and digests in the GitHub release notes.
-5. Create the coordinated `v0.1.0-beta.1` Git tag, GitHub release, and announcement
+5. Create the coordinated `v<version>` Git tag, GitHub release, and announcement
    only after all four artifacts pass. The Python and npm sequences may run
    independently, but the specification package always precedes its producer within
    an ecosystem.
@@ -40,6 +43,43 @@ The completed initial publication and its public-registry verification are recor
 the [v0.1.0-beta.1 release notes](releases/v0.1.0-beta.1.md). Use that record as the
 GitHub Release body so the coordinated tag, registry artifacts, qualification receipts,
 source commits, and user-visible compatibility claims remain together.
+
+## Release branches and immutable tags
+
+`main` is the integration branch. Create `release/<version>` from the reviewed
+integration commit when stabilizing a release, for example
+`release/0.1.0-beta.2`. Prepare package versions, lockfiles, producer provenance
+versions, compatible spec dependencies, release checks, and candidate notes there.
+Send release fixes through PRs targeting that branch. Keep unrelated development
+out of the candidate and merge release corrections back into main through a PR.
+
+The branch name identifies the release being coordinated; it does not override
+the independently selected versions of its packages. Python retains PEP 440
+versions (`0.1.0b2`) while the branch and npm use SemVer (`0.1.0-beta.2`). The
+document format and hash algorithm versions do not follow either automatically.
+
+Package and framework-compatibility CI runs on pushes to `release/**`. Both manual
+release workflows reject main, tags, and other branches. Dispatch inputs must
+match the selected package's committed version; npm producer inputs must also
+match its committed spec peer. Version selection belongs in reviewed source,
+not an ad hoc build-time override. Use the release branch explicitly, for example:
+
+```bash
+gh workflow run release-python.yml --ref release/0.1.0-beta.2 -f package=spec -f version=0.1.0b2 -f publish=false
+gh workflow run release-npm.yml --ref release/0.1.0-beta.2 -f package=spec -f version=0.1.0-beta.2 -f publish=false
+```
+
+Freeze the branch commit while qualifying and publishing the intended package set.
+Any source change requires fresh qualification. Record artifact receipts and
+registry verification before tagging the exact qualified commit as `v<version>`.
+Never move a published version tag. Retain the release branch as the record of
+preparation, and merge the release work back into main after publication.
+
+The missing beta.1 tag was restored on 2026-09-11 at
+`0e127d84d77904dd0a909fab0ea58862282ceae8`, the merge of the original release
+notes in PR #74. The four package source trees match the qualified ancestor
+commits listed in the beta.1 notes. This retrospective tag does not claim that
+the artifacts were rebuilt from that merge or create a GitHub Release.
 
 ## Recovering a partial publication
 

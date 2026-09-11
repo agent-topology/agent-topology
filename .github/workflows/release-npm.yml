@@ -35,6 +35,17 @@ jobs:
       npm-tag: ${{ steps.select.outputs.npm-tag }}
       spec-version: ${{ steps.select.outputs.spec-version }}
     steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Require prepared release source
+        env:
+          PACKAGE: ${{ inputs.package }}
+          VERSION: ${{ inputs.version }}
+          SPEC_VERSION: ${{ inputs.spec-version }}
+        run: >-
+          python3 scripts/check_release_source.py --ecosystem npm
+          --package "$PACKAGE" --version "$VERSION" --spec-version "$SPEC_VERSION"
       - id: select
         env:
           PACKAGE: ${{ inputs.package }}
@@ -137,7 +148,7 @@ jobs:
             --package "$PACKAGE" --version "$VERSION" --spec-version "$SPEC_VERSION" --tarball "$TARBALL"
           if [ "$PACKAGE" = "spec" ]; then
             node scripts/verify_typescript_release.mjs inspect \
-              --package langgraph --version 0.1.0-beta.1 --spec-version "$SPEC_VERSION" --tarball "$SUPPORT_TARBALL"
+              --package langgraph --version 0.1.0-beta.2 --spec-version "$SPEC_VERSION" --tarball "$SUPPORT_TARBALL"
           else
             node scripts/verify_typescript_release.mjs inspect \
               --package spec --version "$SPEC_VERSION" --spec-version "$SPEC_VERSION" --tarball "$SUPPORT_TARBALL"

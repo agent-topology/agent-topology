@@ -4,7 +4,7 @@ Describe a supported compiled LangGraph.js `StateGraph` as the canonical documen
 representation from `@agent-topology/spec`.
 
 ```bash
-npm install @agent-topology/spec@0.1.0-beta.1 @agent-topology/langgraph@0.1.0-beta.1
+npm install @agent-topology/spec@0.1.0-beta.2 @agent-topology/langgraph@0.1.0-beta.2
 ```
 
 Supports Node.js 20+ with ESM imports. Install the specification peer explicitly.

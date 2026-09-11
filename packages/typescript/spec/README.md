@@ -4,7 +4,7 @@ Idiomatic TypeScript types and runtime utilities for the provisional agent-topol
 v0.1 document contract. This package has no framework runtime dependency.
 
 ```bash
-npm install @agent-topology/spec@0.1.0-beta.1
+npm install @agent-topology/spec@0.1.0-beta.2
 ```
 
 Supports Node.js 20+ with ESM imports. Start with the

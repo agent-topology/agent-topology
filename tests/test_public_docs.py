@@ -9,7 +9,9 @@ from urllib.parse import unquote
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE_NOTES = ROOT / "docs/releases/v0.1.0-beta.1.md"
+RELEASE_NOTES = ROOT / "docs/releases/v0.1.0-beta.2.md"
+PUBLISHED_PYTHON_VERSION = "0.1.0b1"
+PUBLISHED_NPM_VERSION = "0.1.0-beta.1"
 PUBLIC_DOCS = (
     ROOT / "README.md",
     ROOT / "CHANGELOG.md",
@@ -81,17 +83,15 @@ def test_readme_installation_and_compatibility_match_package_metadata() -> None:
     )
 
     assert (
-        f'python -m pip install "{python_spec["name"]}=={python_spec["version"]}"'
+        f'python -m pip install "{python_spec["name"]}=={PUBLISHED_PYTHON_VERSION}"'
         in readme
     )
     assert (
         f'python -m pip install "{python_producer["name"]}'
-        f'=={python_producer["version"]}"' in readme
+        f'=={PUBLISHED_PYTHON_VERSION}"' in readme
     )
-    assert (
-        f"npm install {typescript_spec['name']}@{typescript_spec['version']}" in readme
-    )
-    assert f"{typescript_producer['name']}@{typescript_producer['version']}" in readme
+    assert f"npm install {typescript_spec['name']}@{PUBLISHED_NPM_VERSION}" in readme
+    assert f"{typescript_producer['name']}@{PUBLISHED_NPM_VERSION}" in readme
 
     assert "agent_topology.spec" in readme
     assert "agent_topology.langgraph" in readme
@@ -131,7 +131,7 @@ def test_public_preview_release_notes_match_package_metadata() -> None:
         assert package["name"] in release_notes
         assert package["version"] in release_notes
 
-    assert "v0.1.0-beta.1" in release_notes
+    assert "v0.1.0-beta.2" in release_notes
     assert "Python 3.11–3.14" in release_notes
     assert "LangGraph 1.2.10–1.2.11" in release_notes
     assert "Node.js 20+" in release_notes

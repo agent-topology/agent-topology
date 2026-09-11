@@ -34,6 +34,7 @@ standard library. It makes no path-coverage or policy-verdict claim.
 - [Schema and hash specification](../spec/README.md)
 - [Shared conformance fixtures](../conformance/README.md)
 - [Initial public-preview release](releases/v0.1.0-beta.1.md)
+- [Beta.2 release candidate — not published](releases/v0.1.0-beta.2.md)
 - [Changelog](../CHANGELOG.md)
 
 Documentation in the default branch describes the current source. Fixes under

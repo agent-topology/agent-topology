@@ -209,6 +209,13 @@ comment.
 
 ## Issues, branches, commits, and pull requests
 
+From beta.2 onward, release preparation and stabilization use
+`release/<version>` (for example `release/0.1.0-beta.2`). Package-version changes,
+release notes, and candidate fixes are reviewed against that branch; publication
+is dispatched from it after CI passes. Keep main as the integration line and
+bring release corrections back through a PR. Tags name immutable qualified
+commits. See [the release branch policy](docs/releasing.md#release-branches-and-immutable-tags).
+
 Use `docs/ISSUE-PLANNING.md` for the Milestone → Epic → Feature → Task model.
 Every Feature and Task has one native parent issue, while blocked-by relationships
 express execution dependencies rather than hierarchy.
