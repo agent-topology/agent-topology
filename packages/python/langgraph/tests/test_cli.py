@@ -1,10 +1,13 @@
 import json
+import re
+import subprocess
+import sys
 import tomllib
 from pathlib import Path
 
 import pytest
 from agent_topology.langgraph import _cli
-from agent_topology.spec import canonical_json
+from agent_topology.spec import canonical_json, validate_document
 
 
 def _write_graph(path: Path, *, incomplete: bool = False) -> None:
@@ -31,6 +34,43 @@ graph = builder.compile()
 """,
         encoding="utf-8",
     )
+
+
+def test_documented_quickstart_and_consumer_run_end_to_end(tmp_path: Path) -> None:
+    docs = Path(__file__).resolve().parents[4] / "docs"
+    quickstart = (docs / "getting-started/python.md").read_text(encoding="utf-8")
+    source = re.findall(r"```python\n(.*?)\n```", quickstart, re.DOTALL)[0]
+    target = tmp_path / "graph.py"
+    target.write_text(source, encoding="utf-8")
+    api = subprocess.run(
+        [sys.executable, str(target)], capture_output=True, text=True, check=True
+    )
+    api_document = json.loads(api.stdout)
+    output = tmp_path / "topology.json"
+    assert (
+        _cli.main(["describe", f"{target}:graph", "--out", str(output), "--strict"])
+        == 0
+    )
+    document = json.loads(output.read_text(encoding="utf-8"))
+    assert validate_document(document) == []
+    assert document["structureHash"] == api_document["structureHash"]
+    assert {node["id"] for node in document["graphs"][0]["structure"]["nodes"]} == {
+        "__start__",
+        "greet",
+        "__end__",
+    }
+    consumer = (docs / "guides/consuming-documents.md").read_text(encoding="utf-8")
+    source = re.findall(r"```python\n(.*?)\n```", consumer, re.DOTALL)[0]
+    result = subprocess.run(
+        [sys.executable, "-c", source],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert "main 3 nodes" in result.stdout
+    assert "Completeness: complete" in result.stdout
+    assert "Limitation: dynamic-interrupts" in result.stdout
 
 
 def test_package_publishes_agt_from_the_langgraph_distribution() -> None:

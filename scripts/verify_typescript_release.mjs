@@ -16,6 +16,7 @@ const PACKAGES = {
     root: "packages/typescript/spec",
     repositoryDirectory: "packages/typescript/spec",
     files: [
+      "package/LICENSE",
       "package/README.md",
       "package/dist/canonical.d.ts",
       "package/dist/canonical.js",
@@ -42,6 +43,7 @@ const PACKAGES = {
     root: "packages/typescript/langgraph",
     repositoryDirectory: "packages/typescript/langgraph",
     files: [
+      "package/LICENSE",
       "package/README.md",
       "package/dist/compatibility.json",
       "package/dist/errors.d.ts",
@@ -100,7 +102,12 @@ export function inspectTarball({ packageId, version, tarball, specVersion }) {
       directory: config.repositoryDirectory,
     });
   }
-  assert.deepEqual(manifest.files, ["dist", "README.md"]);
+  assert.deepEqual(manifest.files, ["dist", "README.md", "LICENSE"]);
+  assert.equal(
+    tarOutput(absoluteTarball, "package/LICENSE"),
+    readFileSync(resolve(repositoryRoot, "LICENSE"), "utf8"),
+    "tarball must contain the repository license notice",
+  );
   assert.deepEqual(manifest.exports, {
     ".": { types: "./dist/index.d.ts", import: "./dist/index.js" },
   });

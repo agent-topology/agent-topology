@@ -187,6 +187,12 @@ publication with provenance.
 
 ## Documentation and decisions
 
+User guides and references start at `docs/README.md`. Follow
+`docs/maintainers/documentation.md` for navigation, executable examples, and
+relative-link conventions. Package-local `LICENSE` files reproduce the root
+notice for independently distributed artifacts; the public documentation guard
+checks byte equality, and artifact inspection checks the packaged notice.
+
 The README explains user-facing purpose and limits. Architecture describes the
 accepted system shape. ADRs own choices and rationale. Conventions describe how
 repository work preserves those choices.

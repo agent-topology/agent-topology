@@ -1,8 +1,28 @@
+import re
 from pathlib import Path
 
 import pytest
 
 from scripts import release_guard, verify_python_artifacts
+
+
+@pytest.mark.parametrize("name", ["release-python.yml", "release-npm.yml"])
+def test_release_inputs_are_data_not_interpolated_shell(name: str) -> None:
+    workflow = Path(__file__).resolve().parents[1] / ".github/workflows" / name
+    run_indent = None
+    for line in workflow.read_text(encoding="utf-8").splitlines():
+        indentation = len(line) - len(line.lstrip())
+        if line.strip() and run_indent is not None and indentation <= run_indent:
+            run_indent = None
+        if re.match(r"\s*(?:- )?run:", line):
+            run_indent = indentation
+        if run_indent is not None:
+            assert not re.search(
+                r"\$\{\{\s*(?:inputs\.|github\.event\.inputs\.)", line
+            ), (
+                f"{name}: pass dispatch input through a quoted environment variable: "
+                f"{line}"
+            )
 
 
 def _inspection() -> dict[str, object]:

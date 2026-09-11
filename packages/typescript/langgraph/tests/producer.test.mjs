@@ -1,4 +1,8 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 
 import { Annotation, END, START, StateGraph } from "@langchain/langgraph";
@@ -11,6 +15,50 @@ import { describeWithVersion } from "../dist/internal.js";
 const State = Annotation.Root({ value: Annotation });
 /** @param {Record<string, unknown>} state */
 const step = (state) => state;
+
+test("documented JavaScript quickstart and consumer run end to end", () => {
+  const packageRoot = fileURLToPath(new URL("../", import.meta.url));
+  const docs = new URL("../../../../docs/", import.meta.url);
+  const directory = mkdtempSync(join(packageRoot, ".docs-smoke-"));
+  try {
+    const quickstart = readFileSync(
+      new URL("getting-started/typescript.md", docs),
+      "utf8",
+    );
+    const source = quickstart.match(/```javascript\n([\s\S]*?)\n```/)?.[1];
+    assert.ok(source);
+    writeFileSync(join(directory, "graph.mjs"), source);
+    const output = execFileSync(process.execPath, ["graph.mjs"], {
+      cwd: directory,
+      encoding: "utf8",
+    });
+    const validation = validateDocument(JSON.parse(output));
+    assert.ok(validation.valid);
+    const document = validation.document;
+    assert.ok(document.graphs[0]);
+    assert.deepEqual(
+      document.graphs[0].structure.nodes.map((node) => node.id),
+      [END, START, "greet"],
+    );
+    writeFileSync(join(directory, "topology.json"), output);
+    const guide = readFileSync(
+      new URL("guides/consuming-documents.md", docs),
+      "utf8",
+    );
+    const consumer = guide.match(/```javascript\n([\s\S]*?)\n```/)?.[1];
+    assert.ok(consumer);
+    writeFileSync(join(directory, "inspect-topology.mjs"), consumer);
+    const result = execFileSync(process.execPath, ["inspect-topology.mjs"], {
+      cwd: directory,
+      encoding: "utf8",
+    });
+    assert.match(result, /main 3 nodes/);
+    assert.match(result, /Completeness: complete/);
+    assert.match(result, /Limitation: dynamic-interrupts/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
 
 test("the public root exposes only the producer API", () => {
   assert.deepEqual(Object.keys(producer).sort(), [
@@ -165,6 +213,28 @@ test("keeps a multi-source join distinct from independent incoming edges", async
   );
 });
 
+test("join identity uses the same Unicode order as Python", async () => {
+  const document = await describe(
+    new StateGraph(State)
+      .addNode("\u{10000}", step)
+      .addNode("\ue000", step)
+      .addNode("joined", step)
+      .addEdge(START, "\u{10000}")
+      .addEdge(START, "\ue000")
+      .addEdge(["\u{10000}", "\ue000"], "joined")
+      .addEdge("joined", END)
+      .compile(),
+  );
+  assert.equal(validateDocument(document).valid, true);
+  assert.deepEqual(document.graphs[0]?.structure.joins, [
+    {
+      id: "join:\ue000+\u{10000}:joined",
+      sources: ["\ue000", "\u{10000}"],
+      target: "joined",
+    },
+  ]);
+});
+
 test("expands nested graphs only to the requested depth", async () => {
   const child = new StateGraph(State)
     .addNode("innerFirst", step)
@@ -199,6 +269,23 @@ test("expands nested graphs only to the requested depth", async () => {
   assert.deepEqual(expanded.graphs[0]?.["x-langgraph"], {
     traversalDepth: 1,
   });
+  assert.deepEqual(opaque.completeness, { status: "complete", gaps: [] });
+  assert.deepEqual(expanded.completeness, {
+    status: "incomplete",
+    gaps: [
+      {
+        code: "expanded-subgraph-metadata",
+        message:
+          "Expanded child graphs expose drawable shape, but their join, routing, and interrupt declarations are not fully inspected.",
+        element: { graphId: "main", kind: "graph", id: "main" },
+      },
+    ],
+  });
+  assert.equal(validateDocument(expanded).valid, true);
+  assert.equal(
+    (await describe(child, { depth: 1 })).completeness.status,
+    "complete",
+  );
 });
 
 test("refuses unsupported versions before inspecting the graph", async () => {

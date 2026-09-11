@@ -22,6 +22,10 @@ limitations and graph-specific gaps, as well as canonical output and hashing.
 
 ## Development checks
 
+For environment setup and a complete local check sequence, see
+[local development](docs/maintainers/development.md). Public user guides start at
+the [documentation home](docs/README.md).
+
 The authoritative commands and pinned tool versions live in
 [CONVENTIONS.md](CONVENTIONS.md#tests-and-conformance). Run the checks for every
 package you change. Changes to packaging, compatibility, or release behavior also

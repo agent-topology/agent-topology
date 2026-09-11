@@ -211,10 +211,12 @@ jobs:
           path: ${{ runner.temp }}/bundle/dist
       - if: inputs.package == 'spec'
         name: Authorize the verified spec artifacts
+        env:
+          SELECTED_VERSION: ${{ inputs.version }}
         run: >-
           python scripts/release_guard.py create
           --package spec
-          --version "${{ inputs.version }}"
+          --version "$SELECTED_VERSION"
           --dist-dir "${{ runner.temp }}/bundle/dist"
           --commit "${{ github.sha }}"
           --receipt "${{ runner.temp }}/bundle/release-receipt.json"
@@ -225,10 +227,12 @@ jobs:
           --check python-quality
       - if: inputs.package == 'langgraph'
         name: Authorize the verified LangGraph artifacts
+        env:
+          SELECTED_VERSION: ${{ inputs.version }}
         run: >-
           python scripts/release_guard.py create
           --package langgraph
-          --version "${{ inputs.version }}"
+          --version "$SELECTED_VERSION"
           --dist-dir "${{ runner.temp }}/bundle/dist"
           --commit "${{ github.sha }}"
           --receipt "${{ runner.temp }}/bundle/release-receipt.json"
@@ -263,10 +267,13 @@ jobs:
           name: authorized-python-release
           path: .release-bundle
       - name: Refuse changed, dirty, or unchecked artifacts
+        env:
+          SELECTED_PACKAGE: ${{ inputs.package }}
+          SELECTED_VERSION: ${{ inputs.version }}
         run: >-
           python scripts/release_guard.py check
-          --package "${{ inputs.package }}"
-          --version "${{ inputs.version }}"
+          --package "$SELECTED_PACKAGE"
+          --version "$SELECTED_VERSION"
           --dist-dir .release-bundle/dist
           --commit "${{ github.sha }}"
           --receipt .release-bundle/release-receipt.json

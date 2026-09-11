@@ -62,6 +62,27 @@ test("every shared expected document validates and has byte-stable hash parity",
 
 test("canonical bytes and hashes agree with the Python contract implementation", async () => {
   const cases = await expectedDocuments();
+  // UTF-16 order puts the astral character before the BMP private-use character;
+  // Python and the canonical contract order their Unicode code points instead.
+  const firstCase = cases[0];
+  assert.ok(firstCase);
+  const unicode = structuredClone(firstCase.document);
+  unicode.graphs = [
+    {
+      id: "main",
+      structure: {
+        nodes: [{ id: "\u{10000}" }, { id: "\ue000" }],
+        edges: [],
+        joins: [
+          { id: "join", sources: ["\u{10000}", "\ue000"], target: "\ue000" },
+        ],
+        entryNodeIds: ["\u{10000}", "\ue000"],
+        exitNodeIds: ["\u{10000}", "\ue000"],
+      },
+    },
+  ];
+  unicode.completeness = { status: "complete", gaps: [] };
+  cases.push({ name: "unicode structural identifiers", document: unicode });
   const pythonProject = resolve(packageRoot, "../../python/spec");
   const script = [
     "import json, sys",

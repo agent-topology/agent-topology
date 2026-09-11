@@ -8,6 +8,11 @@ available from their public registries and remain independently versioned. See t
 [0.1 contract](docs/0.1-contract.md), [changelog](CHANGELOG.md), and
 [Roadmap](#roadmap).
 
+Start with the [documentation](docs/README.md):
+[Python quickstart](docs/getting-started/python.md),
+[TypeScript / JavaScript quickstart](docs/getting-started/typescript.md), and
+[reading a topology document](docs/guides/consuming-documents.md).
+
 ---
 
 ## What this is
@@ -27,7 +32,8 @@ doc = describe(compiled_graph)
 agt describe src/my_agent/graph.py:graph --out agent-topology.manifest.json
 ```
 
-That's the whole library.
+The producer handles extraction; separate specification packages let consumers
+validate, serialize, and hash the resulting documents.
 
 ## Installation
 
@@ -344,6 +350,10 @@ more dangerous than an obviously absent one.
   output, and the document says so.
 - **Deep nesting.** Subgraphs are opaque by default. Expanding them is opt-in and,
   in at least one framework, currently unreliable past two levels.
+  Expanded drawable shape does not fully preserve child join, routing, and
+  interrupt declarations. Current source records this as an
+  `expanded-subgraph-metadata` gap; the correction is
+  [unreleased](CHANGELOG.md#unreleased).
 - **Runtime-constructed graphs.** A graph assembled from configuration at startup is
   described as it exists at that moment, not as all the graphs it might have been.
 - **Provisional core boundary.** Python and TypeScript exercise the same LangGraph

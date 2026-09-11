@@ -172,6 +172,23 @@ def _inspect_wheel(
             archive=wheel,
         )
         _assert_wheel_scripts(archive, members, scripts=scripts)
+        license_member = (
+            metadata_members[0].removesuffix("METADATA") + "licenses/LICENSE"
+        )
+        expected_license = (
+            Path(__file__).resolve().parents[1] / "LICENSE"
+        ).read_bytes()
+        if (
+            license_member not in members
+            or archive.read(license_member) != expected_license
+        ):
+            raise ValueError(f"{wheel.name} must contain the repository license notice")
+        message = BytesParser().parsebytes(archive.read(metadata_members[0]))
+        if (
+            message.get("Description-Content-Type") != "text/markdown"
+            or not message.get_payload()
+        ):
+            raise ValueError(f"{wheel.name} must include its Markdown package README")
 
     if "agent_topology/__init__.py" in members:
         raise ValueError(f"{wheel.name} must not own agent_topology/__init__.py")
@@ -228,6 +245,17 @@ def _inspect_sdist(
         )
 
         root = PurePosixPath(metadata_members[0]).parts[0]
+        license_member = f"{root}/LICENSE"
+        if license_member not in members:
+            raise ValueError(f"{sdist.name} must contain the repository license notice")
+        license_file = archive.extractfile(license_member)
+        expected_license = (
+            Path(__file__).resolve().parents[1] / "LICENSE"
+        ).read_bytes()
+        if license_file is None or license_file.read() != expected_license:
+            raise ValueError(f"{sdist.name} has an incorrect license notice")
+        if f"{root}/README.md" not in members:
+            raise ValueError(f"{sdist.name} must include its package README")
         pyproject_member = f"{root}/pyproject.toml"
         pyproject_file = archive.extractfile(pyproject_member)
         if pyproject_file is None:

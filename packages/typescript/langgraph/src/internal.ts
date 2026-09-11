@@ -160,7 +160,7 @@ function builderStructure(compiledGraph: RuntimeCompiledGraph): {
 
   const joins = [...compiledGraph.builder.waitingEdges].map(
     ([rawSources, rawTarget]) => {
-      const sortedSources = rawSources.map(String).sort();
+      const sortedSources = rawSources.map(String).sort(compareText);
       const [first, second, ...rest] = sortedSources;
       if (first === undefined || second === undefined) {
         throw new TypeError(
@@ -309,11 +309,26 @@ export async function describeWithVersion(
     },
     "x-langgraph": { traversalDepth: depth },
   };
-  const gaps = [...unknownRouters].sort().map((source) => ({
-    code: "unknown-routing-targets",
-    message: "Not every destination of this router could be determined.",
-    element: { graphId: "main", kind: "node" as const, id: source },
-  }));
+  const gaps: TopologyDocument["completeness"]["gaps"] = [...unknownRouters]
+    .sort(compareText)
+    .map((source) => ({
+      code: "unknown-routing-targets",
+      message: "Not every destination of this router could be determined.",
+      element: { graphId: "main", kind: "node" as const, id: source },
+    }));
+  const rootNodeIds = new Set([
+    START,
+    END,
+    ...Object.keys(runtimeGraph.builder.nodes),
+  ]);
+  if (depth > 0 && nodeIds.some((nodeId) => !rootNodeIds.has(nodeId))) {
+    gaps.push({
+      code: "expanded-subgraph-metadata",
+      message:
+        "Expanded child graphs expose drawable shape, but their join, routing, and interrupt declarations are not fully inspected.",
+      element: { graphId: "main", kind: "graph", id: "main" },
+    });
+  }
   return finalizeDocument({
     topologyVersion: "0.1",
     provenance: {

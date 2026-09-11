@@ -6,9 +6,16 @@ build-backend = "hatchling.build"
 name = "agent-topology-langgraph"
 version = "0.1.0b1"
 description = "LangGraph producer for agent-topology documents"
+readme = "README.md"
 requires-python = ">=3.11,<3.15"
 license = "MIT"
+license-files = ["LICENSE"]
 dependencies = ["agent-topology-spec>=0.1.0b1,<0.2.0", "langgraph>=1.2.10,<=1.2.11"]
+
+[project.urls]
+Documentation = "https://github.com/agent-topology/agent-topology/blob/main/docs/README.md"
+Repository = "https://github.com/agent-topology/agent-topology"
+Issues = "https://github.com/agent-topology/agent-topology/issues"
 
 [project.scripts]
 agt = "agent_topology.langgraph._cli:main"
@@ -20,7 +27,7 @@ test = ["pytest==9.1.1"]
 packages = ["src/agent_topology"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/agent_topology", "tests", "pyproject.toml"]
+include = ["src/agent_topology", "tests", "pyproject.toml", "README.md", "LICENSE"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -50,9 +50,9 @@ without any producer:
 python3 -m pip install ./packages/python/spec
 ```
 
-The eventual public-registry command will be
-`python3 -m pip install agent-topology-spec`, but the distribution has not been
-published to PyPI yet. Public registry installation is milestone 5 work.
+For the initial published preview, use
+`python3 -m pip install "agent-topology-spec==0.1.0b1"`. See the
+[documentation home](../docs/README.md) for installation and consumer guides.
 
 The native namespace import exposes schema loading, validation, canonicalisation,
 and hashing without importing or installing LangGraph:
@@ -102,5 +102,4 @@ python3 -m unittest discover -s spec/tests -v
 ```
 
 The examples under `tests/documents` measure schema behavior only. Shared graph
-meanings and producer conformance fixtures belong under `conformance/` and are
-introduced separately.
+meanings and producer conformance fixtures live under `conformance/`.
