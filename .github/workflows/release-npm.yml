@@ -189,20 +189,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - if: inputs.package == 'langgraph'
+      - if: inputs.publish && inputs.package == 'langgraph'
         uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - if: inputs.package == 'langgraph'
+      - if: inputs.publish && inputs.package == 'langgraph'
         uses: actions/setup-node@v6
         with:
           node-version: 20
-      - if: inputs.package == 'langgraph'
+      - if: inputs.publish && inputs.package == 'langgraph'
         uses: actions/download-artifact@v6
         with:
           name: authorized-npm-release
           path: ${{ runner.temp }}/release-dist
-      - if: inputs.package == 'langgraph'
+      - if: inputs.publish && inputs.package == 'langgraph'
         name: Verify the published spec peer on the public registry before the producer can publish
         env:
           SPEC_VERSION: ${{ needs.selection.outputs.spec-version }}

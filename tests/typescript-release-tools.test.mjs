@@ -309,7 +309,7 @@ test("clean install must resolve the exact qualified spec peer, not a substitute
   }
 });
 
-test("release-npm.yml gates producer publication on a registry preflight even for dry runs", () => {
+test("release-npm.yml qualifies unpublished candidates and gates producer publication on a registry preflight", () => {
   const release = workflow("release-npm.yml");
   const preflightJob = release.indexOf("\n  registry-preflight:");
   const qualifyJob = release.indexOf("\n  qualify:");
@@ -335,10 +335,29 @@ test("release-npm.yml gates producer publication on a registry preflight even fo
     publishNeeds > preflightJob,
     "publish must depend on the registry-preflight job so a fail-closed result blocks the upload",
   );
-  assert.ok(
-    !/registry-preflight:[\s\S]*?if:\s*inputs\.publish/.test(
-      release.slice(preflightJob, publishJob),
-    ),
-    "registry-preflight must run even when publish=false so dry runs still qualify the candidate",
+  const preflight = release.slice(preflightJob, publishJob);
+  const conditions = [...preflight.matchAll(/^      - if: (.+)$/gm)].map(
+    (match) => match[1],
   );
+  assert.equal(conditions.length, 4);
+  for (const condition of conditions) {
+    assert.equal(condition, "inputs.publish && inputs.package == 'langgraph'");
+    for (const publish of [false, true]) {
+      for (const name of ["spec", "langgraph"]) {
+        const enabled = Function(
+          "inputs",
+          `return ${condition}`,
+        )({
+          publish,
+          package: name,
+        });
+        assert.equal(enabled, publish && name === "langgraph");
+      }
+    }
+  }
+  assert.doesNotMatch(preflight, /^    if:/m);
+  const qualification = release.slice(qualifyJob, preflightJob);
+  assert.doesNotMatch(qualification, /inputs\.publish/);
+  assert.match(qualification, /smoke_typescript_installation\.mjs/);
+  assert.match(qualification, /release-receipt\.json/);
 });

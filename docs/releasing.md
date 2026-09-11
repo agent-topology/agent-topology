@@ -36,10 +36,10 @@ below. The current candidate is [0.1.0-beta.2](releases/v0.1.0-beta.2.md).
    tarball — then runs a minimal public-API smoke against that combination.
    This is why the specification package must publish first: the preflight
    fails closed (missing peer, registry query failure, or smoke failure) and
-   blocks the `publish` job before any upload, for both `publish=false` dry
-   runs and `publish=true` runs. It is a publication-only check and does not
-   replace or relax the offline/local candidate qualification the `qualify`
-   job already performs from locally built tarballs.
+   blocks the `publish` job before any upload when `publish=true`. With
+   `publish=false`, the registry steps are skipped so an unpublished candidate
+   can qualify. Both modes retain the candidate qualification that the `qualify`
+   job performs from locally built tarballs.
 4. Install every exact version from its public registry in a clean environment and
    repeat the public smoke paths. Record the source commit, filenames, registry URLs,
    provenance, and digests in the GitHub release notes.
