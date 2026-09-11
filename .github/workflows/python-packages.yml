@@ -44,10 +44,10 @@ jobs:
           version: "0.12.1"
       - run: uvx --from ruff==0.16.7 ruff format --check packages/python scripts tests
       - run: uvx --from ruff==0.16.7 ruff check packages/python scripts tests
-      - name: Test release guards
+      - name: Test release and public documentation guards
         run: >-
           uv run --project packages/python/spec --group test
-          python -m pytest tests/test_release_tools.py
+          python -m pytest tests/test_release_tools.py tests/test_public_docs.py
 
   artifacts:
     name: Inspect ${{ matrix.package }} artifacts

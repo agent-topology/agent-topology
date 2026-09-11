@@ -2,8 +2,10 @@
 
 **A derived, descriptive manifest for the internal shape of an agent workflow.**
 
-Status: **0.1 contract candidate** — provisional, pre-1.0, and not yet published to
-PyPI or npm. See the [0.1 contract](docs/0.1-contract.md) and [Roadmap](#roadmap).
+Status: **0.1 public preview** — provisional and pre-1.0. The four packages are
+published independently, so registry availability may be partial until a coordinated
+GitHub release is announced. See the [0.1 contract](docs/0.1-contract.md),
+[changelog](CHANGELOG.md), and [Roadmap](#roadmap).
 
 ---
 
@@ -25,6 +27,25 @@ agt describe src/my_agent/graph.py:graph --out agent-topology.manifest.json
 ```
 
 That's the whole library.
+
+## Installation
+
+The public preview has four distinct installation paths. Pin `0.1.0` when evaluating
+the initial release; if a registry does not yet list it, that package's publication
+step is still pending.
+
+| Package                             | Install                                                                  |
+| ----------------------------------- | ------------------------------------------------------------------------ |
+| Python document utilities           | `python -m pip install "agent-topology-spec==0.1.0"`                     |
+| Python LangGraph producer and `agt` | `python -m pip install "agent-topology-langgraph==0.1.0"`                |
+| TypeScript document utilities       | `npm install @agent-topology/spec@0.1.0`                                 |
+| TypeScript LangGraph.js producer    | `npm install @agent-topology/spec@0.1.0 @agent-topology/langgraph@0.1.0` |
+
+The Python distributions install into the native namespace and are imported as
+`agent_topology.spec` and `agent_topology.langgraph`. The TypeScript packages are
+imported as `@agent-topology/spec` and `@agent-topology/langgraph`. Installing the
+Python producer also installs its compatible specification dependency. The
+TypeScript producer declares the specification as a peer, so install both explicitly.
 
 ### Python API
 
@@ -86,16 +107,16 @@ document and exits with status 6.
 
 `agt describe` uses stable, distinguishable process results:
 
-| Status | Meaning |
-| --- | --- |
-| 0 | The canonical document was written successfully. |
-| 2 | The command or target syntax is invalid. |
-| 3 | The Python target file could not be imported. |
-| 4 | The named object could not be resolved or is not a compiled graph. |
-| 5 | The installed LangGraph version is unsupported. |
-| 6 | Strict extraction found graph-specific completeness gaps. |
-| 7 | The output document could not be written. |
-| 8 | Extraction failed for another reason. |
+| Status | Meaning                                                            |
+| ------ | ------------------------------------------------------------------ |
+| 0      | The canonical document was written successfully.                   |
+| 2      | The command or target syntax is invalid.                           |
+| 3      | The Python target file could not be imported.                      |
+| 4      | The named object could not be resolved or is not a compiled graph. |
+| 5      | The installed LangGraph version is unsupported.                    |
+| 6      | Strict extraction found graph-specific completeness gaps.          |
+| 7      | The output document could not be written.                          |
+| 8      | Extraction failed for another reason.                              |
 
 Importing a target executes its module-level Python statements so the compiled object
 can be created. The CLI never invokes or schedules the graph itself.
@@ -123,13 +144,35 @@ The TypeScript producer currently supports LangGraph.js 1.4.14 and refuses other
 versions before graph inspection with an actionable installation command. It has no
 CLI; `agt` remains owned by the Python Foundation producer.
 
-Both npm packages exist in this repository and can be packed and qualified
-independently without publication.
+All four packages are built, qualified, and published as independent operations.
 Repository CI inspects their exact public contents and metadata, installs the
-tarballs in clean projects, and binds qualification to the source commit and artifact
-digests. Registry publication remains behind the protected public-preview release
-environment and is planned for milestone 5. None of the four packages is available
-from its public registry yet; use repository-local builds for evaluation.
+artifacts in clean projects, and binds qualification to the source commit and artifact
+digests. During the initial rollout, check the relevant registry before installing;
+the coordinated announcement waits for all four. Maintainers use the
+[release and partial-publication recovery guide](docs/releasing.md).
+
+### Compatibility matrix
+
+| Package                           | Runtime          | Framework compatibility |
+| --------------------------------- | ---------------- | ----------------------- |
+| `agent-topology-spec` 0.1.0       | Python 3.11–3.14 | No framework dependency |
+| `agent-topology-langgraph` 0.1.0  | Python 3.11–3.14 | LangGraph 1.2.10–1.2.11 |
+| `@agent-topology/spec` 0.1.0      | Node.js 20+      | No framework dependency |
+| `@agent-topology/langgraph` 0.1.0 | Node.js 20+      | LangGraph.js 1.4.14     |
+
+Only the versions listed above have conformance evidence. Producers refuse untested
+framework releases before inspecting a graph.
+
+### Interface support matrix
+
+| Interface              | Python                                              | TypeScript                                        |
+| ---------------------- | --------------------------------------------------- | ------------------------------------------------- |
+| Contract utilities     | `agent_topology.spec`                               | `@agent-topology/spec`                            |
+| LangGraph producer API | `agent_topology.langgraph.describe`                 | async `describe` from `@agent-topology/langgraph` |
+| Command line           | `agt describe`, owned by `agent-topology-langgraph` | Not provided                                      |
+
+There is no TypeScript `agt` command, producer discovery, or `agt diff` command in the
+0.1 public preview.
 
 For maintainers, see [Architecture](ARCHITECTURE.md),
 [Conventions](CONVENTIONS.md), the
@@ -246,12 +289,12 @@ If no, it's an extension.
 
 ## Producers
 
-| Framework          | Status                                       |
-| ------------------ | -------------------------------------------- |
-| LangGraph (Python) | Foundation implemented (1.2.10–1.2.11)       |
-| LangGraph.js       | TypeScript producer implemented (1.4.14)     |
-| LangChain (LCEL)   | planned                                      |
-| others             | contributions welcome                        |
+| Framework          | Status                                   |
+| ------------------ | ---------------------------------------- |
+| LangGraph (Python) | Foundation implemented (1.2.10–1.2.11)   |
+| LangGraph.js       | TypeScript producer implemented (1.4.14) |
+| LangChain (LCEL)   | planned                                  |
+| others             | contributions welcome                    |
 
 A producer is a function from a framework's compiled object to this document. It should
 be small. If it needs configuration, the format is probably wrong.
@@ -303,6 +346,14 @@ more dangerous than an obviously absent one.
   in at least one framework, currently unreliable past two levels.
 - **Runtime-constructed graphs.** A graph assembled from configuration at startup is
   described as it exists at that moment, not as all the graphs it might have been.
+- **Provisional core boundary.** Python and TypeScript exercise the same LangGraph
+  model. That proves cross-language extraction, not vendor neutrality. Core fields may
+  move before v1 when a structurally different producer supplies evidence.
+- **Branch and fan-out semantics.** The current document can represent the resulting
+  conditional shape but does not establish whether several destinations are
+  alternatives or all run. It is not a path-coverage or policy-verdict format.
+- **Framework-shaped sentinel nodes.** LangGraph entry and exit sentinels remain
+  visible in the 0.1 producer output and are marked under `x-langgraph`.
 
 Every document carries a `completeness` field listing what the producer could not
 determine. **Consumers must surface it.**
@@ -340,4 +391,5 @@ hash-algorithm, and package-version policy in the
 
 ## License
 
-MIT
+[MIT](LICENSE). For public support, contribution guidance, and the private security
+channel, see [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).

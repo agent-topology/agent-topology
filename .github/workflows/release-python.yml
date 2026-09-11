@@ -89,7 +89,7 @@ jobs:
           ${{ needs.selection.outputs.package-root }} scripts tests
       - run: >-
           uv run --project packages/python/spec --group test
-          python -m pytest tests/test_release_tools.py
+          python -m pytest tests/test_release_tools.py tests/test_public_docs.py
 
   producer-conformance:
     needs: selection
@@ -197,7 +197,8 @@ jobs:
           if-no-files-found: error
 
   authorize:
-    needs: [selection, package-tests, python-quality, producer-conformance, artifact]
+    needs:
+      [selection, package-tests, python-quality, producer-conformance, artifact]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
