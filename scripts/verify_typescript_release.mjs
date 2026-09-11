@@ -95,6 +95,11 @@ export function inspectTarball({ packageId, version, tarball, specVersion }) {
   assert.deepEqual(manifest.exports, {
     ".": { types: "./dist/index.d.ts", import: "./dist/index.js" },
   });
+  assert.equal(
+    manifest.bin,
+    undefined,
+    "TypeScript packages must not publish an executable",
+  );
 
   if (packageId === "spec") {
     assert.deepEqual(manifest.dependencies, {
