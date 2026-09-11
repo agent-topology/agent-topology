@@ -32,6 +32,7 @@ function workflow(name) {
 test("TypeScript evidence jobs provision their cross-language inputs", () => {
   const compatibility = workflow("langgraph-compatibility.yml");
   const packages = workflow("typescript-packages.yml");
+  const release = workflow("release-npm.yml");
   const installSpec = compatibility.indexOf(
     "npm ci --prefix packages/typescript/spec",
   );
@@ -65,6 +66,10 @@ test("TypeScript evidence jobs provision their cross-language inputs", () => {
   assert.ok(
     packages.includes("uses: astral-sh/setup-uv@v10.0.1"),
     "package tests must install uv for the Python parity oracle",
+  );
+  assert.ok(
+    release.includes("uses: astral-sh/setup-uv@v10.0.1"),
+    "npm release qualification must install uv for the Python parity oracle",
   );
   assert.ok(packageInstallSpec >= 0, "package spec install step is missing");
   assert.ok(packageBuildSpec > packageInstallSpec);
