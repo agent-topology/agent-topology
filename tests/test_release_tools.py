@@ -16,7 +16,7 @@ def test_release_requires_prepared_version_and_release_branch(
     package: str,
 ) -> None:
     arguments = {
-        "ref": "refs/heads/release/0.1.0-beta.2",
+        "ref": "refs/heads/rc/0.1.0-beta.2",
         "spec_version": "0.1.0-beta.2",
     }
     check_release_source.validate_selection(ecosystem, package, version, **arguments)
@@ -27,10 +27,11 @@ def test_release_requires_prepared_version_and_release_branch(
     for ref in (
         "",
         "refs/heads/main",
+        "refs/heads/release/0.1.0-beta.2",
         "refs/tags/v0.1.0-beta.2",
-        "refs/heads/release/",
+        "refs/heads/rc/",
     ):
-        with pytest.raises(ValueError, match="release/<version>"):
+        with pytest.raises(ValueError, match="rc/<version>"):
             check_release_source.validate_selection(
                 ecosystem, package, version, ref=ref
             )
@@ -42,7 +43,7 @@ def test_release_refuses_an_unprepared_spec_peer() -> None:
             "npm",
             "langgraph",
             "0.1.0-beta.2",
-            ref="refs/heads/release/0.1.0-beta.2",
+            ref="refs/heads/rc/0.1.0-beta.2",
             spec_version="0.1.0-beta.1",
         )
 

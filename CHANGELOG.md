@@ -9,13 +9,13 @@ future package versions will move together.
 
 ### 0.1.0-beta.2 candidate
 
-Prepared on `release/0.1.0-beta.2`: Python distributions use `0.1.0b2`, npm
+Prepared on `rc/0.1.0-beta.2`: Python distributions use `0.1.0b2`, npm
 packages use `0.1.0-beta.2`, and the npm producer's spec peer uses beta.2.
 These artifacts have not been published. See the
 [candidate release notes](docs/releases/v0.1.0-beta.2.md).
 
-- Run package CI on `release/**` as well as main. Release dispatches require a
-  release branch and versions matching the prepared source manifests; the npm
+- Run package CI on `rc/**` as well as main. Release dispatches require a
+  RC branch and versions matching the prepared source manifests; the npm
   producer also requires its prepared specification peer.
 
 - Both LangGraph producers now record an `expanded-subgraph-metadata` gap when

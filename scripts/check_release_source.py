@@ -1,4 +1,4 @@
-"""Reject release dispatches outside a release branch or its prepared versions."""
+"""Reject release dispatches outside an RC branch or its prepared versions."""
 
 from __future__ import annotations
 
@@ -19,9 +19,9 @@ def validate_selection(
     ref: str,
     spec_version: str = "",
 ) -> None:
-    prefix = "refs/heads/release/"
+    prefix = "refs/heads/rc/"
     if not ref.startswith(prefix) or not ref.removeprefix(prefix):
-        raise ValueError("release workflows require a release/<version> branch")
+        raise ValueError("release workflows require an rc/<version> branch")
     if ecosystem not in {"python", "npm"} or package not in {"spec", "langgraph"}:
         raise ValueError("unsupported release package")
     if ecosystem == "python":

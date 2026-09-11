@@ -8,7 +8,7 @@ available from their public registries and remain independently versioned. See t
 [0.1 contract](docs/0.1-contract.md), [changelog](CHANGELOG.md), and
 [Roadmap](#roadmap).
 
-Current source prepares **beta.2** on `release/0.1.0-beta.2`; it is not published.
+Current source prepares **beta.2** on `rc/0.1.0-beta.2`; it is not published.
 The installation commands below still select published beta.1. See the
 [beta.2 release candidate](docs/releases/v0.1.0-beta.2.md) for changes and the
 remaining publication checks.

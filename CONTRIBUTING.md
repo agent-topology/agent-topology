@@ -35,6 +35,39 @@ Pull requests should explain the observable change, its verification, and any
 compatibility impact. By contributing, you agree that your contribution is licensed
 under the repository's [MIT License](LICENSE).
 
+## Branching strategy
+
+`rc` stands for release candidate. `main` is the integration branch. Merge normal
+development from working branches through pull requests. When a release is ready
+for stabilization, create
+`rc/<version>` from the reviewed main commit, for example
+`rc/0.1.0-beta.2`.
+
+```mermaid
+flowchart TD
+    work["Working branch"] -->|Pull request| main["main"]
+    main -->|Create release candidate branch| candidate["rc/0.1.0-beta.2"]
+    fix["Release-fix branch"] -->|Pull request targeting RC branch| candidate
+    candidate --> checks["Freeze commit; pass CI and release dry-runs"]
+    checks --> publish["Manually dispatch publication from RC branch"]
+    publish --> verify["Verify published packages with clean installs"]
+    verify --> tag["Tag the qualified commit: v0.1.0-beta.2"]
+    tag --> backport["Open a PR to merge release changes back into main"]
+    backport --> main
+```
+
+- Keep version preparation, release notes, and candidate fixes on the release
+  branch. Target release-fix PRs at that branch; keep unrelated development on main.
+- There is no separate branch named `release`. Each release uses its own
+  `rc/<version>` branch.
+- PR merges approve code; they do **not** automatically publish packages or create
+  tags. Publication is a separate, manually triggered workflow after qualification.
+- Freeze the candidate commit during qualification and publication. Any source
+  change requires fresh qualification. Create the immutable version tag on the
+  qualified commit only after publication and registry-install verification succeed.
+- After publication, merge release changes back into main through a PR and retain
+  the RC branch as the preparation record.
+
 ## Releases
 
 The four packages are independently versioned and published. Do not infer a package

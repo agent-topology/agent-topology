@@ -15,7 +15,7 @@ axes.
 
 ## Publication sequence
 
-For beta.2 and later, prepare and qualify from `release/<version>` as described
+For beta.2 and later, prepare and qualify from `rc/<version>` as described
 below. The current candidate is [0.1.0-beta.2](releases/v0.1.0-beta.2.md).
 
 1. Start from the reviewed source commit and confirm both package CI workflows are
@@ -44,11 +44,11 @@ the [v0.1.0-beta.1 release notes](releases/v0.1.0-beta.1.md). Use that record as
 GitHub Release body so the coordinated tag, registry artifacts, qualification receipts,
 source commits, and user-visible compatibility claims remain together.
 
-## Release branches and immutable tags
+## Release candidate branches and immutable tags
 
-`main` is the integration branch. Create `release/<version>` from the reviewed
+`main` is the integration branch. Create `rc/<version>` from the reviewed
 integration commit when stabilizing a release, for example
-`release/0.1.0-beta.2`. Prepare package versions, lockfiles, producer provenance
+`rc/0.1.0-beta.2`. Prepare package versions, lockfiles, producer provenance
 versions, compatible spec dependencies, release checks, and candidate notes there.
 Send release fixes through PRs targeting that branch. Keep unrelated development
 out of the candidate and merge release corrections back into main through a PR.
@@ -58,21 +58,21 @@ the independently selected versions of its packages. Python retains PEP 440
 versions (`0.1.0b2`) while the branch and npm use SemVer (`0.1.0-beta.2`). The
 document format and hash algorithm versions do not follow either automatically.
 
-Package and framework-compatibility CI runs on pushes to `release/**`. Both manual
+Package and framework-compatibility CI runs on pushes to `rc/**`. Both manual
 release workflows reject main, tags, and other branches. Dispatch inputs must
 match the selected package's committed version; npm producer inputs must also
 match its committed spec peer. Version selection belongs in reviewed source,
-not an ad hoc build-time override. Use the release branch explicitly, for example:
+not an ad hoc build-time override. Use the RC branch explicitly, for example:
 
 ```bash
-gh workflow run release-python.yml --ref release/0.1.0-beta.2 -f package=spec -f version=0.1.0b2 -f publish=false
-gh workflow run release-npm.yml --ref release/0.1.0-beta.2 -f package=spec -f version=0.1.0-beta.2 -f publish=false
+gh workflow run release-python.yml --ref rc/0.1.0-beta.2 -f package=spec -f version=0.1.0b2 -f publish=false
+gh workflow run release-npm.yml --ref rc/0.1.0-beta.2 -f package=spec -f version=0.1.0-beta.2 -f publish=false
 ```
 
 Freeze the branch commit while qualifying and publishing the intended package set.
 Any source change requires fresh qualification. Record artifact receipts and
 registry verification before tagging the exact qualified commit as `v<version>`.
-Never move a published version tag. Retain the release branch as the record of
+Never move a published version tag. Retain the RC branch as the record of
 preparation, and merge the release work back into main after publication.
 
 The missing beta.1 tag was restored on 2026-09-11 at

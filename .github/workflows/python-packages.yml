@@ -3,7 +3,7 @@ name: Python packages
 on:
   pull_request:
   push:
-    branches: [main, "release/**"]
+    branches: [main, "rc/**"]
   workflow_dispatch:
 
 permissions:
