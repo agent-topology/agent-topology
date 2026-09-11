@@ -30,7 +30,7 @@ def _distribution_version(distribution: str) -> str:
         return version(distribution)
     except PackageNotFoundError:
         # Source checkouts can import the package without installed metadata.
-        return "0.1.0"
+        return "0.1.0b1"
 
 
 def _node_document(

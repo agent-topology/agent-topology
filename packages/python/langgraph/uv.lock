@@ -8,7 +8,7 @@ resolution-markers = [
 
 [[package]]
 name = "agent-topology-langgraph"
-version = "0.1.0"
+version = "0.1.0b1"
 source = { editable = "." }
 dependencies = [
     { name = "agent-topology-spec" },
@@ -31,7 +31,7 @@ test = [{ name = "pytest", specifier = "==9.1.1" }]
 
 [[package]]
 name = "agent-topology-spec"
-version = "0.1.0"
+version = "0.1.0b1"
 source = { directory = "../spec" }
 dependencies = [
     { name = "jsonschema" },

@@ -5,7 +5,7 @@ This file records user-visible changes to the independently versioned
 the structure-hash algorithm, and repository membership does not promise that
 future package versions will move together.
 
-## 0.1 public preview — unreleased
+## v0.1.0-beta.1 public preview — unreleased
 
 The initial public preview provides:
 
@@ -21,10 +21,11 @@ a structurally different framework. It is therefore not vendor-neutral or a stab
 v1 contract. See the [0.1 contract](docs/0.1-contract.md) and the
 [known limitations](README.md#known-limits) before adopting it.
 
-The four `0.1.0` packages are published independently. A release can be partially
-available while that sequence is in progress; the coordinated GitHub release and
-announcement are withheld until all four registry artifacts pass clean-install and
-provenance verification. Maintainers follow the
+The first beta uses Python version `0.1.0b1` and npm version `0.1.0-beta.1`.
+The four packages are published independently. A release can be partially available
+while that sequence is in progress; the coordinated GitHub release and announcement
+are withheld until all four registry artifacts pass clean-install and provenance
+verification. Maintainers follow the
 [release and partial-publication recovery guide](docs/releasing.md). Public support
 is best-effort through GitHub Issues, with security reports handled through the
 private channel described in [SECURITY.md](SECURITY.md).

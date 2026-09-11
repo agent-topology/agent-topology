@@ -7,9 +7,11 @@ The repository publishes four independently versioned packages:
 | PyPI     | `agent-topology-spec`  | `agent-topology-langgraph`  |
 | npm      | `@agent-topology/spec` | `@agent-topology/langgraph` |
 
-The initial preview uses `0.1.0` for all four packages, but that is a release choice,
-not a promise that later versions or release dates will remain coordinated. The
-topology format and structure-hash algorithm have their own version axes.
+The initial preview is beta.1: Python packages use the PEP 440 version `0.1.0b1`,
+while npm packages use the SemVer version `0.1.0-beta.1`. That coordinated beta label
+is a release choice, not a promise that later versions or release dates will remain
+coordinated. The topology format and structure-hash algorithm have their own version
+axes.
 
 ## Publication sequence
 
@@ -25,9 +27,10 @@ topology format and structure-hash algorithm have their own version axes.
 4. Install every exact version from its public registry in a clean environment and
    repeat the public smoke paths. Record the source commit, filenames, registry URLs,
    provenance, and digests in the GitHub release notes.
-5. Create the coordinated Git tag, GitHub release, and announcement only after all
-   four artifacts pass. The Python and npm sequences may run independently, but the
-   specification package always precedes its producer within an ecosystem.
+5. Create the coordinated `v0.1.0-beta.1` Git tag, GitHub release, and announcement
+   only after all four artifacts pass. The Python and npm sequences may run
+   independently, but the specification package always precedes its producer within
+   an ecosystem.
 
 The protected workflows publish one selected package at a time. A successful run for
 one package does not authorize another package and does not prove the four-package

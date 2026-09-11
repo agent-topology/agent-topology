@@ -1,6 +1,6 @@
 {
   "name": "@agent-topology/langgraph",
-  "version": "0.1.0",
+  "version": "0.1.0-beta.1",
   "description": "Describe compiled LangGraph.js graphs as canonical agent-topology documents",
   "license": "MIT",
   "type": "module",
@@ -23,13 +23,13 @@
     "check:compatibility": "node scripts/check-compatibility.mjs",
     "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.json\" \"scripts/*.mjs\" \"tests/*.mjs\" \"*.json\" \"*.md\"",
     "prepack": "npm run build",
-    "pack:check": "node ../../../scripts/verify_typescript_release.mjs pack --package langgraph --version 0.1.0 --spec-version 0.1.0"
+    "pack:check": "node ../../../scripts/verify_typescript_release.mjs pack --package langgraph --version 0.1.0-beta.1 --spec-version 0.1.0-beta.1"
   },
   "dependencies": {
     "@langchain/langgraph": "1.4.14"
   },
   "peerDependencies": {
-    "@agent-topology/spec": "0.1.0"
+    "@agent-topology/spec": "0.1.0-beta.1"
   },
   "devDependencies": {
     "@agent-topology/spec": "file:../spec",

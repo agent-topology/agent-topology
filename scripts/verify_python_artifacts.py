@@ -28,7 +28,7 @@ PACKAGES = {
         "module": "langgraph",
         "generated_files": set(),
         "requirements": {
-            "agent-topology-spec<0.2.0,>=0.1.0",
+            "agent-topology-spec<0.2.0,>=0.1.0b1",
             "langgraph<=1.2.11,>=1.2.10",
         },
         "scripts": {"agt": "agent_topology.langgraph._cli:main"},

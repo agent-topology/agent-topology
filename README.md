@@ -30,16 +30,16 @@ That's the whole library.
 
 ## Installation
 
-The public preview has four distinct installation paths. Pin `0.1.0` when evaluating
-the initial release; if a registry does not yet list it, that package's publication
-step is still pending.
+The public preview has four distinct installation paths. Pin the ecosystem-native
+`beta.1` version when evaluating the initial release; if a registry does not yet list
+it, that package's publication step is still pending.
 
 | Package                             | Install                                                                  |
 | ----------------------------------- | ------------------------------------------------------------------------ |
-| Python document utilities           | `python -m pip install "agent-topology-spec==0.1.0"`                     |
-| Python LangGraph producer and `agt` | `python -m pip install "agent-topology-langgraph==0.1.0"`                |
-| TypeScript document utilities       | `npm install @agent-topology/spec@0.1.0`                                 |
-| TypeScript LangGraph.js producer    | `npm install @agent-topology/spec@0.1.0 @agent-topology/langgraph@0.1.0` |
+| Python document utilities           | `python -m pip install "agent-topology-spec==0.1.0b1"`                               |
+| Python LangGraph producer and `agt` | `python -m pip install "agent-topology-langgraph==0.1.0b1"`                          |
+| TypeScript document utilities       | `npm install @agent-topology/spec@0.1.0-beta.1`                                      |
+| TypeScript LangGraph.js producer    | `npm install @agent-topology/spec@0.1.0-beta.1 @agent-topology/langgraph@0.1.0-beta.1` |
 
 The Python distributions install into the native namespace and are imported as
 `agent_topology.spec` and `agent_topology.langgraph`. The TypeScript packages are
@@ -155,10 +155,10 @@ the coordinated announcement waits for all four. Maintainers use the
 
 | Package                           | Runtime          | Framework compatibility |
 | --------------------------------- | ---------------- | ----------------------- |
-| `agent-topology-spec` 0.1.0       | Python 3.11–3.14 | No framework dependency |
-| `agent-topology-langgraph` 0.1.0  | Python 3.11–3.14 | LangGraph 1.2.10–1.2.11 |
-| `@agent-topology/spec` 0.1.0      | Node.js 20+      | No framework dependency |
-| `@agent-topology/langgraph` 0.1.0 | Node.js 20+      | LangGraph.js 1.4.14     |
+| `agent-topology-spec` 0.1.0b1            | Python 3.11–3.14 | No framework dependency |
+| `agent-topology-langgraph` 0.1.0b1       | Python 3.11–3.14 | LangGraph 1.2.10–1.2.11 |
+| `@agent-topology/spec` 0.1.0-beta.1      | Node.js 20+      | No framework dependency |
+| `@agent-topology/langgraph` 0.1.0-beta.1 | Node.js 20+      | LangGraph.js 1.4.14     |
 
 Only the versions listed above have conformance evidence. Producers refuse untested
 framework releases before inspecting a graph.
