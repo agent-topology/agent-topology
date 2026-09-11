@@ -1,0 +1,10 @@
+$ npm install --ignore-scripts --registry=https://registry.npmjs.org @agent-topology/spec@0.1.0-beta.2 @agent-topology/langgraph@0.1.0-beta.2 @langchain/langgraph@1.4.14
+
+added 30 packages, and audited 31 packages in 902ms
+
+9 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+$ node --input-type=module --eval import assert from "node:assert/strict"; import {readFileSync} from "node:fs"; import {Annotation,StateGraph,START,END} from "@langchain/langgraph"; import {describe} from "@agent-topology/langgraph"; import {validateDocument,computeStructureHash,canonicalStringify} from "@agent-topology/spec"; for(const p of ["spec","langgraph"]) assert.equal(JSON.parse(readFileSync(`node_modules/@agent-topology/${p}/package.json`)).version,"0.1.0-beta.2"); const g=new StateGraph(Annotation.Root({value:Annotation()})).addNode("step",s=>s).addEdge(START,"step").addEdge("step",END).compile(); const d=await describe(g); assert.equal(d.provenance.producer.version,"0.1.0-beta.2"); assert.equal(validateDocument(d).valid,true); assert.deepEqual(computeStructureHash(d),d.structureHash); assert.deepEqual(JSON.parse(canonicalStringify(d)),d); console.log("npm exact-version public extraction, validation, hash and canonicalization smoke passed");
+npm exact-version public extraction, validation, hash and canonicalization smoke passed

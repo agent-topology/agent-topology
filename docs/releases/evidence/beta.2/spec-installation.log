@@ -1,0 +1,29 @@
+$ uv venv /var/folders/8j/d_ssv7cx3nn3khgst1nwjgfh0000gn/T/agt-beta2-spec-vh60yjkv/venv
+Using CPython 3.12.14
+Creating virtual environment at: /var/folders/8j/d_ssv7cx3nn3khgst1nwjgfh0000gn/T/agt-beta2-spec-vh60yjkv/venv
+Activate with: source /var/folders/8j/d_ssv7cx3nn3khgst1nwjgfh0000gn/T/agt-beta2-spec-vh60yjkv/venv/bin/activate
+$ uv pip install --python /var/folders/8j/d_ssv7cx3nn3khgst1nwjgfh0000gn/T/agt-beta2-spec-vh60yjkv/venv/bin/python --index-url https://pypi.org/simple agent-topology-spec==0.1.0b2
+Using Python 3.12.14 environment at: /var/folders/8j/d_ssv7cx3nn3khgst1nwjgfh0000gn/T/agt-beta2-spec-vh60yjkv/venv
+Resolved 7 packages in 281ms
+Prepared 1 package in 29ms
+Installed 7 packages in 7ms
+ + agent-topology-spec==0.1.0b2
+ + attrs==26.1.0
+ + jsonschema==4.26.0
+ + jsonschema-specifications==2025.9.1
+ + referencing==0.37.0
+ + rpds-py==2026.6.3
+ + typing-extensions==4.16.0
+$ /var/folders/8j/d_ssv7cx3nn3khgst1nwjgfh0000gn/T/agt-beta2-spec-vh60yjkv/venv/bin/python -I /Users/minhokang/orca/workspaces/agent-topology/publish-and-verify-beta.2-then-record-the-immuta/scripts/smoke_spec_install.py
+$ /var/folders/8j/d_ssv7cx3nn3khgst1nwjgfh0000gn/T/agt-beta2-spec-vh60yjkv/venv/bin/python -I -c from importlib.metadata import version; assert version("agent-topology-spec")=="0.1.0b2"; print("Python spec exact-version public smoke passed")
+Python spec exact-version public smoke passed
+$ npm install --ignore-scripts --registry=https://registry.npmjs.org @agent-topology/spec@0.1.0-beta.2
+
+added 7 packages, and audited 8 packages in 814ms
+
+2 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+$ node --input-type=module --eval import assert from "node:assert/strict"; import {readFileSync} from "node:fs"; import * as api from "@agent-topology/spec"; assert.equal(JSON.parse(readFileSync("node_modules/@agent-topology/spec/package.json")).version,"0.1.0-beta.2"); for(const key of ["validateDocument","computeStructureHash","canonicalizeDocument"]) assert.equal(typeof api[key],"function"); console.log("npm spec exact-version public smoke passed")
+npm spec exact-version public smoke passed

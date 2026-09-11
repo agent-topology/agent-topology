@@ -10,8 +10,8 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE_NOTES = ROOT / "docs/releases/v0.1.0-beta.2.md"
-PUBLISHED_PYTHON_VERSION = "0.1.0b1"
-PUBLISHED_NPM_VERSION = "0.1.0-beta.1"
+PUBLISHED_PYTHON_VERSION = "0.1.0b2"
+PUBLISHED_NPM_VERSION = "0.1.0-beta.2"
 PUBLIC_DOCS = (
     ROOT / "README.md",
     ROOT / "CHANGELOG.md",
@@ -142,7 +142,7 @@ def test_public_preview_release_notes_match_package_metadata(path: Path) -> None
     if path == RELEASE_NOTES:
         assert "`agt describe`" in release_notes
         assert "Python `agent-topology-langgraph` distribution" in release_notes
-    assert "not published" in release_notes
+    assert "published and verified" in release_notes.lower()
     assert (
         f"@agent-topology/spec@{typescript_producer['peerDependencies']['@agent-topology/spec']}"
         in release_notes
@@ -163,8 +163,8 @@ def test_quickstarts_keep_published_install_selections(name: str) -> None:
     install = re.findall(r"```bash\n(.*?)\n```", document, re.DOTALL)[0]
     expected = PUBLISHED_PYTHON_VERSION if name == "python" else PUBLISHED_NPM_VERSION
     assert expected in install
-    assert "0.1.0b2" not in install
-    assert "0.1.0-beta.2" not in install
+    assert "0.1.0b1" not in install
+    assert "0.1.0-beta.1" not in install
 
 
 @pytest.mark.parametrize(

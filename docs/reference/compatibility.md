@@ -3,15 +3,14 @@
 [Documentation home](../README.md)
 
 Choose the package for the language of the compiled graph, or install just a
-specification package when consuming JSON. These commands select the initial
-public preview, not unreleased fixes in the repository.
+specification package when consuming JSON. These commands select the verified beta.2 public preview.
 
 | Task | Install |
 | --- | --- |
-| Read documents in Python | `python -m pip install "agent-topology-spec==0.1.0b1"` |
-| Extract Python LangGraph graphs or use `agt` | `python -m pip install "agent-topology-langgraph==0.1.0b1"` |
-| Read documents in Node.js | `npm install @agent-topology/spec@0.1.0-beta.1` |
-| Extract LangGraph.js graphs | `npm install @agent-topology/spec@0.1.0-beta.1 @agent-topology/langgraph@0.1.0-beta.1` |
+| Read documents in Python | `python -m pip install "agent-topology-spec==0.1.0b2"` |
+| Extract Python LangGraph graphs or use `agt` | `python -m pip install "agent-topology-langgraph==0.1.0b2"` |
+| Read documents in Node.js | `npm install @agent-topology/spec@0.1.0-beta.2` |
+| Extract LangGraph.js graphs | `npm install @agent-topology/spec@0.1.0-beta.2 @agent-topology/langgraph@0.1.0-beta.2` |
 
 The Python producer installs its specification dependency. The TypeScript producer
 declares it as a peer; install both explicitly. For application code that imports
@@ -38,7 +37,7 @@ Python imports use underscores: `agent_topology.spec` and
 declarations, not a CommonJS `require` entry point or a browser bundle. `agt` is
 provided only by the Python producer.
 
-See [release notes](../releases/v0.1.0-beta.1.md) for published artifact identities,
+See [release notes](../releases/v0.1.0-beta.2.md) for published artifact identities,
 the [contract](../0.1-contract.md#supported-versions) for links to the authoritative
 compatibility manifests, and [local development](../maintainers/development.md)
 to test unreleased source.

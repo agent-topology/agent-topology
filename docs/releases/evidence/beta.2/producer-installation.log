@@ -1,0 +1,10 @@
+$ uv venv /var/folders/8j/d_ssv7cx3nn3khgst1nwjgfh0000gn/T/agt-beta2-public-uksnkkm0/venv
+Using CPython 3.12.14
+Creating virtual environment at: /var/folders/8j/d_ssv7cx3nn3khgst1nwjgfh0000gn/T/agt-beta2-public-uksnkkm0/venv
+Activate with: source /var/folders/8j/d_ssv7cx3nn3khgst1nwjgfh0000gn/T/agt-beta2-public-uksnkkm0/venv/bin/activate
+$ uv pip install --python /var/folders/8j/d_ssv7cx3nn3khgst1nwjgfh0000gn/T/agt-beta2-public-uksnkkm0/venv/bin/python --index-url https://pypi.org/simple agent-topology-spec==0.1.0b2 agent-topology-langgraph==0.1.0b2
+Using Python 3.12.14 environment at: /var/folders/8j/d_ssv7cx3nn3khgst1nwjgfh0000gn/T/agt-beta2-public-uksnkkm0/venv
+  × No solution found when resolving dependencies:
+  ╰─▶ Because there is no version of agent-topology-langgraph==0.1.0b2 and
+      you require agent-topology-langgraph==0.1.0b2, we can conclude that your
+      requirements are unsatisfiable.

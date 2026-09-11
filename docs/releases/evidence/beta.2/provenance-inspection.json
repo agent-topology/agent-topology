@@ -1,0 +1,54 @@
+[
+  {
+    "package": "npm-spec",
+    "run": 34627023206,
+    "betaTag": "0.1.0-beta.2",
+    "sourceAndSubjectMatch": true
+  },
+  {
+    "package": "npm-langgraph",
+    "run": 34629146186,
+    "betaTag": "0.1.0-beta.2",
+    "sourceAndSubjectMatch": true
+  },
+  {
+    "filename": "agent_topology_spec-0.1.0b2-py3-none-any.whl",
+    "subjectAndSourceMatch": true,
+    "publisher": {
+      "environment": "pypi-agent-topology-spec",
+      "kind": "GitHub",
+      "repository": "agent-topology/agent-topology",
+      "workflow": "release-python.yml"
+    }
+  },
+  {
+    "filename": "agent_topology_spec-0.1.0b2.tar.gz",
+    "subjectAndSourceMatch": true,
+    "publisher": {
+      "environment": "pypi-agent-topology-spec",
+      "kind": "GitHub",
+      "repository": "agent-topology/agent-topology",
+      "workflow": "release-python.yml"
+    }
+  },
+  {
+    "filename": "agent_topology_langgraph-0.1.0b2-py3-none-any.whl",
+    "subjectAndSourceMatch": true,
+    "publisher": {
+      "environment": "pypi-agent-topology-langgraph",
+      "kind": "GitHub",
+      "repository": "agent-topology/agent-topology",
+      "workflow": "release-python.yml"
+    }
+  },
+  {
+    "filename": "agent_topology_langgraph-0.1.0b2.tar.gz",
+    "subjectAndSourceMatch": true,
+    "publisher": {
+      "environment": "pypi-agent-topology-langgraph",
+      "kind": "GitHub",
+      "repository": "agent-topology/agent-topology",
+      "workflow": "release-python.yml"
+    }
+  }
+]
