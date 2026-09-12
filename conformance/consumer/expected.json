@@ -1,0 +1,61 @@
+{
+  "direct": {
+    "branches": {
+      "router": ["known", "all-declared", "unconditional-edges"]
+    },
+    "roots": ["__start__"]
+  },
+  "single": {
+    "branches": {
+      "router": ["unknown", "selection-not-observable"]
+    },
+    "roots": ["__start__"]
+  },
+  "list": {
+    "branches": {
+      "router": ["unknown", "selection-not-observable"]
+    },
+    "roots": ["__start__"]
+  },
+  "orphan": {
+    "branches": {
+      "router": ["unknown", "selection-not-observable"]
+    },
+    "roots": ["__start__", "target"],
+    "gaps": [["unknown-routing-targets", "router"]]
+  },
+  "ordinary": {
+    "branches": {},
+    "roots": ["__start__"],
+    "children": {
+      "child": ["unknown", "identity-unavailable"]
+    }
+  },
+  "child": {
+    "branches": {},
+    "roots": ["__start__"],
+    "children": {
+      "child": ["known", "opaque-child", "compiled-child"]
+    }
+  },
+  "join": {
+    "branches": {
+      "__start__": ["known", "all-declared", "unconditional-edges"]
+    },
+    "roots": ["__start__"],
+    "joinConnections": [
+      ["", "joined"],
+      ["𐀀", "joined"]
+    ]
+  },
+  "independent": {
+    "branches": {
+      "__start__": ["known", "all-declared", "unconditional-edges"]
+    },
+    "roots": ["__start__"]
+  },
+  "sentinel-names": {
+    "branches": {},
+    "roots": ["__start__"]
+  }
+}

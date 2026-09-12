@@ -31,3 +31,9 @@ The Python LangGraph runner is
 `packages/python/langgraph/tests/test_conformance.py`, and the LangGraph.js runner
 is `packages/typescript/langgraph/tests/conformance.test.mjs`. Both read these
 same files and do not copy or redefine the expected documents.
+
+The separate [producer-to-consumer regression gate](consumer/README.md) preserves
+experimental interpretation metadata instead of normalizing it away. It generates
+real Python and TypeScript output and sends both through framework-free document
+consumers. Its [F1–F6 disposition record](consumer/README.md#finding-disposition)
+distinguishes implemented improvements from remaining unknowns.
