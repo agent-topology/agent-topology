@@ -1,0 +1,9 @@
+{
+  "name": "issue95-evidence",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@agent-topology/langgraph": "0.1.0-beta.2",
+    "@agent-topology/spec": "0.1.0-beta.2"
+  }
+}

@@ -1,0 +1,935 @@
+{
+  "node": "v22.16.0",
+  "documents": {
+    "F1-one": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "name": "LangGraph",
+          "structure": {
+            "edges": [
+              {
+                "id": "edge:__start__:router:direct:1",
+                "kind": "direct",
+                "source": "__start__",
+                "target": "router"
+              },
+              {
+                "id": "edge:left:__end__:direct:1",
+                "kind": "direct",
+                "source": "left",
+                "target": "__end__"
+              },
+              {
+                "id": "edge:right:__end__:direct:1",
+                "kind": "direct",
+                "source": "right",
+                "target": "__end__"
+              },
+              {
+                "id": "edge:router:left:conditional:1",
+                "kind": "conditional",
+                "source": "router",
+                "target": "left"
+              },
+              {
+                "id": "edge:router:right:conditional:1",
+                "kind": "conditional",
+                "source": "router",
+                "target": "right"
+              }
+            ],
+            "entryNodeIds": [
+              "__start__"
+            ],
+            "exitNodeIds": [
+              "__end__"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "__end__",
+                "x-langgraph": {
+                  "name": "__end__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "__start__",
+                "x-langgraph": {
+                  "name": "__start__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "left",
+                "x-langgraph": {
+                  "name": "left",
+                  "sentinel": false
+                }
+              },
+              {
+                "id": "right",
+                "x-langgraph": {
+                  "name": "right",
+                  "sentinel": false
+                }
+              },
+              {
+                "id": "router",
+                "x-langgraph": {
+                  "name": "router",
+                  "sentinel": false
+                }
+              }
+            ]
+          },
+          "x-langgraph": {
+            "traversalDepth": 0
+          }
+        }
+      ],
+      "producerLimitations": [
+        {
+          "code": "dynamic-interrupts",
+          "message": "Interrupts raised inside node bodies cannot be observed statically."
+        }
+      ],
+      "provenance": {
+        "framework": {
+          "name": "langgraph",
+          "version": "1.4.14"
+        },
+        "generatedAt": "2000-01-01T00:00:00Z",
+        "producer": {
+          "name": "@agent-topology/langgraph",
+          "version": "0.1.0-beta.2"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "3726e22eeabf0574d5719fbf0d929e9be6f335b4e7e740c1182b03080136ae5c"
+      },
+      "topologyVersion": "0.1"
+    },
+    "F1-many": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "name": "LangGraph",
+          "structure": {
+            "edges": [
+              {
+                "id": "edge:__start__:router:direct:1",
+                "kind": "direct",
+                "source": "__start__",
+                "target": "router"
+              },
+              {
+                "id": "edge:left:__end__:direct:1",
+                "kind": "direct",
+                "source": "left",
+                "target": "__end__"
+              },
+              {
+                "id": "edge:right:__end__:direct:1",
+                "kind": "direct",
+                "source": "right",
+                "target": "__end__"
+              },
+              {
+                "id": "edge:router:left:conditional:1",
+                "kind": "conditional",
+                "source": "router",
+                "target": "left"
+              },
+              {
+                "id": "edge:router:right:conditional:1",
+                "kind": "conditional",
+                "source": "router",
+                "target": "right"
+              }
+            ],
+            "entryNodeIds": [
+              "__start__"
+            ],
+            "exitNodeIds": [
+              "__end__"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "__end__",
+                "x-langgraph": {
+                  "name": "__end__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "__start__",
+                "x-langgraph": {
+                  "name": "__start__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "left",
+                "x-langgraph": {
+                  "name": "left",
+                  "sentinel": false
+                }
+              },
+              {
+                "id": "right",
+                "x-langgraph": {
+                  "name": "right",
+                  "sentinel": false
+                }
+              },
+              {
+                "id": "router",
+                "x-langgraph": {
+                  "name": "router",
+                  "sentinel": false
+                }
+              }
+            ]
+          },
+          "x-langgraph": {
+            "traversalDepth": 0
+          }
+        }
+      ],
+      "producerLimitations": [
+        {
+          "code": "dynamic-interrupts",
+          "message": "Interrupts raised inside node bodies cannot be observed statically."
+        }
+      ],
+      "provenance": {
+        "framework": {
+          "name": "langgraph",
+          "version": "1.4.14"
+        },
+        "generatedAt": "2000-01-01T00:00:00Z",
+        "producer": {
+          "name": "@agent-topology/langgraph",
+          "version": "0.1.0-beta.2"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "3726e22eeabf0574d5719fbf0d929e9be6f335b4e7e740c1182b03080136ae5c"
+      },
+      "topologyVersion": "0.1"
+    },
+    "F1-consumer-trial": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "name": "LangGraph",
+          "structure": {
+            "edges": [
+              {
+                "id": "edge:__start__:router:direct:1",
+                "kind": "direct",
+                "source": "__start__",
+                "target": "router"
+              },
+              {
+                "id": "edge:left:__end__:direct:1",
+                "kind": "direct",
+                "source": "left",
+                "target": "__end__"
+              },
+              {
+                "id": "edge:right:__end__:direct:1",
+                "kind": "direct",
+                "source": "right",
+                "target": "__end__"
+              },
+              {
+                "id": "edge:router:left:conditional:1",
+                "kind": "conditional",
+                "source": "router",
+                "target": "left"
+              },
+              {
+                "id": "edge:router:right:conditional:1",
+                "kind": "conditional",
+                "source": "router",
+                "target": "right"
+              }
+            ],
+            "entryNodeIds": [
+              "__start__"
+            ],
+            "exitNodeIds": [
+              "__end__"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "__end__",
+                "x-langgraph": {
+                  "name": "__end__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "__start__",
+                "x-langgraph": {
+                  "name": "__start__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "left",
+                "x-langgraph": {
+                  "name": "left",
+                  "sentinel": false
+                }
+              },
+              {
+                "id": "right",
+                "x-langgraph": {
+                  "name": "right",
+                  "sentinel": false
+                }
+              },
+              {
+                "id": "router",
+                "x-langgraph": {
+                  "name": "router",
+                  "sentinel": false
+                }
+              }
+            ],
+            "x-topology-branch": [
+              {
+                "id": "branch:router",
+                "sourceId": "router",
+                "mode": "exclusive",
+                "edgeIds": [
+                  "edge:router:left:conditional:1",
+                  "edge:router:right:conditional:1"
+                ]
+              }
+            ]
+          },
+          "x-langgraph": {
+            "traversalDepth": 0
+          }
+        }
+      ],
+      "producerLimitations": [
+        {
+          "code": "dynamic-interrupts",
+          "message": "Interrupts raised inside node bodies cannot be observed statically."
+        }
+      ],
+      "provenance": {
+        "framework": {
+          "name": "langgraph",
+          "version": "1.4.14"
+        },
+        "generatedAt": "2000-01-01T00:00:00Z",
+        "producer": {
+          "name": "@agent-topology/langgraph",
+          "version": "0.1.0-beta.2"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "3726e22eeabf0574d5719fbf0d929e9be6f335b4e7e740c1182b03080136ae5c"
+      },
+      "topologyVersion": "0.1"
+    },
+    "F2-unknown": {
+      "completeness": {
+        "gaps": [
+          {
+            "code": "unknown-routing-targets",
+            "element": {
+              "graphId": "main",
+              "id": "router",
+              "kind": "node"
+            },
+            "message": "Not every destination of this router could be determined."
+          }
+        ],
+        "status": "incomplete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "name": "LangGraph",
+          "structure": {
+            "edges": [
+              {
+                "id": "edge:__start__:router:direct:1",
+                "kind": "direct",
+                "source": "__start__",
+                "target": "router"
+              },
+              {
+                "id": "edge:target:__end__:direct:1",
+                "kind": "direct",
+                "source": "target",
+                "target": "__end__"
+              }
+            ],
+            "entryNodeIds": [
+              "__start__",
+              "target"
+            ],
+            "exitNodeIds": [
+              "__end__"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "__end__",
+                "x-langgraph": {
+                  "name": "__end__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "__start__",
+                "x-langgraph": {
+                  "name": "__start__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "router",
+                "x-langgraph": {
+                  "name": "router",
+                  "sentinel": false
+                }
+              },
+              {
+                "id": "target",
+                "x-langgraph": {
+                  "name": "target",
+                  "sentinel": false
+                }
+              }
+            ]
+          },
+          "x-langgraph": {
+            "traversalDepth": 0
+          }
+        }
+      ],
+      "producerLimitations": [
+        {
+          "code": "dynamic-interrupts",
+          "message": "Interrupts raised inside node bodies cannot be observed statically."
+        }
+      ],
+      "provenance": {
+        "framework": {
+          "name": "langgraph",
+          "version": "1.4.14"
+        },
+        "generatedAt": "2000-01-01T00:00:00Z",
+        "producer": {
+          "name": "@agent-topology/langgraph",
+          "version": "0.1.0-beta.2"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "00da965b2172598b239ab27d7a48c105b3a9d815ac139e7f629fa00e23f057b8"
+      },
+      "topologyVersion": "0.1"
+    },
+    "F3-nested": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "name": "LangGraph",
+          "structure": {
+            "edges": [
+              {
+                "id": "edge:__start__:nested:direct:1",
+                "kind": "direct",
+                "source": "__start__",
+                "target": "nested"
+              },
+              {
+                "id": "edge:nested:__end__:direct:1",
+                "kind": "direct",
+                "source": "nested",
+                "target": "__end__"
+              }
+            ],
+            "entryNodeIds": [
+              "__start__"
+            ],
+            "exitNodeIds": [
+              "__end__"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "__end__",
+                "x-langgraph": {
+                  "name": "__end__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "__start__",
+                "x-langgraph": {
+                  "name": "__start__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "nested",
+                "x-langgraph": {
+                  "name": "nested",
+                  "sentinel": false
+                }
+              }
+            ]
+          },
+          "x-langgraph": {
+            "traversalDepth": 0
+          }
+        }
+      ],
+      "producerLimitations": [
+        {
+          "code": "dynamic-interrupts",
+          "message": "Interrupts raised inside node bodies cannot be observed statically."
+        }
+      ],
+      "provenance": {
+        "framework": {
+          "name": "langgraph",
+          "version": "1.4.14"
+        },
+        "generatedAt": "2000-01-01T00:00:00Z",
+        "producer": {
+          "name": "@agent-topology/langgraph",
+          "version": "0.1.0-beta.2"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "405323b5a06db1fe358b1094077c442785ec605e065655dda192b424b9663b50"
+      },
+      "topologyVersion": "0.1"
+    },
+    "F3-ordinary": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "name": "LangGraph",
+          "structure": {
+            "edges": [
+              {
+                "id": "edge:__start__:nested:direct:1",
+                "kind": "direct",
+                "source": "__start__",
+                "target": "nested"
+              },
+              {
+                "id": "edge:nested:__end__:direct:1",
+                "kind": "direct",
+                "source": "nested",
+                "target": "__end__"
+              }
+            ],
+            "entryNodeIds": [
+              "__start__"
+            ],
+            "exitNodeIds": [
+              "__end__"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "__end__",
+                "x-langgraph": {
+                  "name": "__end__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "__start__",
+                "x-langgraph": {
+                  "name": "__start__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "nested",
+                "x-langgraph": {
+                  "name": "nested",
+                  "sentinel": false
+                }
+              }
+            ]
+          },
+          "x-langgraph": {
+            "traversalDepth": 0
+          }
+        }
+      ],
+      "producerLimitations": [
+        {
+          "code": "dynamic-interrupts",
+          "message": "Interrupts raised inside node bodies cannot be observed statically."
+        }
+      ],
+      "provenance": {
+        "framework": {
+          "name": "langgraph",
+          "version": "1.4.14"
+        },
+        "generatedAt": "2000-01-01T00:00:00Z",
+        "producer": {
+          "name": "@agent-topology/langgraph",
+          "version": "0.1.0-beta.2"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "405323b5a06db1fe358b1094077c442785ec605e065655dda192b424b9663b50"
+      },
+      "topologyVersion": "0.1"
+    },
+    "F4-join": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "name": "LangGraph",
+          "structure": {
+            "edges": [
+              {
+                "id": "edge:__start__:left:direct:1",
+                "kind": "direct",
+                "source": "__start__",
+                "target": "left"
+              },
+              {
+                "id": "edge:__start__:right:direct:1",
+                "kind": "direct",
+                "source": "__start__",
+                "target": "right"
+              },
+              {
+                "id": "edge:joined:__end__:direct:1",
+                "kind": "direct",
+                "source": "joined",
+                "target": "__end__"
+              }
+            ],
+            "entryNodeIds": [
+              "__start__"
+            ],
+            "exitNodeIds": [
+              "__end__"
+            ],
+            "joins": [
+              {
+                "id": "join:left+right:joined",
+                "sources": [
+                  "left",
+                  "right"
+                ],
+                "target": "joined"
+              }
+            ],
+            "nodes": [
+              {
+                "id": "__end__",
+                "x-langgraph": {
+                  "name": "__end__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "__start__",
+                "x-langgraph": {
+                  "name": "__start__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "joined",
+                "x-langgraph": {
+                  "name": "joined",
+                  "sentinel": false
+                }
+              },
+              {
+                "id": "left",
+                "x-langgraph": {
+                  "name": "left",
+                  "sentinel": false
+                }
+              },
+              {
+                "id": "right",
+                "x-langgraph": {
+                  "name": "right",
+                  "sentinel": false
+                }
+              }
+            ]
+          },
+          "x-langgraph": {
+            "traversalDepth": 0
+          }
+        }
+      ],
+      "producerLimitations": [
+        {
+          "code": "dynamic-interrupts",
+          "message": "Interrupts raised inside node bodies cannot be observed statically."
+        }
+      ],
+      "provenance": {
+        "framework": {
+          "name": "langgraph",
+          "version": "1.4.14"
+        },
+        "generatedAt": "2000-01-01T00:00:00Z",
+        "producer": {
+          "name": "@agent-topology/langgraph",
+          "version": "0.1.0-beta.2"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "7349a60932bf7e969a6295ed586620989ed86a0cf84a13a205b1f707c07b39eb"
+      },
+      "topologyVersion": "0.1"
+    },
+    "F5-sentinels": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "name": "LangGraph",
+          "structure": {
+            "edges": [
+              {
+                "id": "edge:__start__:task:direct:1",
+                "kind": "direct",
+                "source": "__start__",
+                "target": "task"
+              },
+              {
+                "id": "edge:task:__end__:direct:1",
+                "kind": "direct",
+                "source": "task",
+                "target": "__end__"
+              }
+            ],
+            "entryNodeIds": [
+              "__start__"
+            ],
+            "exitNodeIds": [
+              "__end__"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "__end__",
+                "x-langgraph": {
+                  "name": "__end__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "__start__",
+                "x-langgraph": {
+                  "name": "__start__",
+                  "sentinel": true
+                }
+              },
+              {
+                "id": "task",
+                "x-langgraph": {
+                  "name": "task",
+                  "sentinel": false
+                }
+              }
+            ]
+          },
+          "x-langgraph": {
+            "traversalDepth": 0
+          }
+        }
+      ],
+      "producerLimitations": [
+        {
+          "code": "dynamic-interrupts",
+          "message": "Interrupts raised inside node bodies cannot be observed statically."
+        }
+      ],
+      "provenance": {
+        "framework": {
+          "name": "langgraph",
+          "version": "1.4.14"
+        },
+        "generatedAt": "2000-01-01T00:00:00Z",
+        "producer": {
+          "name": "@agent-topology/langgraph",
+          "version": "0.1.0-beta.2"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "4e94ee707496747e9e3d332e578d26718fe13cfdfb2a1a73ea9304f4570c8d0f"
+      },
+      "topologyVersion": "0.1"
+    }
+  },
+  "observations": {
+    "F1": {
+      "sameStructure": true,
+      "sameHash": true,
+      "trialValid": true,
+      "trialHashUnchanged": true
+    },
+    "F2": {
+      "entries": [
+        "__start__",
+        "target"
+      ],
+      "gaps": [
+        {
+          "code": "unknown-routing-targets",
+          "element": {
+            "graphId": "main",
+            "id": "router",
+            "kind": "node"
+          },
+          "message": "Not every destination of this router could be determined."
+        }
+      ]
+    },
+    "F3": {
+      "nestedCore": {
+        "id": "nested"
+      },
+      "ordinaryCore": {
+        "id": "nested"
+      },
+      "danglingSubgraphRejected": true
+    },
+    "F4": {
+      "joins": [
+        {
+          "id": "join:left+right:joined",
+          "sources": [
+            "left",
+            "right"
+          ],
+          "target": "joined"
+        }
+      ],
+      "incomingOrdinaryEdges": 0
+    },
+    "F5": {
+      "sentinels": [
+        {
+          "id": "__end__",
+          "x-langgraph": {
+            "name": "__end__",
+            "sentinel": true
+          }
+        },
+        {
+          "id": "__start__",
+          "x-langgraph": {
+            "name": "__start__",
+            "sentinel": true
+          }
+        }
+      ]
+    },
+    "F6": {
+      "esmImport": "passed",
+      "requireCode": "ERR_PACKAGE_PATH_NOT_EXPORTED",
+      "version": "0.1.0-beta.2",
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js"
+        }
+      },
+      "dependencies": {
+        "ajv": "8.20.0",
+        "ajv-formats": "3.0.1"
+      }
+    }
+  }
+}

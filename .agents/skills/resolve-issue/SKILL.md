@@ -117,7 +117,7 @@ criterion and how it was verified, and the check output. Then hand back the
 next command, for the user to run:
 
 ```
-ghpr run <ISSUE_NUMBER> --trace-db /Users/minhokang/Work/local-workbench/giro.trace.db
+ghpr run <ISSUE_NUMBER> --trace-db /Users/minhokang/Work/local-workbench/giro.trace.db --verified "all green" --ci-exists 
 ```
 
 After that lands a PR, the follow-up unit of work is `review-pr <PR_NUMBER>`.

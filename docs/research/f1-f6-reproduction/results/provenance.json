@@ -1,0 +1,36 @@
+{
+  "date": "2026-09-11",
+  "main": "668bf46c88c37f3c14a4e143eb60c8695df74c6f",
+  "betaSource": "cbd2f404a36834fb9ba318500b7832f03ba610da",
+  "testbed": "ce6e96014ace35fed7ddeb047dcbe244f22fbd26",
+  "airflow2105": "b93c3db6b1641b0840bd15ac7d05bc58ff2cccbf",
+  "node": "v22.16.0",
+  "npm": "11.4.1",
+  "mainTarballsSha256": {
+    "agent-topology-spec-0.1.0-beta.2.tgz": "373fbb08548ebcf8d62abb952b5f1e711be3d2616579cbe86e8c30f89e8aa9bc",
+    "agent-topology-langgraph-0.1.0-beta.2.tgz": "4a13dfe6b5044ae7754708dbdf30ff0cf9f7baccabeb543ed13677311f9daeb1"
+  },
+  "inspectedSourcesSha256": {
+    "testbed/findings/F1-fan-out-semantics/ISSUE.md": "6a3f0d72a26ddf963e11793318b464f2c6016fd135e30be970e54329084d4689",
+    "testbed/findings/F1-fan-out-semantics/README.md": "a6d7de4936592478bd36f80042549e826567a7f0730e8b0182094e8d7fdfee8d",
+    "testbed/findings/F3-opaque-subgraph/ISSUE.md": "ce201b72f535f78e0fbda9b0d65a8e9d01a1e8bcaabb285076b28bbd693e1817",
+    "testbed/findings/F3-opaque-subgraph/README.md": "8a748d41e25a27f34de34cb84e21dd9e5ea962f30e7de90bdc59426a3c42ab34",
+    "testbed/findings/README.md": "ddb5f894968b8b433c4ff934215f50bad11002461b92bbb3ae56b2019c769979",
+    "testbed/instrument/src/experiment.ts": "6d6278e753d3319a963be20d838a328a16cc46fbb0228be473b218847eeb30dd",
+    "testbed/probes/airflow/OUTPUT.txt": "d7a34bfcb606b6e0b1b98cccff25ec2bdffdc72437672a0861f80fff1c169dc6",
+    "testbed/probes/airflow/airflow_dag.py": "62d504ac7128ea42cc56e4777ab5cffb8e848c5ea69ddd356141db42dbbad9dc",
+    "testbed/probes/airflow/airflow_probe.py": "1f73dfc36a8d2dac20b54c054acc0aa69168cc2eb83a61d6cdb49754dd25ecba",
+    "testbed/probes/airflow/requirements.txt": "9b93be85316e273d01dd72c17b21ca3ae7b090f4b1d9bee3b3997cde45b3246c",
+    "airflow/python.py": "1eb372bdbb91b48c1d01b0521698d1d5a6b9450ddf9f900361fa8ca10c5f4220",
+    "airflow/skipmixin.py": "7bd99208ba39b42251c0aafd4218b4b5d7a4fb4845b2bdcfa1e228ba06ae1e75",
+    "airflow/task_group.py": "15e4902817e6b570b972f32d4edf4b8736c54c5d3ede9b165586667d24998e23"
+  },
+  "reproductionSha256": {
+    "probe.mjs": "9adf875eadaf173a84404a15e7248415d2076261836993fbe752bc15853ccf5d",
+    "spec-only.mjs": "fdf5fb391d5470a61b85b60eefbbf0144c37047a959297367e5c90d50dad566c",
+    "environment/package-lock.json": "053e20befdc41f0e64cb977c674f3d00e9d20afee45aade385d0c424f1401cdd",
+    "results/beta.2.json": "6284c1bcf8e28cb7f4e963d13417d698946610e5ccc65a40940b02a25d2a2bd9",
+    "results/main.json": "6284c1bcf8e28cb7f4e963d13417d698946610e5ccc65a40940b02a25d2a2bd9",
+    "results/spec-only.json": "8bf50e4abcb4b6e651d65cb9c9722c09da05cb270ab0328dba0edf5a0fc893a4"
+  }
+}
