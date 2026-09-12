@@ -12,6 +12,9 @@ authoritative until it is superseded.
 
 ## Contents
 
+- [F1–F6 reproduction and disposition](f1-f6-reproduction/README.md) preserves
+  pinned consumer findings, minimum inputs, beta.2/main results, and corrections
+  to unsupported Airflow and package-consumption claims for Task #95.
 - `0.1-contract-reconciliation.md` records the evidence-source review and
   classifies every mismatch considered for the 0.1 contract candidate.
 - `catalog.yaml` is the machine-readable index, grouped by framework,
