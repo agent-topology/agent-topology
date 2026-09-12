@@ -368,6 +368,8 @@ more dangerous than an obviously absent one.
   alternatives or all run. It is not a path-coverage or policy-verdict format.
 - **Framework-shaped sentinel nodes.** LangGraph entry and exit sentinels remain
   visible in the 0.1 producer output and are marked under `x-langgraph`.
+  Current unreleased source also emits [experimental common sentinel roles](docs/guides/consuming-documents.md#experimental-sentinel-roles);
+  published beta.2 does not.
 
 Every document carries a `completeness` field listing what the producer could not
 determine. **Consumers must surface it.**

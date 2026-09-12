@@ -163,6 +163,7 @@ test("retained identity preserves branch facts", async () => {
       /** @param {any} r */ (r) => r.nodeId === "retained",
     );
     assert.equal(retained.branch.value, "all-declared");
+    assert.equal(retained.sentinel.value, "ordinary");
     assert.deepEqual(retained.subgraph, {
       status: "unknown",
       reason: "identity-unavailable",

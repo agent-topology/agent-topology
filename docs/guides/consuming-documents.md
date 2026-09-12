@@ -101,7 +101,7 @@ For an offline consumer with sample trace data, continue to the
 
 ## Experimental branch interpretation
 
-Current source (unreleased, after published beta.2) emits the `branch` and `subgraph` facts
+Current source (unreleased, after published beta.2) emits the `branch`, `subgraph` and `sentinel` facts
 of graph-level `x-topology-interpretation` revision `"1"`. The requested
 `traversalDepth` describes the snapshot; records refer to visible node IDs and
 are sorted by Unicode code point. Other experimental fact families remain
@@ -161,3 +161,35 @@ mean equal child metadata. Preserve the source document when offering expansion.
 
 See the [child evidence and conformance record](../../conformance/subgraph-evidence.md)
 for structural surfaces, framework versions, and counterexamples.
+
+## Experimental sentinel roles
+
+Current unreleased source emits `sentinel` in revision `"1"`; published beta.2
+has no common role assertion. After validating the core, extension schema and
+semantic references, a consumer can select known `start` / `end` facts with
+`framework-sentinel` evidence without matching literal IDs or reading
+`x-langgraph`. Known `ordinary` requires positive user-node membership; names
+such as `start`, `end` and `__start__-user` do not establish sentinel identity.
+An ordinary node can still contain a compiled child: the role distinguishes it
+from a framework sentinel, not from a subgraph.
+
+Root nodes retain roles only with matching structural identity. Failed identity
+inspection yields `unknown/identity-unavailable` at root depth; unmapped user
+or child nodes at positive depth yield `unknown/scope-not-inspected`. Failed
+reserved sentinel ownership remains `identity-unavailable`. Expanded child names do
+not inherit root roles. Unknown facts do not add gaps or alter strict mode.
+
+A presentation filter may omit known start/end nodes from its display list, but
+must retain the original document byte-for-byte, including every edge, join,
+entry/exit array, gap and trace identity. A join involving a hidden node remains
+one original join; hiding does not authorize dropping or reconnecting it. Keep
+gaps visible even when attached to a hidden node. See the framework-free
+[consumer assertions](../../spec/tests/test_sentinel_consumer.py) and
+[version-pinned evidence](../../conformance/sentinel-evidence.md).
+
+Legacy absence, missing records, unknown facts, invalid extensions and
+unsupported revisions do not authorize hiding. Expose the valid core and the
+local extension status. Core validation alone cannot certify a role. Equal core
+hashes do not establish equal role metadata; compare extension revision and
+canonical content for interpretation caches. This is an experimental consumer
+contract, not a renderer, core promotion or proof of vendor neutrality.

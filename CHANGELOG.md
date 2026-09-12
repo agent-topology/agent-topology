@@ -7,6 +7,11 @@ future package versions will move together.
 
 ## Unreleased
 
+- Both LangGraph producers emit experimental revision 1 sentinel roles from
+  framework-owned identity and positive user-node membership. Unmapped expanded
+  nodes remain unknown; nodes, connections, joins, gaps and core hashes are
+  preserved. See the [consumer guide](docs/guides/consuming-documents.md#experimental-sentinel-roles).
+
 - Both LangGraph producers emit experimental revision 1 branch interpretation
   from inspected declarations. Direct fan-out can be `all-declared`; conditional
   and dynamic routing remain unknown, as do unmapped expanded child branches.
