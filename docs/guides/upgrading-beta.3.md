@@ -1,16 +1,16 @@
-# Upgrade from beta.2 to beta.3
+# beta.3 partial-publication upgrade record
 
 [Documentation home](../README.md) · [Release notes](../releases/v0.1.0-beta.3.md)
 
-Status: **Prepared in source; not published.** The installation commands in
-this repository's README, package READMEs, and quickstarts still select the
-published beta.2 versions. This guide describes what changes for a beta.2
-consumer once beta.3 passes registry verification; do not install these
-candidate versions from a public registry before then.
+Status: **Partial publication; not the coordinated public release.** The four
+beta.3 registry packages exist, but their immutable READMEs and this repository's
+public installation paths still select beta.2, and no coordinated GitHub prerelease
+was created. This guide preserves the beta.3 behavioral changes for audit purposes.
+Consumers should wait for the corrected beta.4 release.
 
 ## Select the packages
 
-| Package | beta.2 → beta.3 candidate | Runtime | Framework |
+| Package | beta.2 → beta.3 partial publication | Runtime | Framework |
 | --- | --- | --- | --- |
 | `agent-topology-spec` | `0.1.0b2` → `0.1.0b3` | Python 3.11–3.14 | None |
 | `agent-topology-langgraph` | `0.1.0b2` → `0.1.0b3` | Python 3.11–3.14 | LangGraph 1.2.10–1.2.11 |
@@ -19,9 +19,9 @@ candidate versions from a public registry before then.
 
 Python uses PEP 440 `0.1.0b3`; npm uses SemVer `0.1.0-beta.3`. Package versions
 remain independent of the document format (`0.1`) and structure-hash algorithm
-(`1`), neither of which changes in this candidate. The Python producer will
-require `agent-topology-spec>=0.1.0b3,<0.2.0`; the npm producer's peer will be
-the exact `@agent-topology/spec@0.1.0-beta.3`. LangGraph and LangGraph.js
+(`1`), neither of which changed in beta.3. The Python producer requires
+`agent-topology-spec>=0.1.0b3,<0.2.0`; the npm producer's peer is the exact
+`@agent-topology/spec@0.1.0-beta.3`. LangGraph and LangGraph.js
 compatibility ranges are unchanged from beta.2.
 
 ## No core stability claim
@@ -29,7 +29,7 @@ compatibility ranges are unchanged from beta.2.
 Nothing below changes `topologyVersion`, `structureHash.algorithm`, or
 `structureHash.algorithmVersion`. Every change is either additive
 (experimental `x-*` extensions and a new opt-in helper) or a documentation
-correction. This candidate does not claim vendor neutrality, a stable v1
+correction. This partial publication does not claim vendor neutrality, a stable v1
 contract, or backward compatibility across a future format or hash-algorithm
 transition. See the [0.1 contract's known limitations](../0.1-contract.md#known-limitations-and-excluded-consumers).
 
@@ -66,8 +66,8 @@ to a finite double, along with `NaN` and `±Infinity`, remain rejected. See
 
 ## Treat new experimental extensions as additive, not authoritative
 
-Both LangGraph producers add three experimental revision 1 extensions in this
-candidate: `entry` (confirmed vs. observed execution entry points), sentinel
+Both LangGraph producers add three experimental revision 1 extensions in beta.3:
+`entry` (confirmed vs. observed execution entry points), sentinel
 roles (framework-owned identity), and branch interpretation (inspected
 fan-out declarations). Each is additive: existing nodes, edges, joins,
 `entryNodeIds`/`exitNodeIds`, completeness gaps, and `structureHash` are
@@ -81,7 +81,7 @@ sections for what each extension does and does not claim.
 
 ## Do not infer an OR-convergence policy
 
-This candidate documents, but does not implement, the boundary between
+Beta.3 documents, but does not implement, the boundary between
 ordinary-edge connectivity and first-trigger/once-only/reset firing policy at
 a target with multiple incoming connections. None of the experimental
 extensions above adds a convergence firing-policy fact. A declared
@@ -91,19 +91,19 @@ policy from ordinary edges alone; a stronger OR representation remains future
 work requiring its own evidence and contract decision. See the
 [consumer guide's OR convergence section](consuming-documents.md#or-convergence-and-first-trigger-firing).
 
-## Try the new join-consumption helper (unreleased)
+## Join-consumption helper in the partial publication
 
-Current source adds `derived_join_edges` (Python) and `derivedJoinEdges`
-(TypeScript) for already-validated structures; the published beta.2 packages
-do not export them. They derive one `{joinId, source, target}` record per join
-source without adding document fields or changing structure-hash algorithm 1.
-Continue reading both `structure.edges` and `structure.joins` directly today;
-adopt the helper once beta.3 is published. See the
+Beta.3 adds `derived_join_edges` (Python) and `derivedJoinEdges` (TypeScript) for
+already-validated structures; coordinated beta.2 packages do not export them. They
+derive one `{joinId, source, target}` record per join source without adding document
+fields or changing structure-hash algorithm 1. Continue reading both
+`structure.edges` and `structure.joins` directly until the corrected beta.4 release.
+See the
 [join connections section](consuming-documents.md#join-connections) for the
 full example and ordering guarantees.
 
 ## ESM installation guidance is unchanged
 
 Both npm packages remain ESM-only on Node.js 20+ with no behavior change in
-this candidate. See [troubleshooting](troubleshooting.md#esm-installation-errors)
+beta.3. See [troubleshooting](troubleshooting.md#esm-installation-errors)
 if `require()` fails with `ERR_PACKAGE_PATH_NOT_EXPORTED`.
