@@ -95,6 +95,19 @@ Unknown interpretation does not change completeness or strict-mode behavior.
 Equal structure hashes do not establish equal extension metadata. No core field,
 hash algorithm, renderer, or vendor-neutrality claim is added by this decision.
 
+## Accepted numeric canonical form
+
+[ADR 0009](docs/decisions/0009-numeric-canonical-form.md) defines the
+canonical byte spelling for a JSON number (the ECMAScript `Number::toString`
+/ RFC 8785 rule) and the supported numeric domain (finite `binary64`,
+integer literals bounded by `2^53`). No core field is numeric today, and the
+version-1 hash projection excludes every extension, so this is a
+full-document canonicalisation change with no `structureHash.algorithmVersion`
+or `topologyVersion` impact. It changes published beta.2 full-document byte
+output for documents whose extensions carry numbers once the fixed
+specification packages release; hashes and historical artifacts are
+unaffected.
+
 ## Package and naming model
 
 The repository is a monorepo of independently versioned packages. Package
@@ -176,9 +189,12 @@ list could emit the proposed field. If not, prefer a framework extension. A
 field should move into core only with evidence from multiple producers, not
 because it is convenient for the first one.
 
-Changes to canonicalisation or hashed structural properties require a new hash
-algorithm version. Changes to the document contract require a format-version
-decision. Package releases follow their own versions and do not imply either.
+A canonicalisation change requires a new hash algorithm version only when it
+can alter the byte output of the version-1 hash projection, or when the set
+of hashed structural properties changes; see
+[ADR 0009](docs/decisions/0009-numeric-canonical-form.md) for the numeric
+case. Changes to the document contract require a format-version decision.
+Package releases follow their own versions and do not imply either.
 
 Use [the decision router](docs/decisions/DECISIONS.md) to find the ADR governing
 a change. If no accepted decision covers a material architectural choice, write

@@ -18,6 +18,7 @@ authority for why a choice was made and when it may be revisited.
 | Diagram data, renderers, visual output, or what conformance compares | [ADR 0004](0004-rendering-is-not-part-of-the-core-document.md) |
 | Core versus `x-*` extensions, vendor neutrality, v0 status, or the evidence required from a second framework | [ADR 0005](0005-vendor-neutrality-is-provisional-at-v0.md) |
 | Experimental consumer interpretation, branch selection evidence, opaque children, sentinel roles, or observed roots versus confirmed entries | [ADR 0008](0008-experimental-consumer-interpretation.md) |
+| Numeric canonical byte spelling, the supported numeric domain, or whether a canonicalisation change requires a new hash algorithm version | [ADR 0009](0009-numeric-canonical-form.md) |
 | Monorepo/package boundaries, Python versus TypeScript, independent releases, published names/imports, or the `agt` command name | [ADR 0006](0006-repository-layout-and-language-boundaries.md) |
 | Ownership of the `agt` executable, `describe` dispatch, CLI producer discovery, command collisions, or `agt diff` ownership | [ADR 0007](0007-langgraph-owns-the-foundation-cli.md) |
 
@@ -41,6 +42,7 @@ For a change spanning several rows, read every routed ADR. Common paths are:
 | [0006](0006-repository-layout-and-language-boundaries.md) | Accepted | Use independently versioned, framework-named packages with explicit published names and `agt` as the short CLI name. |
 | [0007](0007-langgraph-owns-the-foundation-cli.md) | Accepted | Let the LangGraph distribution alone publish the Foundation `agt describe` command and defer a unified CLI until evidence requires one. |
 | [0008](0008-experimental-consumer-interpretation.md) | Accepted | Define revision 1 of the experimental graph interpretation extension, independent validation, and T3–T6 implementation criteria without changing core/hash semantics. |
+| [0009](0009-numeric-canonical-form.md) | Accepted | Define the canonical numeric byte spelling and its supported domain, and confirm neither requires a new hash algorithm version. |
 
 ## Adding or changing a decision
 
