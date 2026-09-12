@@ -74,7 +74,9 @@ function compileCase(recipe, reverse = false) {
 }
 /** @param {any} document */
 function meaning(document) {
-  const records = structuredClone(document.graphs[0][key].nodes);
+  const records = structuredClone(document.graphs[0][key].nodes).filter(
+    /** @param {any} record */ (record) => record.branch !== undefined,
+  );
   for (const record of records) {
     if (record.branch.evidence) {
       assert.equal(
@@ -216,7 +218,9 @@ test("hidden dynamic declarations require producer conformance", async () => {
   const document = await describe(compileCase(recipe));
   assert.equal(meaning(document).router.status, "unknown");
   const extension = /** @type {any} */ (document.graphs[0]?.[key]);
-  extension.nodes[0].branch = {
+  extension.nodes.find(
+    /** @param {any} r */ (r) => r.nodeId === "router",
+  ).branch = {
     ...cases[0].expected.router,
     evidence: { kind: "unconditional-edges", source: "authored-test" },
   };

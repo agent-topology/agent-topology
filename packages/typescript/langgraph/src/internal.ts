@@ -353,6 +353,54 @@ function branchInterpretation(
   );
 }
 
+function subgraphInterpretation(
+  compiled: RuntimeCompiledGraph,
+  drawable: DrawableGraph,
+  graph: TopologyGraph,
+  depth: number,
+): void {
+  const extension = (graph["x-topology-interpretation"] ??= {
+    version: "1",
+    traversalDepth: depth,
+    nodes: [],
+  }) as { nodes: Array<{ nodeId: string; subgraph?: unknown }> };
+  const records = new Map(
+    extension.nodes.map((record) => [record.nodeId, record]),
+  );
+  for (const node of graph.structure.nodes) {
+    const nodeId = node.id;
+    if (nodeId === START || nodeId === END || node.subgraphId !== undefined)
+      continue;
+    const runnable = Object.hasOwn(compiled.builder.nodes, nodeId)
+      ? compiled.builder.nodes[nodeId]?.runnable
+      : undefined;
+    const mapped =
+      runnable !== undefined && drawable.nodes[nodeId]?.data === runnable;
+    let fact: unknown;
+    if (!mapped) {
+      fact = { status: "unknown", reason: "scope-not-inspected" };
+    } else if (runnable instanceof CompiledStateGraph) {
+      fact = {
+        status: "known",
+        value: "opaque-child",
+        evidence: {
+          kind: "compiled-child",
+          source: "compiled.builder.nodes.runnable",
+        },
+      };
+    } else {
+      // Functions and wrappers may hide child invocation; absence is not proved.
+      fact = { status: "unknown", reason: "identity-unavailable" };
+    }
+    const record = records.get(nodeId) ?? { nodeId };
+    record.subgraph = fact;
+    records.set(nodeId, record);
+  }
+  extension.nodes = [...records.values()].sort((a, b) =>
+    compareText(a.nodeId, b.nodeId),
+  );
+}
+
 export async function describeWithVersion(
   compiledGraph: unknown,
   installedVersion: string,
@@ -398,6 +446,7 @@ export async function describeWithVersion(
     "x-langgraph": { traversalDepth: depth },
   };
   branchInterpretation(runtimeGraph, drawable, graph, depth);
+  subgraphInterpretation(runtimeGraph, drawable, graph, depth);
   const gaps: TopologyDocument["completeness"]["gaps"] = [...unknownRouters]
     .sort(compareText)
     .map((source) => ({

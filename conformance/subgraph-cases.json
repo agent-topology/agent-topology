@@ -1,0 +1,257 @@
+[
+  {
+    "mode": "child",
+    "depth": 0,
+    "expected": {
+      "child": {
+        "status": "known",
+        "value": "opaque-child",
+        "evidence": {
+          "kind": "compiled-child"
+        }
+      }
+    }
+  },
+  {
+    "mode": "child",
+    "depth": 1,
+    "expected": {
+      "child:step": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      }
+    },
+    "typescriptExpected": {
+      "child": {
+        "status": "known",
+        "value": "opaque-child",
+        "evidence": {
+          "kind": "compiled-child"
+        }
+      }
+    }
+  },
+  {
+    "mode": "child",
+    "depth": 2,
+    "expected": {
+      "child:step": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      }
+    },
+    "typescriptExpected": {
+      "child": {
+        "status": "known",
+        "value": "opaque-child",
+        "evidence": {
+          "kind": "compiled-child"
+        }
+      }
+    }
+  },
+  {
+    "mode": "ordinary",
+    "depth": 0,
+    "expected": {
+      "child": {
+        "status": "unknown",
+        "reason": "identity-unavailable"
+      }
+    }
+  },
+  {
+    "mode": "ordinary",
+    "depth": 1,
+    "expected": {
+      "child": {
+        "status": "unknown",
+        "reason": "identity-unavailable"
+      }
+    }
+  },
+  {
+    "mode": "ordinary",
+    "depth": 2,
+    "expected": {
+      "child": {
+        "status": "unknown",
+        "reason": "identity-unavailable"
+      }
+    }
+  },
+  {
+    "mode": "wrapper",
+    "depth": 0,
+    "expected": {
+      "child": {
+        "status": "unknown",
+        "reason": "identity-unavailable"
+      }
+    }
+  },
+  {
+    "mode": "wrapper",
+    "depth": 1,
+    "expected": {
+      "child": {
+        "status": "unknown",
+        "reason": "identity-unavailable"
+      }
+    }
+  },
+  {
+    "mode": "wrapper",
+    "depth": 2,
+    "expected": {
+      "child": {
+        "status": "unknown",
+        "reason": "identity-unavailable"
+      }
+    }
+  },
+  {
+    "mode": "grandchild",
+    "depth": 0,
+    "expected": {
+      "child": {
+        "status": "known",
+        "value": "opaque-child",
+        "evidence": {
+          "kind": "compiled-child"
+        }
+      }
+    }
+  },
+  {
+    "mode": "grandchild",
+    "depth": 1,
+    "expected": {
+      "child:inner": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      }
+    },
+    "typescriptExpected": {
+      "child": {
+        "status": "known",
+        "value": "opaque-child",
+        "evidence": {
+          "kind": "compiled-child"
+        }
+      }
+    }
+  },
+  {
+    "mode": "grandchild",
+    "depth": 2,
+    "expected": {
+      "child:inner:step": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      }
+    },
+    "typescriptExpected": {
+      "child": {
+        "status": "known",
+        "value": "opaque-child",
+        "evidence": {
+          "kind": "compiled-child"
+        }
+      }
+    }
+  },
+  {
+    "mode": "child",
+    "width": 2,
+    "depth": 0,
+    "expected": {
+      "child": {
+        "status": "known",
+        "value": "opaque-child",
+        "evidence": {
+          "kind": "compiled-child"
+        }
+      }
+    }
+  },
+  {
+    "mode": "child",
+    "width": 2,
+    "depth": 1,
+    "expected": {
+      "child:next": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      },
+      "child:step": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      }
+    }
+  },
+  {
+    "mode": "child",
+    "width": 2,
+    "depth": 2,
+    "expected": {
+      "child:next": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      },
+      "child:step": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      }
+    }
+  },
+  {
+    "mode": "grandchild",
+    "width": 2,
+    "depth": 0,
+    "expected": {
+      "child": {
+        "status": "known",
+        "value": "opaque-child",
+        "evidence": {
+          "kind": "compiled-child"
+        }
+      }
+    }
+  },
+  {
+    "mode": "grandchild",
+    "width": 2,
+    "depth": 1,
+    "expected": {
+      "child:inner": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      }
+    },
+    "typescriptExpected": {
+      "child": {
+        "status": "known",
+        "value": "opaque-child",
+        "evidence": {
+          "kind": "compiled-child"
+        }
+      }
+    }
+  },
+  {
+    "mode": "grandchild",
+    "width": 2,
+    "depth": 2,
+    "expected": {
+      "child:inner:next": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      },
+      "child:inner:step": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      }
+    }
+  }
+]
