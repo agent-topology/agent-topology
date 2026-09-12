@@ -71,8 +71,12 @@ def _format_number(value: float) -> str:
     negative = value < 0
     magnitude = -value if negative else value
     decimal_value = Decimal(repr(magnitude))
-    _, digit_tuple, exponent = decimal_value.normalize().as_tuple()
+    _, digit_tuple, exponent = decimal_value.as_tuple()
     digits = "".join(str(digit) for digit in digit_tuple)
+    trailing_zero_count = len(digits) - len(digits.rstrip("0"))
+    if trailing_zero_count:
+        digits = digits[:-trailing_zero_count]
+        exponent += trailing_zero_count
     k = len(digits)
     n = exponent + k
     if k <= n <= 21:
