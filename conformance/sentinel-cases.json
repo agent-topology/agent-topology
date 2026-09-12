@@ -1,0 +1,274 @@
+[
+  {
+    "name": "ordinary-task",
+    "nodes": [
+      "task"
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "start",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "end",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "task": {
+        "status": "known",
+        "value": "ordinary",
+        "evidence": {
+          "kind": "ordinary-node"
+        }
+      }
+    }
+  },
+  {
+    "name": "ordinary-start",
+    "nodes": [
+      "start"
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "start",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "end",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "start": {
+        "status": "known",
+        "value": "ordinary",
+        "evidence": {
+          "kind": "ordinary-node"
+        }
+      }
+    }
+  },
+  {
+    "name": "ordinary-end",
+    "nodes": [
+      "end"
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "start",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "end",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "end": {
+        "status": "known",
+        "value": "ordinary",
+        "evidence": {
+          "kind": "ordinary-node"
+        }
+      }
+    }
+  },
+  {
+    "name": "ordinary-__start__-user",
+    "nodes": [
+      "__start__-user"
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "start",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "end",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "__start__-user": {
+        "status": "known",
+        "value": "ordinary",
+        "evidence": {
+          "kind": "ordinary-node"
+        }
+      }
+    }
+  },
+  {
+    "name": "ordinary--𐀀",
+    "nodes": [
+      "",
+      "𐀀"
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "start",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "end",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "": {
+        "status": "known",
+        "value": "ordinary",
+        "evidence": {
+          "kind": "ordinary-node"
+        }
+      },
+      "𐀀": {
+        "status": "known",
+        "value": "ordinary",
+        "evidence": {
+          "kind": "ordinary-node"
+        }
+      }
+    }
+  },
+  {
+    "name": "child-0",
+    "nodes": [
+      "child",
+      "retained"
+    ],
+    "depth": 0,
+    "child": true,
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "start",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "end",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "retained": {
+        "status": "known",
+        "value": "ordinary",
+        "evidence": {
+          "kind": "ordinary-node"
+        }
+      },
+      "child": {
+        "status": "known",
+        "value": "ordinary",
+        "evidence": {
+          "kind": "ordinary-node"
+        }
+      }
+    }
+  },
+  {
+    "name": "child-1",
+    "nodes": [
+      "child",
+      "retained"
+    ],
+    "depth": 1,
+    "child": true,
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "start",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "end",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "retained": {
+        "status": "known",
+        "value": "ordinary",
+        "evidence": {
+          "kind": "ordinary-node"
+        }
+      },
+      "child:start": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      },
+      "child:__start__-user": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      }
+    }
+  },
+  {
+    "name": "child-2",
+    "nodes": [
+      "child",
+      "retained"
+    ],
+    "depth": 2,
+    "child": true,
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "start",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "end",
+        "evidence": {
+          "kind": "framework-sentinel"
+        }
+      },
+      "retained": {
+        "status": "known",
+        "value": "ordinary",
+        "evidence": {
+          "kind": "ordinary-node"
+        }
+      },
+      "child:start": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      },
+      "child:__start__-user": {
+        "status": "unknown",
+        "reason": "scope-not-inspected"
+      }
+    }
+  }
+]

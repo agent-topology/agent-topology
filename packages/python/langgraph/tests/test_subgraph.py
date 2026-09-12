@@ -154,6 +154,7 @@ def test_retained_identity_and_preserved_branch():
         document = describe(builder.compile(), depth=depth)
         records = {r["nodeId"]: r for r in document["graphs"][0][KEY]["nodes"]}
         assert records["retained"]["branch"]["value"] == "all-declared"
+        assert records["retained"]["sentinel"]["value"] == "ordinary"
         assert records["retained"]["subgraph"] == {
             "status": "unknown",
             "reason": "identity-unavailable",

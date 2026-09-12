@@ -62,6 +62,7 @@ interface DrawableGraph {
 }
 
 interface RuntimeCompiledGraph {
+  inputChannels?: unknown;
   builder: RuntimeBuilder;
   getGraphAsync(options?: { xray?: boolean | number }): Promise<DrawableGraph>;
   getName(): string;
@@ -401,6 +402,70 @@ function subgraphInterpretation(
   );
 }
 
+function sentinelInterpretation(
+  compiled: RuntimeCompiledGraph,
+  drawable: DrawableGraph,
+  graph: TopologyGraph,
+  depth: number,
+): void {
+  const extension = (graph["x-topology-interpretation"] ??= {
+    version: "1",
+    traversalDepth: depth,
+    nodes: [],
+  }) as { nodes: Array<{ nodeId: string; sentinel?: unknown }> };
+  const records = new Map(
+    extension.nodes.map((record) => [record.nodeId, record]),
+  );
+  for (const node of graph.structure.nodes) {
+    const nodeId = node.id;
+    const data = drawable.nodes[nodeId]?.data;
+    const member = Object.hasOwn(compiled.builder.nodes, nodeId);
+    let fact: unknown = {
+      status: "unknown",
+      reason: depth > 0 ? "scope-not-inspected" : "identity-unavailable",
+    };
+    if (nodeId === START || nodeId === END) {
+      fact = { status: "unknown", reason: "identity-unavailable" };
+      // The supported compiled graph creates schema nodes for reserved sentinels.
+      if (
+        compiled.inputChannels === START &&
+        !member &&
+        data !== null &&
+        typeof data === "object" &&
+        Object.hasOwn(data, "schema")
+      ) {
+        fact = {
+          status: "known",
+          value: nodeId === START ? "start" : "end",
+          evidence: {
+            kind: "framework-sentinel",
+            source: "compiled.inputChannels+getGraphAsync.reserved-sentinels",
+          },
+        };
+      }
+    } else if (
+      member &&
+      data !== undefined &&
+      data === compiled.builder.nodes[nodeId]?.runnable
+    ) {
+      fact = {
+        status: "known",
+        value: "ordinary",
+        evidence: {
+          kind: "ordinary-node",
+          source: "compiled.builder.nodes.runnable",
+        },
+      };
+    }
+    const record = records.get(nodeId) ?? { nodeId };
+    record.sentinel = fact;
+    records.set(nodeId, record);
+  }
+  extension.nodes = [...records.values()].sort((a, b) =>
+    compareText(a.nodeId, b.nodeId),
+  );
+}
+
 export async function describeWithVersion(
   compiledGraph: unknown,
   installedVersion: string,
@@ -447,6 +512,7 @@ export async function describeWithVersion(
   };
   branchInterpretation(runtimeGraph, drawable, graph, depth);
   subgraphInterpretation(runtimeGraph, drawable, graph, depth);
+  sentinelInterpretation(runtimeGraph, drawable, graph, depth);
   const gaps: TopologyDocument["completeness"]["gaps"] = [...unknownRouters]
     .sort(compareText)
     .map((source) => ({

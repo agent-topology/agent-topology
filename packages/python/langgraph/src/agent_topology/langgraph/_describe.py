@@ -265,6 +265,59 @@ def _subgraph_interpretation(
     extension["nodes"] = [records[node_id] for node_id in sorted(records)]
 
 
+def _sentinel_interpretation(
+    compiled_graph: CompiledStateGraph, drawable: Any, graph: dict[str, Any], depth: int
+) -> None:
+    """Use reserved framework identity and positive root-node membership."""
+    extension = graph.setdefault(
+        "x-topology-interpretation",
+        {"version": "1", "traversalDepth": depth, "nodes": []},
+    )
+    records = {record["nodeId"]: record for record in extension["nodes"]}
+    builder_nodes = compiled_graph.builder.nodes
+    for node in graph["structure"]["nodes"]:
+        node_id = node["id"]
+        data = drawable.nodes[node_id].data
+        runtime_node = compiled_graph.nodes.get(node_id)
+        mapped = runtime_node is not None and data is runtime_node.bound
+        fact: dict[str, Any] = {
+            "status": "unknown",
+            "reason": "scope-not-inspected" if depth > 0 else "identity-unavailable",
+        }
+        if node_id in {START, END}:
+            fact["reason"] = "identity-unavailable"
+            owned = (
+                compiled_graph.input_channels == START
+                and node_id not in builder_nodes
+                and (
+                    (node_id == START and mapped)
+                    or (node_id == END and runtime_node is None and data is None)
+                )
+            )
+            if owned:
+                fact = {
+                    "status": "known",
+                    "value": "start" if node_id == START else "end",
+                    "evidence": {
+                        "kind": "framework-sentinel",
+                        "source": (
+                            "compiled.input_channels+nodes+get_graph.reserved-sentinels"
+                        ),
+                    },
+                }
+        elif node_id in builder_nodes and mapped:
+            fact = {
+                "status": "known",
+                "value": "ordinary",
+                "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "compiled.builder.nodes+nodes.bound",
+                },
+            }
+        records.setdefault(node_id, {"nodeId": node_id})["sentinel"] = fact
+    extension["nodes"] = [records[node_id] for node_id in sorted(records)]
+
+
 def describe(
     compiled_graph: CompiledStateGraph,
     *,
@@ -347,6 +400,7 @@ def describe(
     }
     _branch_interpretation(compiled_graph, drawable, graph_document, depth)
     _subgraph_interpretation(compiled_graph, drawable, graph_document, depth)
+    _sentinel_interpretation(compiled_graph, drawable, graph_document, depth)
     if isinstance(graph_name, str) and graph_name:
         graph_document["name"] = graph_name
 
