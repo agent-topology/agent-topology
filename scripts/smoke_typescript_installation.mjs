@@ -98,7 +98,7 @@ try {
         project,
         `
         import assert from "node:assert/strict";
-        import { derivedJoinEdges, validateDocument } from "@agent-topology/spec";
+        import { canonicalStringify, computeStructureHash, derivedJoinEdges, validateDocument } from "@agent-topology/spec";
         const document = ${readFileSync(new URL("../conformance/fixtures/multi-source-join/expected.json", import.meta.url), "utf8")};
         assert.equal(validateDocument(document).valid, true);
         const structure = document.graphs[0].structure;
@@ -107,6 +107,56 @@ try {
         assert.deepEqual(links, structure.joins.flatMap(join => join.sources.map(source => ({joinId: join.id, source, target: join.target}))));
         assert.equal(links.length, 2);
         assert.equal(JSON.stringify(structure), before);
+        const numericDocument = JSON.parse(${JSON.stringify(`
+          {
+            "topologyVersion": "0.1",
+            "provenance": {
+              "generatedAt": "2026-09-10T19:00:00Z",
+              "producer": {"name": "smoke-test", "version": "1.0"},
+              "framework": {"name": "smoke-test", "version": "1.0"}
+            },
+            "producerLimitations": [],
+            "structureHash": {
+              "algorithm": "sha256",
+              "algorithmVersion": "1",
+              "value": "0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "graphs": [
+              {
+                "id": "main",
+                "structure": {
+                  "nodes": [],
+                  "edges": [],
+                  "joins": [],
+                  "entryNodeIds": [],
+                  "exitNodeIds": []
+                }
+              }
+            ],
+            "completeness": {"status": "complete", "gaps": []},
+            "x-numeric": [
+              0.0,
+              -0.0,
+              1.0,
+              0.5,
+              0.000001,
+              0.0000001,
+              100000000000000000000,
+              1e21,
+              9007199254740993,
+              {"decimal": 1.23456789}
+            ]
+          }
+        `)});
+        const expectedNumericBytes = '{"completeness":{"gaps":[],"status":"complete"},"graphs":[{"id":"main","structure":{"edges":[],"entryNodeIds":[],"exitNodeIds":[],"joins":[],"nodes":[]}}],"producerLimitations":[],"provenance":{"framework":{"name":"smoke-test","version":"1.0"},"generatedAt":"2026-09-10T19:00:00Z","producer":{"name":"smoke-test","version":"1.0"}},"structureHash":{"algorithm":"sha256","algorithmVersion":"1","value":"0000000000000000000000000000000000000000000000000000000000000000"},"topologyVersion":"0.1","x-numeric":[0,0,1,0.5,0.000001,1e-7,100000000000000000000,1e+21,9007199254740992,{"decimal":1.23456789}]}';
+        const expectedHash = {
+          algorithm: "sha256",
+          algorithmVersion: "1",
+          value: "8bfd237d53e3cd48927ba6ddc520d66a3fd32c629e969204654a2801ed423319",
+        };
+        assert.equal(validateDocument(numericDocument).valid, true);
+        assert.equal(canonicalStringify(numericDocument), expectedNumericBytes);
+        assert.deepEqual(computeStructureHash(numericDocument), expectedHash);
         `,
       );
       writeFileSync(
