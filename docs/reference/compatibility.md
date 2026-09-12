@@ -35,7 +35,11 @@ npm ls @agent-topology/spec @agent-topology/langgraph @langchain/langgraph
 Python imports use underscores: `agent_topology.spec` and
 `agent_topology.langgraph`. The npm packages publish ESM imports and TypeScript
 declarations, not a CommonJS `require` entry point or a browser bundle. `agt` is
-provided only by the Python producer.
+provided only by the Python producer. Use the
+[`.mjs` quickstart](../getting-started/typescript.md#export-a-graph)
+or [CommonJS async import example](../getting-started/typescript.md#use-it-from-commonjs);
+see [ESM installation errors](../guides/troubleshooting.md#esm-installation-errors)
+for `ERR_PACKAGE_PATH_NOT_EXPORTED` recovery.
 
 See [release notes](../releases/v0.1.0-beta.2.md) for published artifact identities,
 the [contract](../0.1-contract.md#supported-versions) for links to the authoritative

@@ -7,27 +7,57 @@ v0.1 document contract. This package has no framework runtime dependency.
 npm install @agent-topology/spec@0.1.0-beta.2
 ```
 
-Supports Node.js 20+ with ESM imports. Start with the
+Supports Node.js 20+ and is ESM-only; synchronous `require()` is unsupported.
+Ajv and ajv-formats are runtime dependencies; hashing uses `node:crypto`. Start with the
 [consumer guide](https://github.com/agent-topology/agent-topology/blob/main/docs/guides/consuming-documents.md)
 for a runnable JSON-file example.
 
-```ts
-import {
-  canonicalStringify,
-  computeStructureHash,
-  validateDocument,
-  type TopologyDocument,
-} from "@agent-topology/spec";
+Save this as `inspect.mjs` next to a `topology.json` document and run
+`node inspect.mjs` (or use `.js` with `"type": "module"`):
 
+```javascript
+import { readFileSync } from "node:fs";
+import { canonicalStringify, validateDocument } from "@agent-topology/spec";
+
+const value = JSON.parse(readFileSync("topology.json", "utf8"));
 const result = validateDocument(value);
 if (!result.valid) {
   console.error(result.errors);
+  process.exitCode = 1;
 } else {
-  const document: TopologyDocument = result.document;
-  console.log(canonicalStringify(document));
-  console.log(computeStructureHash(document));
+  console.log(canonicalStringify(result.document));
 }
 ```
+
+For CommonJS, save this as `inspect.cjs` and run `node inspect.cjs`:
+
+```javascript
+const { readFileSync } = require("node:fs");
+
+async function main() {
+  const { canonicalStringify, validateDocument } =
+    await import("@agent-topology/spec");
+  const value = JSON.parse(readFileSync("topology.json", "utf8"));
+  const result = validateDocument(value);
+  if (!result.valid) {
+    console.error(result.errors);
+    process.exitCode = 1;
+  } else {
+    console.log(canonicalStringify(result.document));
+  }
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+```
+
+Await the module namespace inside an async function; CommonJS has no top-level
+`await`. Use named APIs from the public package root. For
+`ERR_PACKAGE_PATH_NOT_EXPORTED`, see
+[ESM installation errors](https://github.com/agent-topology/agent-topology/blob/main/docs/guides/troubleshooting.md#esm-installation-errors).
+TypeScript consumers can also import the `TopologyDocument` type.
 
 The repository root `spec/agent-topology.schema.json` remains the single checked-in
 schema authority. The build generates TypeScript declarations from it and embeds a
