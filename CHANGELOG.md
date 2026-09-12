@@ -7,7 +7,11 @@ future package versions will move together.
 
 ## Unreleased
 
-No changes recorded.
+- Both LangGraph producers emit experimental revision 1 branch interpretation
+  from inspected declarations. Direct fan-out can be `all-declared`; conditional
+  and dynamic routing remain unknown, as do unmapped expanded child branches.
+  Core structure, hashes, completeness, and strict behavior are preserved.
+  See the [consumer guide](docs/guides/consuming-documents.md#experimental-branch-interpretation).
 
 ## v0.1.0-beta.2 public preview — 2026-09-11
 

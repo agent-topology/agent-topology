@@ -9,6 +9,8 @@ import {
   validateDocument,
 } from "../dist/index.js";
 
+import { interpretationStatus } from "./interpretation-helper.mjs";
+
 // Authored ADR examples: these are not producer output or a public validator.
 const root = new URL("../../../../spec/experimental/", import.meta.url);
 const cases = JSON.parse(
@@ -23,6 +25,7 @@ const key = "x-topology-interpretation";
 for (const example of cases) {
   test(`ADR 0008 core/hash/shape: ${example.name}`, () => {
     const document = example.document;
+    assert.equal(interpretationStatus(document), example.extensionStatus);
     assert.equal(validateDocument(document).valid, true);
     assert.deepEqual(computeStructureHash(document), document.structureHash);
     assert.equal(

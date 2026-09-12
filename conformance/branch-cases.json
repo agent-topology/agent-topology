@@ -1,0 +1,349 @@
+[
+  {
+    "name": "direct-fanout",
+    "nodes": ["router", "left", "right"],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"],
+      ["router", "left"],
+      ["router", "right"]
+    ],
+    "expected": {
+      "router": {
+        "status": "known",
+        "value": "all-declared",
+        "evidence": {
+          "kind": "unconditional-edges"
+        }
+      }
+    }
+  },
+  {
+    "name": "single",
+    "nodes": ["router", "left", "right"],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"]
+    ],
+    "expected": {
+      "router": {
+        "status": "unknown",
+        "reason": "selection-not-observable"
+      }
+    },
+    "routers": [
+      {
+        "source": "router",
+        "targets": ["left", "right"],
+        "mode": "single"
+      }
+    ]
+  },
+  {
+    "name": "list",
+    "nodes": ["router", "left", "right"],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"]
+    ],
+    "expected": {
+      "router": {
+        "status": "unknown",
+        "reason": "selection-not-observable"
+      }
+    },
+    "routers": [
+      {
+        "source": "router",
+        "targets": ["left", "right"],
+        "mode": "list"
+      }
+    ]
+  },
+  {
+    "name": "annotated",
+    "nodes": ["router", "left", "right"],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"]
+    ],
+    "expected": {
+      "router": {
+        "status": "unknown",
+        "reason": "selection-not-observable"
+      }
+    },
+    "routers": [
+      {
+        "source": "router",
+        "targets": ["left", "right"],
+        "mode": "annotated"
+      }
+    ]
+  },
+  {
+    "name": "annotated-list",
+    "nodes": ["router", "left", "right"],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"]
+    ],
+    "expected": {
+      "router": {
+        "status": "unknown",
+        "reason": "selection-not-observable"
+      }
+    },
+    "routers": [
+      {
+        "source": "router",
+        "targets": ["left", "right"],
+        "mode": "annotated-list"
+      }
+    ]
+  },
+  {
+    "name": "send",
+    "nodes": ["router", "left", "right"],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"]
+    ],
+    "expected": {
+      "router": {
+        "status": "unknown",
+        "reason": "selection-not-observable"
+      }
+    },
+    "routers": [
+      {
+        "source": "router",
+        "targets": ["left", "right"],
+        "mode": "send"
+      }
+    ]
+  },
+  {
+    "name": "unknown",
+    "nodes": ["router", "left"],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"]
+    ],
+    "expected": {
+      "router": {
+        "status": "unknown",
+        "reason": "selection-not-observable"
+      }
+    },
+    "routers": [
+      {
+        "source": "router",
+        "mode": "single"
+      }
+    ]
+  },
+  {
+    "name": "loop",
+    "nodes": ["router"],
+    "edges": [["__start__", "router"]],
+    "expected": {
+      "router": {
+        "status": "unknown",
+        "reason": "selection-not-observable"
+      }
+    },
+    "routers": [
+      {
+        "source": "router",
+        "targets": ["router", "__end__"],
+        "mode": "single"
+      }
+    ]
+  },
+  {
+    "name": "mixed-conditional",
+    "nodes": ["router", "left", "right"],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"],
+      ["router", "left"],
+      ["router", "right"]
+    ],
+    "expected": {
+      "router": {
+        "status": "unknown",
+        "reason": "selection-not-observable"
+      }
+    },
+    "routers": [
+      {
+        "source": "router",
+        "mode": "single",
+        "targets": ["left", "right"]
+      }
+    ]
+  },
+  {
+    "name": "mixed-unknown",
+    "nodes": ["router", "left", "right"],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"],
+      ["router", "left"],
+      ["router", "right"]
+    ],
+    "expected": {
+      "router": {
+        "status": "unknown",
+        "reason": "selection-not-observable"
+      }
+    },
+    "routers": [
+      {
+        "source": "router",
+        "mode": "single"
+      }
+    ]
+  },
+  {
+    "name": "multiple-routers",
+    "nodes": ["router", "left", "right"],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"]
+    ],
+    "expected": {
+      "router": {
+        "status": "unknown",
+        "reason": "selection-not-observable"
+      }
+    },
+    "routers": [
+      {
+        "source": "router",
+        "targets": ["left"],
+        "mode": "single"
+      },
+      {
+        "source": "router",
+        "targets": ["right"],
+        "mode": "list"
+      }
+    ]
+  },
+  {
+    "name": "dynamic-declared",
+    "nodes": ["router", "left", "right"],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"],
+      ["router", "left"],
+      ["router", "right"]
+    ],
+    "expected": {
+      "router": {
+        "status": "unknown",
+        "reason": "selection-not-observable"
+      }
+    },
+    "dynamic": {
+      "router": ["left", "right"]
+    }
+  },
+  {
+    "name": "dynamic-empty",
+    "nodes": ["router", "left", "right"],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"],
+      ["router", "left"],
+      ["router", "right"]
+    ],
+    "expected": {
+      "router": {
+        "status": "unknown",
+        "reason": "selection-not-observable"
+      }
+    },
+    "dynamic": {
+      "router": []
+    }
+  },
+  {
+    "name": "join",
+    "nodes": ["left", "right", "join"],
+    "edges": [
+      ["__start__", "left"],
+      ["__start__", "right"],
+      ["join", "__end__"]
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "all-declared",
+        "evidence": {
+          "kind": "unconditional-edges"
+        }
+      }
+    },
+    "joins": [[["left", "right"], "join"]]
+  },
+  {
+    "name": "linear",
+    "nodes": ["step"],
+    "edges": [
+      ["__start__", "step"],
+      ["step", "__end__"]
+    ],
+    "expected": {}
+  },
+  {
+    "name": "unicode-order",
+    "nodes": ["", "𐀀", "left", "right"],
+    "edges": [
+      ["__start__", ""],
+      ["__start__", "𐀀"],
+      ["", "left"],
+      ["", "right"],
+      ["𐀀", "left"],
+      ["𐀀", "right"],
+      ["left", "__end__"],
+      ["right", "__end__"]
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "all-declared",
+        "evidence": {
+          "kind": "unconditional-edges"
+        }
+      },
+      "": {
+        "status": "known",
+        "value": "all-declared",
+        "evidence": {
+          "kind": "unconditional-edges"
+        }
+      },
+      "𐀀": {
+        "status": "known",
+        "value": "all-declared",
+        "evidence": {
+          "kind": "unconditional-edges"
+        }
+      }
+    }
+  }
+]

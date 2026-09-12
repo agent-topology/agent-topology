@@ -87,8 +87,9 @@ without false confidence.
 
 [ADR 0008](docs/decisions/0008-experimental-consumer-interpretation.md) defines
 graph-level `x-topology-interpretation` revision 1 for evidence-backed branch,
-opaque-child, sentinel and entry interpretation. Producer implementation is
-tracked separately in #97–#100; published beta.2 does not emit this extension.
+opaque-child, sentinel and entry interpretation. Current source implements branch
+facts (#97); child, sentinel, and entry implementation remains tracked in
+#98–#100. Published beta.2 does not emit this extension.
 The specification owns its separate opt-in shape and semantic checks; producers
 own version-pinned evidence. Core validation remains extension-agnostic.
 Unknown interpretation does not change completeness or strict-mode behavior.
