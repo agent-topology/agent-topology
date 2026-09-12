@@ -16,7 +16,9 @@ axes.
 ## Publication sequence
 
 For beta.2 and later, prepare and qualify from `rc/<version>` as described
-below. The current candidate is [0.1.0-beta.2](releases/v0.1.0-beta.2.md).
+below. The current candidate is [0.1.0-beta.3](releases/v0.1.0-beta.3.md);
+[0.1.0-beta.2](releases/v0.1.0-beta.2.md) is the most recently published
+version.
 
 1. Start from the reviewed source commit and confirm both package CI workflows are
    green. Run each release workflow with `publish` disabled before contacting a

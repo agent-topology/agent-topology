@@ -12,6 +12,12 @@ available from their public registries and remain independently versioned. See t
 the exact released versions. See the [release notes](docs/releases/v0.1.0-beta.2.md)
 and [upgrade guide](docs/guides/upgrading-beta.2.md) before migrating from beta.1.
 
+Current source prepares **beta.3** on `rc/0.1.0-beta.3`; it is not published.
+The installation commands below still select published beta.2. See the
+[beta.3 release candidate](docs/releases/v0.1.0-beta.3.md) and
+[upgrade guide](docs/guides/upgrading-beta.3.md) for changes and the remaining
+publication checks.
+
 Start with the [documentation](docs/README.md):
 [Python quickstart](docs/getting-started/python.md),
 [TypeScript / JavaScript quickstart](docs/getting-started/typescript.md), and
