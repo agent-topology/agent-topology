@@ -75,6 +75,9 @@ jobs:
           cache-dependency-path: |
             packages/typescript/spec/package-lock.json
             packages/typescript/langgraph/package-lock.json
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
       - run: npm ci --prefix packages/typescript/spec
       - name: Build the local specification dependency
         run: npm --prefix packages/typescript/spec run build

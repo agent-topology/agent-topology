@@ -243,6 +243,7 @@ test("real producer documents validate and canonicalize across languages", async
       input: JSON.stringify(documents),
     },
   );
+  assert.ifError(result.error);
   assert.equal(result.status, 0, result.stderr);
   const evidence = JSON.parse(result.stdout);
   documents.forEach((document, index) => {
