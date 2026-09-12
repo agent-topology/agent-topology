@@ -119,28 +119,31 @@ def test_readme_installation_and_compatibility_match_package_metadata() -> None:
     "path", [RELEASE_NOTES, ROOT / "docs/guides/upgrading-beta.2.md"]
 )
 def test_public_preview_release_notes_match_package_metadata(path: Path) -> None:
+    # This immutable beta.2 record describes the published beta.2 versions, not
+    # whatever the source manifests currently prepare as a later candidate.
     release_notes = path.read_text(encoding="utf-8")
     with (ROOT / "packages/python/spec/pyproject.toml").open("rb") as source:
-        python_spec = tomllib.load(source)["project"]
+        python_spec_name = tomllib.load(source)["project"]["name"]
     with (ROOT / "packages/python/langgraph/pyproject.toml").open("rb") as source:
-        python_producer = tomllib.load(source)["project"]
-    typescript_spec = json.loads(
+        python_producer_name = tomllib.load(source)["project"]["name"]
+    typescript_spec_name = json.loads(
         (ROOT / "packages/typescript/spec/package.json").read_text(encoding="utf-8")
-    )
-    typescript_producer = json.loads(
+    )["name"]
+    typescript_producer_name = json.loads(
         (ROOT / "packages/typescript/langgraph/package.json").read_text(
             encoding="utf-8"
         )
-    )
+    )["name"]
 
-    for package in (
-        python_spec,
-        python_producer,
-        typescript_spec,
-        typescript_producer,
+    for name in (
+        python_spec_name,
+        python_producer_name,
+        typescript_spec_name,
+        typescript_producer_name,
     ):
-        assert package["name"] in release_notes
-        assert package["version"] in release_notes
+        assert name in release_notes
+    assert PUBLISHED_PYTHON_VERSION in release_notes
+    assert PUBLISHED_NPM_VERSION in release_notes
 
     assert "v0.1.0-beta.2" in release_notes
     assert "Python 3.11–3.14" in release_notes
@@ -151,18 +154,8 @@ def test_public_preview_release_notes_match_package_metadata(path: Path) -> None
         assert "`agt describe`" in release_notes
         assert "Python `agent-topology-langgraph` distribution" in release_notes
     assert "published and verified" in release_notes.lower()
-    assert (
-        f"@agent-topology/spec@{typescript_producer['peerDependencies']['@agent-topology/spec']}"
-        in release_notes
-    )
-    assert (
-        next(
-            dep
-            for dep in python_producer["dependencies"]
-            if dep.startswith("agent-topology-spec")
-        )
-        in release_notes
-    )
+    assert f"@agent-topology/spec@{PUBLISHED_NPM_VERSION}" in release_notes
+    assert "agent-topology-spec>=0.1.0b2,<0.2.0" in release_notes
 
 
 @pytest.mark.parametrize("name", ["python", "typescript"])
@@ -188,3 +181,89 @@ def test_quickstarts_keep_published_install_selections(name: str) -> None:
 )
 def test_migration_guide_is_discoverable(name: str) -> None:
     assert "guides/upgrading-beta.2.md" in (ROOT / "docs" / name).read_text()
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "releases/v0.1.0-beta.3.md",
+        "getting-started/python.md",
+        "getting-started/typescript.md",
+        "guides/troubleshooting.md",
+        "reference/api.md",
+        "README.md",
+    ],
+)
+def test_beta3_migration_guide_is_discoverable(name: str) -> None:
+    assert "guides/upgrading-beta.3.md" in (ROOT / "docs" / name).read_text()
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        ROOT / "docs/releases/v0.1.0-beta.3.md",
+        ROOT / "docs/guides/upgrading-beta.3.md",
+    ],
+)
+def test_beta3_candidate_notes_match_package_metadata(path: Path) -> None:
+    candidate_notes = path.read_text(encoding="utf-8")
+    with (ROOT / "packages/python/spec/pyproject.toml").open("rb") as source:
+        python_spec = tomllib.load(source)["project"]
+    with (ROOT / "packages/python/langgraph/pyproject.toml").open("rb") as source:
+        python_producer = tomllib.load(source)["project"]
+    typescript_spec = json.loads(
+        (ROOT / "packages/typescript/spec/package.json").read_text(encoding="utf-8")
+    )
+    typescript_producer = json.loads(
+        (ROOT / "packages/typescript/langgraph/package.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    for package in (
+        python_spec,
+        python_producer,
+        typescript_spec,
+        typescript_producer,
+    ):
+        assert package["name"] in candidate_notes
+        assert package["version"] in candidate_notes
+
+    assert "0.1.0-beta.3" in candidate_notes
+    assert "not published" in candidate_notes.lower()
+    assert "published and verified" not in candidate_notes.lower()
+    assert (
+        f"@agent-topology/spec@{typescript_producer['peerDependencies']['@agent-topology/spec']}"
+        in candidate_notes
+    )
+    assert (
+        next(
+            dep
+            for dep in python_producer["dependencies"]
+            if dep.startswith("agent-topology-spec")
+        )
+        in candidate_notes
+    )
+
+
+def test_beta3_candidate_keeps_published_install_selections() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    with (ROOT / "packages/python/spec/pyproject.toml").open("rb") as source:
+        python_spec = tomllib.load(source)["project"]
+    typescript_spec = json.loads(
+        (ROOT / "packages/typescript/spec/package.json").read_text(encoding="utf-8")
+    )
+
+    install_lines = [
+        line
+        for line in readme.splitlines()
+        if "pip install" in line or "npm install" in line
+    ]
+
+    assert (
+        f'python -m pip install "{python_spec["name"]}=={PUBLISHED_PYTHON_VERSION}"'
+        in readme
+    )
+    assert f"npm install {typescript_spec['name']}@{PUBLISHED_NPM_VERSION}" in readme
+    assert not any(python_spec["version"] in line for line in install_lines)
+    assert not any(typescript_spec["version"] in line for line in install_lines)

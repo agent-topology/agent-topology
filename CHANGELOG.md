@@ -7,6 +7,14 @@ future package versions will move together.
 
 ## Unreleased
 
+### 0.1.0-beta.3 candidate
+
+Prepared on `rc/0.1.0-beta.3`: Python distributions use `0.1.0b3`, npm
+packages use `0.1.0-beta.3`, and the npm producer's spec peer uses beta.3.
+This candidate has not been published. See the
+[candidate release notes](docs/releases/v0.1.0-beta.3.md) and the
+[beta.2 to beta.3 upgrade guide](docs/guides/upgrading-beta.3.md).
+
 - Both specification packages now spell `x-*` extension numbers per
   [ADR 0009](docs/decisions/0009-numeric-canonical-form.md)'s byte oracle
   instead of each runtime's default float formatting: `agent_topology.spec`
@@ -31,6 +39,13 @@ future package versions will move together.
   and dynamic routing remain unknown, as do unmapped expanded child branches.
   Core structure, hashes, completeness, and strict behavior are preserved.
   See the [consumer guide](docs/guides/consuming-documents.md#experimental-branch-interpretation).
+
+- Documented the explicit boundary between ordinary-edge connectivity and
+  first-trigger/once-only/reset firing policy at a multi-connection target: no
+  convergence firing-policy fact is added by experimental interpretation
+  revision 1, and this is not an OR-convergence implementation. See the
+  [contract's known limitations](docs/0.1-contract.md#known-limitations-and-excluded-consumers)
+  and the [consumer guide's OR convergence section](docs/guides/consuming-documents.md#or-convergence-and-first-trigger-firing).
 
 ## v0.1.0-beta.2 public preview — 2026-09-11
 

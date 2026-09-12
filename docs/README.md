@@ -36,6 +36,8 @@ standard library. It makes no path-coverage or policy-verdict claim.
 - [Initial public-preview release](releases/v0.1.0-beta.1.md)
 - [Upgrade from beta.1 to beta.2](guides/upgrading-beta.2.md)
 - [Beta.2 verified release](releases/v0.1.0-beta.2.md)
+- [Upgrade from beta.2 to beta.3](guides/upgrading-beta.3.md)
+- [Beta.3 release candidate — not published](releases/v0.1.0-beta.3.md)
 - [Changelog](../CHANGELOG.md)
 
 Documentation in the default branch describes the current source. Fixes under
