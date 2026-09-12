@@ -7,6 +7,15 @@ future package versions will move together.
 
 ## Unreleased
 
+- Both specification packages now spell `x-*` extension numbers per
+  [ADR 0009](docs/decisions/0009-numeric-canonical-form.md)'s byte oracle
+  instead of each runtime's default float formatting: `agent_topology.spec`
+  no longer emits Python's `repr(float)` spelling (`0.0` for a document that
+  should read `0`), and both packages now reject a bare JSON integer literal
+  beyond magnitude `2^53` rather than silently narrowing it. `structureHash`
+  is unaffected; no core field is numeric. See the
+  [contract's numeric canonical form section](docs/0.1-contract.md#numeric-canonical-form).
+
 - Both LangGraph producers distinguish observed roots from confirmed execution
   entries with experimental revision 1 `entry` facts. START alone is confirmed;
   candidate uncertainty stays local without changing entry arrays, routing gaps
