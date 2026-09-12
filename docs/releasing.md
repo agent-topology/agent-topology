@@ -16,9 +16,16 @@ axes.
 ## Publication sequence
 
 For beta.2 and later, prepare and qualify from `rc/<version>` as described
-below. The current candidate is [0.1.0-beta.3](releases/v0.1.0-beta.3.md);
-[0.1.0-beta.2](releases/v0.1.0-beta.2.md) is the most recently published
-version.
+below. [0.1.0-beta.2](releases/v0.1.0-beta.2.md) remains the most recent
+coordinated release. The four beta.3 registry packages and tag form a retained
+[partial publication](releases/v0.1.0-beta.3.md), not a completed coordinated
+release. A corrected beta.4 candidate must repeat qualification and publication;
+immutable beta.3 artifacts are never overwritten.
+
+The machine-readable [release state](releases/release-state.json) distinguishes
+the current coordinated release, an optional candidate, and retained partial
+publications. Package versions remain independent entries; never derive one package's
+version from the coordinated label or another package.
 
 1. Start from the reviewed source commit and confirm both package CI workflows are
    green. Run each release workflow with `publish` disabled before contacting a
@@ -44,15 +51,30 @@ version.
    job performs from locally built tarballs.
 4. Install every exact version from its public registry in a clean environment and
    repeat the public smoke paths. Record the source commit, filenames, registry URLs,
-   provenance, and digests in the GitHub release notes.
-5. Create the coordinated `v<version>` Git tag, GitHub release, and announcement
-   only after all four artifacts pass. The Python and npm sequences may run
-   independently, but the specification package always precedes its producer within
-   an ecosystem.
+   provenance, digests, and qualification runs in a checked-in evidence record.
+5. Run the release-finalization workflow's `stage` phase. It verifies candidate
+   documentation and registry evidence before creating the immutable `v<version>` tag
+   and a draft GitHub prerelease. A draft is not a completed public release.
+6. Open a dedicated closeout PR that records the evidence, moves the release state
+   from `candidate` to `coordinatedPublished`, and updates every public installation
+   path. Its published-phase documentation check must pass after the candidate is
+   cleared.
+7. After the closeout PR merges, run the finalization workflow's `complete` phase.
+   It rechecks main, the tag target, evidence, and draft release before making the
+   GitHub prerelease public. Only this point is `public release complete`.
 
 The protected workflows publish one selected package at a time. A successful run for
 one package does not authorize another package and does not prove the four-package
 preview complete.
+
+### Release issue completion
+
+Issues labeled `area:release` use the release issue template and carry an explicit
+`Done when` checklist. Closing such an issue as completed with no checklist or any
+unchecked item causes automation to reopen it and identify the missing criteria.
+Canceled or superseded release work may close as `not planned` only after recording
+the partial outcome and linking its successor. Closure counts never substitute for
+release evidence.
 
 The completed initial publication and its public-registry verification are recorded in
 the [v0.1.0-beta.1 release notes](releases/v0.1.0-beta.1.md). Use that record as the

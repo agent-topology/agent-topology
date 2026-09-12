@@ -51,9 +51,10 @@ flowchart TD
     candidate --> checks["Freeze commit; pass CI and release dry-runs"]
     checks --> publish["Manually dispatch publication from RC branch"]
     publish --> verify["Verify published packages with clean installs"]
-    verify --> tag["Tag the qualified commit: v0.1.0-beta.2"]
-    tag --> backport["Open a PR to merge release changes back into main"]
-    backport --> main
+    verify --> stage["Finalization stage: immutable tag + draft prerelease"]
+    stage --> closeout["Required closeout PR: evidence + published docs"]
+    closeout --> main
+    main --> complete["Finalization complete: publish GitHub prerelease"]
 ```
 
 - Keep version preparation, release notes, and candidate fixes on the release
@@ -65,8 +66,10 @@ flowchart TD
 - Freeze the candidate commit during qualification and publication. Any source
   change requires fresh qualification. Create the immutable version tag on the
   qualified commit only after publication and registry-install verification succeed.
-- After publication, merge release changes back into main through a PR and retain
-  the RC branch as the preparation record.
+- After registry publication, stage the immutable tag and draft prerelease, then
+  merge a dedicated closeout PR that records evidence and updates public installation
+  documentation. Publish the GitHub prerelease only after the closeout check passes on
+  main; retain the RC branch as the preparation record.
 
 ## Releases
 

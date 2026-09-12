@@ -12,11 +12,13 @@ available from their public registries and remain independently versioned. See t
 the exact released versions. See the [release notes](docs/releases/v0.1.0-beta.2.md)
 and [upgrade guide](docs/guides/upgrading-beta.2.md) before migrating from beta.1.
 
-Current source prepares **beta.3** on `rc/0.1.0-beta.3`; it is not published.
-The installation commands below still select published beta.2. See the
-[beta.3 release candidate](docs/releases/v0.1.0-beta.3.md) and
-[upgrade guide](docs/guides/upgrading-beta.3.md) for changes and the remaining
-publication checks.
+The four **beta.3** packages and `v0.1.0-beta.3` tag exist, but beta.3 is a
+[partial publication](docs/releases/v0.1.0-beta.3.md), not the current
+coordinated release. Its immutable package READMEs and this repository's public
+installation guides still select beta.2, and no coordinated GitHub prerelease was
+created. The installation commands below therefore remain on verified beta.2 while
+a corrected beta.4 release is prepared. See the
+[beta.3 upgrade record](docs/guides/upgrading-beta.3.md) for the affected changes.
 
 Start with the [documentation](docs/README.md):
 [Python quickstart](docs/getting-started/python.md),
@@ -383,9 +385,9 @@ more dangerous than an obviously absent one.
 - **Deep nesting.** Subgraphs are opaque by default. Expanding them is opt-in and,
   in at least one framework, currently unreliable past two levels.
   Expanded drawable shape does not fully preserve child join, routing, and
-  interrupt declarations. Current source records this as an
-  `expanded-subgraph-metadata` gap; the correction is
-  [unreleased](CHANGELOG.md#unreleased).
+  interrupt declarations. Published beta.2 records this as an
+  `expanded-subgraph-metadata` gap; see the
+  [beta.2 release notes](docs/releases/v0.1.0-beta.2.md).
 - **Runtime-constructed graphs.** A graph assembled from configuration at startup is
   described as it exists at that moment, not as all the graphs it might have been.
 - **Provisional core boundary.** Python and TypeScript exercise the same LangGraph
@@ -396,8 +398,9 @@ more dangerous than an obviously absent one.
   alternatives or all run. It is not a path-coverage or policy-verdict format.
 - **Framework-shaped sentinel nodes.** LangGraph entry and exit sentinels remain
   visible in the 0.1 producer output and are marked under `x-langgraph`.
-  Current unreleased source also emits [experimental common sentinel roles](docs/guides/consuming-documents.md#experimental-sentinel-roles);
-  published beta.2 does not.
+  The beta.3 partial publication also emits
+  [experimental common sentinel roles](docs/guides/consuming-documents.md#experimental-sentinel-roles);
+  coordinated beta.2 does not.
 
 Every document carries a `completeness` field listing what the producer could not
 determine. **Consumers must surface it.**

@@ -219,6 +219,19 @@ is dispatched from it after CI passes. Keep main as the integration line and
 bring release corrections back through a PR. Tags name immutable qualified
 commits. See [the RC branch policy](docs/releasing.md#release-candidate-branches-and-immutable-tags).
 
+`docs/releases/release-state.json` is the machine-readable authority for the latest
+coordinated release, the current candidate, and any partial publications. Candidate
+checks bind package manifests and packaged READMEs to the candidate while keeping
+live installation guides on the coordinated release. Published checks require a
+separate closeout PR to clear the candidate and move every live installation path.
+Artifact qualification, registry publication, and public release completion are
+distinct states; none implies the next.
+
+An `area:release` issue closed as completed must have at least one acceptance
+checkbox and no unchecked boxes. Repository automation reopens violations. Work that
+was deliberately canceled or superseded closes as `not planned` only after its
+partial outcome and successor are recorded.
+
 Use `docs/ISSUE-PLANNING.md` for the Milestone → Epic → Feature → Task model.
 Every Feature and Task has one native parent issue, while blocked-by relationships
 express execution dependencies rather than hierarchy.

@@ -40,9 +40,11 @@ hash algorithm versions are independent.
 
 Licensed under the MIT License; see the included `LICENSE` file.
 
-## Join connections (unreleased)
+## Join connections (beta.3 partial publication)
 
-Current source exports `derived_join_edges(structure)`; published beta.2 does not.
+The beta.3 partial publication exports `derived_join_edges(structure)`; coordinated
+beta.2 does not. Wait for the corrected beta.4 release before adopting it from the
+current installation path.
 
 ```python
 from agent_topology.spec import derived_join_edges

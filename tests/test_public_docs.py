@@ -8,10 +8,19 @@ from urllib.parse import unquote
 
 import pytest
 
+from scripts import check_release_docs
+
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE_NOTES = ROOT / "docs/releases/v0.1.0-beta.2.md"
-PUBLISHED_PYTHON_VERSION = "0.1.0b2"
-PUBLISHED_NPM_VERSION = "0.1.0-beta.2"
+RELEASE_STATE = check_release_docs.load_state()
+PUBLISHED_RELEASE = RELEASE_STATE["coordinatedPublished"]
+PUBLISHED_VERSIONS = {
+    package["name"]: package["version"] for package in PUBLISHED_RELEASE["packages"]
+}
+RELEASE_NOTES = ROOT / PUBLISHED_RELEASE["releaseNotes"]
+PUBLISHED_PYTHON_SPEC_VERSION = PUBLISHED_VERSIONS["agent-topology-spec"]
+PUBLISHED_PYTHON_PRODUCER_VERSION = PUBLISHED_VERSIONS["agent-topology-langgraph"]
+PUBLISHED_NPM_SPEC_VERSION = PUBLISHED_VERSIONS["@agent-topology/spec"]
+PUBLISHED_NPM_PRODUCER_VERSION = PUBLISHED_VERSIONS["@agent-topology/langgraph"]
 PUBLIC_DOCS = (
     ROOT / "README.md",
     ROOT / "CHANGELOG.md",
@@ -90,16 +99,19 @@ def test_readme_installation_and_compatibility_match_package_metadata() -> None:
         )
     )
 
-    assert (
-        f'python -m pip install "{python_spec["name"]}=={PUBLISHED_PYTHON_VERSION}"'
-        in readme
+    python_spec_install = (
+        f'python -m pip install "{python_spec["name"]}'
+        f'=={PUBLISHED_PYTHON_SPEC_VERSION}"'
     )
+    assert python_spec_install in readme
     assert (
         f'python -m pip install "{python_producer["name"]}'
-        f'=={PUBLISHED_PYTHON_VERSION}"' in readme
+        f'=={PUBLISHED_PYTHON_PRODUCER_VERSION}"' in readme
     )
-    assert f"npm install {typescript_spec['name']}@{PUBLISHED_NPM_VERSION}" in readme
-    assert f"{typescript_producer['name']}@{PUBLISHED_NPM_VERSION}" in readme
+    assert (
+        f"npm install {typescript_spec['name']}@{PUBLISHED_NPM_SPEC_VERSION}" in readme
+    )
+    assert f"{typescript_producer['name']}@{PUBLISHED_NPM_PRODUCER_VERSION}" in readme
 
     assert "agent_topology.spec" in readme
     assert "agent_topology.langgraph" in readme
@@ -142,8 +154,10 @@ def test_public_preview_release_notes_match_package_metadata(path: Path) -> None
         typescript_producer_name,
     ):
         assert name in release_notes
-    assert PUBLISHED_PYTHON_VERSION in release_notes
-    assert PUBLISHED_NPM_VERSION in release_notes
+    assert PUBLISHED_PYTHON_SPEC_VERSION in release_notes
+    assert PUBLISHED_PYTHON_PRODUCER_VERSION in release_notes
+    assert PUBLISHED_NPM_SPEC_VERSION in release_notes
+    assert PUBLISHED_NPM_PRODUCER_VERSION in release_notes
 
     assert "v0.1.0-beta.2" in release_notes
     assert "Python 3.11–3.14" in release_notes
@@ -154,7 +168,7 @@ def test_public_preview_release_notes_match_package_metadata(path: Path) -> None
         assert "`agt describe`" in release_notes
         assert "Python `agent-topology-langgraph` distribution" in release_notes
     assert "published and verified" in release_notes.lower()
-    assert f"@agent-topology/spec@{PUBLISHED_NPM_VERSION}" in release_notes
+    assert f"@agent-topology/spec@{PUBLISHED_NPM_SPEC_VERSION}" in release_notes
     assert "agent-topology-spec>=0.1.0b2,<0.2.0" in release_notes
 
 
@@ -162,8 +176,12 @@ def test_public_preview_release_notes_match_package_metadata(path: Path) -> None
 def test_quickstarts_keep_published_install_selections(name: str) -> None:
     document = (ROOT / f"docs/getting-started/{name}.md").read_text()
     install = re.findall(r"```bash\n(.*?)\n```", document, re.DOTALL)[0]
-    expected = PUBLISHED_PYTHON_VERSION if name == "python" else PUBLISHED_NPM_VERSION
-    assert expected in install
+    expected = (
+        (PUBLISHED_PYTHON_PRODUCER_VERSION,)
+        if name == "python"
+        else (PUBLISHED_NPM_SPEC_VERSION, PUBLISHED_NPM_PRODUCER_VERSION)
+    )
+    assert all(version in install for version in expected)
     assert "0.1.0b1" not in install
     assert "0.1.0-beta.1" not in install
 
@@ -205,48 +223,22 @@ def test_beta3_migration_guide_is_discoverable(name: str) -> None:
         ROOT / "docs/guides/upgrading-beta.3.md",
     ],
 )
-def test_beta3_candidate_notes_match_package_metadata(path: Path) -> None:
-    candidate_notes = path.read_text(encoding="utf-8")
-    with (ROOT / "packages/python/spec/pyproject.toml").open("rb") as source:
-        python_spec = tomllib.load(source)["project"]
-    with (ROOT / "packages/python/langgraph/pyproject.toml").open("rb") as source:
-        python_producer = tomllib.load(source)["project"]
-    typescript_spec = json.loads(
-        (ROOT / "packages/typescript/spec/package.json").read_text(encoding="utf-8")
+def test_beta3_partial_notes_match_retained_release_state(path: Path) -> None:
+    partial_notes = path.read_text(encoding="utf-8")
+    beta3 = next(
+        release
+        for release in RELEASE_STATE["partialPublications"]
+        if release["coordinatedVersion"] == "0.1.0-beta.3"
     )
-    typescript_producer = json.loads(
-        (ROOT / "packages/typescript/langgraph/package.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    for package in beta3["packages"]:
+        assert package["name"] in partial_notes
+        assert package["version"] in partial_notes
 
-    for package in (
-        python_spec,
-        python_producer,
-        typescript_spec,
-        typescript_producer,
-    ):
-        assert package["name"] in candidate_notes
-        assert package["version"] in candidate_notes
-
-    assert "0.1.0-beta.3" in candidate_notes
-    assert "not published" in candidate_notes.lower()
-    assert "published and verified" not in candidate_notes.lower()
-    assert (
-        f"@agent-topology/spec@{typescript_producer['peerDependencies']['@agent-topology/spec']}"
-        in candidate_notes
-    )
-    assert (
-        next(
-            dep
-            for dep in python_producer["dependencies"]
-            if dep.startswith("agent-topology-spec")
-        )
-        in candidate_notes
-    )
+    assert "partial publication" in partial_notes.lower()
+    assert "published and verified" not in partial_notes.lower()
 
 
-def test_beta3_candidate_keeps_published_install_selections() -> None:
+def test_beta3_partial_publication_keeps_coordinated_install_selections() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     with (ROOT / "packages/python/spec/pyproject.toml").open("rb") as source:
         python_spec = tomllib.load(source)["project"]
@@ -260,10 +252,17 @@ def test_beta3_candidate_keeps_published_install_selections() -> None:
         if "pip install" in line or "npm install" in line
     ]
 
-    assert (
-        f'python -m pip install "{python_spec["name"]}=={PUBLISHED_PYTHON_VERSION}"'
-        in readme
+    python_spec_install = (
+        f'python -m pip install "{python_spec["name"]}'
+        f'=={PUBLISHED_PYTHON_SPEC_VERSION}"'
     )
-    assert f"npm install {typescript_spec['name']}@{PUBLISHED_NPM_VERSION}" in readme
+    assert python_spec_install in readme
+    assert (
+        f"npm install {typescript_spec['name']}@{PUBLISHED_NPM_SPEC_VERSION}" in readme
+    )
     assert not any(python_spec["version"] in line for line in install_lines)
     assert not any(typescript_spec["version"] in line for line in install_lines)
+
+
+def test_release_state_and_public_docs_are_in_published_phase() -> None:
+    check_release_docs.check_phase("published")

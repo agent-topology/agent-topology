@@ -64,9 +64,11 @@ schema authority. The build generates TypeScript declarations from it and embeds
 copy for runtime validation. `topologyVersion`, the structure-hash algorithm version,
 and this npm package's version are independent.
 
-## Join connections (unreleased)
+## Join connections (beta.3 partial publication)
 
-Current source exports `derivedJoinEdges(structure)`; published beta.2 does not.
+The beta.3 partial publication exports `derivedJoinEdges(structure)`; coordinated
+beta.2 does not. Wait for the corrected beta.4 release before adopting it from the
+current installation path.
 
 ```typescript
 import { derivedJoinEdges, type DerivedJoinEdge } from "@agent-topology/spec";

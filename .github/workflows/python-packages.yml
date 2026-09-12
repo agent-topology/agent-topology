@@ -47,7 +47,7 @@ jobs:
       - name: Test release and public documentation guards
         run: >-
           uv run --project packages/python/spec --group test
-          python -m pytest tests/test_release_tools.py tests/test_public_docs.py
+          python -m pytest tests/test_release_tools.py tests/test_release_docs.py tests/test_public_docs.py
 
   artifacts:
     name: Inspect ${{ matrix.package }} artifacts

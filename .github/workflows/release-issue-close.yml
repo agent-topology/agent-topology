@@ -1,0 +1,45 @@
+name: Enforce release issue completion
+
+on:
+  issues:
+    types: [closed]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  completion-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: check
+        name: Check release acceptance criteria
+        continue-on-error: true
+        env:
+          EVENT_PATH: ${{ github.event_path }}
+        run: >-
+          python3 scripts/check_release_issue.py
+          --event "$EVENT_PATH"
+          --comment "${{ runner.temp }}/release-issue-comment.md"
+      - if: steps.check.outcome == 'failure'
+        name: Reopen the incomplete release issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_FILE: ${{ runner.temp }}/release-issue-comment.md
+        run: |
+          gh issue reopen "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY"
+          comment_id="$(gh api --paginate \
+            "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER/comments" \
+            --slurp --jq '[.[].[] | select(.body | contains("<!-- release-issue-close-guard -->"))] | last | .id // empty')"
+          jq -n --rawfile body "$COMMENT_FILE" '{body: $body}' > "${{ runner.temp }}/comment.json"
+          if [ -n "$comment_id" ]; then
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$comment_id" \
+              --input "${{ runner.temp }}/comment.json"
+          else
+            gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER/comments" \
+              --input "${{ runner.temp }}/comment.json"
+          fi

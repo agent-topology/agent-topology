@@ -7,13 +7,24 @@ future package versions will move together.
 
 ## Unreleased
 
-### 0.1.0-beta.3 candidate
+- Add a machine-readable release-state record and phase-specific documentation
+  checks so artifact qualification cannot be mistaken for a completed public
+  release.
+- Require a separate post-publication closeout before a draft GitHub prerelease
+  becomes public, and automatically reopen release issues closed as completed with
+  missing acceptance criteria.
+
+## v0.1.0-beta.3 partial publication — 2026-09-12
 
 Prepared on `rc/0.1.0-beta.3`: Python distributions use `0.1.0b3`, npm
 packages use `0.1.0-beta.3`, and the npm producer's spec peer uses beta.3.
-This candidate has not been published. See the
-[candidate release notes](docs/releases/v0.1.0-beta.3.md) and the
-[beta.2 to beta.3 upgrade guide](docs/guides/upgrading-beta.3.md).
+All four registry packages and the immutable tag were published, but the coordinated
+release was not completed: package and repository installation documentation still
+selected beta.2 and no GitHub prerelease was created. See the
+[partial-publication record](docs/releases/v0.1.0-beta.3.md) and the
+[beta.2 to beta.3 upgrade record](docs/guides/upgrading-beta.3.md). A corrected
+beta.4 release will repeat qualification and publication with coherent packaged
+documentation rather than overwrite immutable beta.3 artifacts.
 
 - Both specification packages explicitly test rejection of duplicate graph ids, and
   both LangGraph producers now accept a caller-supplied document-local graph id.

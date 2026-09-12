@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "coordinatedVersion": "0.1.0-beta.3",
+  "sourceCommit": "848b179aee32789a6f8b0ad4552a3a1262a05d55",
+  "tag": "v0.1.0-beta.3",
+  "coordinatedComplete": false,
+  "githubRelease": null,
+  "registryVerifiedAt": "2026-09-12T20:48:21Z",
+  "verification": [
+    "Clean-installed both exact Python packages together from PyPI without local support artifacts.",
+    "Ran the installed specification numeric-byte, structure-hash, and derived-join helper smoke.",
+    "Ran the installed Python producer API and agt CLI smoke.",
+    "Downloaded both exact npm tarballs from the registry and verified their registry digests.",
+    "Ran the TypeScript specification numeric-byte, structure-hash, derived-join helper, ESM, CommonJS, producer, and coexistence smokes."
+  ],
+  "packages": [
+    {
+      "name": "agent-topology-spec",
+      "version": "0.1.0b3",
+      "registry": "pypi",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/34713578793",
+      "artifacts": [
+        {
+          "filename": "agent_topology_spec-0.1.0b3-py3-none-any.whl",
+          "url": "https://files.pythonhosted.org/packages/71/ac/b727fa2ce0a8ac2dedb9877462a7277cae36d972af2b3c4211dc592f7ae5/agent_topology_spec-0.1.0b3-py3-none-any.whl",
+          "sha256": "45732c5080126484af8ba4bea7a1767f72fca27721825c0f678321fa7093e276",
+          "provenanceUrl": "https://pypi.org/integrity/agent-topology-spec/0.1.0b3/agent_topology_spec-0.1.0b3-py3-none-any.whl/provenance"
+        },
+        {
+          "filename": "agent_topology_spec-0.1.0b3.tar.gz",
+          "url": "https://files.pythonhosted.org/packages/69/e3/69ed2ef9589f85467a1138c79ab9fb77e4a62498512fd18cced56dbb52fe/agent_topology_spec-0.1.0b3.tar.gz",
+          "sha256": "b6da5f5640eae25477771845ea171fef80195856163e69a5f9d4dc047862a71d",
+          "provenanceUrl": "https://pypi.org/integrity/agent-topology-spec/0.1.0b3/agent_topology_spec-0.1.0b3.tar.gz/provenance"
+        }
+      ]
+    },
+    {
+      "name": "agent-topology-langgraph",
+      "version": "0.1.0b3",
+      "registry": "pypi",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/34713739005",
+      "artifacts": [
+        {
+          "filename": "agent_topology_langgraph-0.1.0b3-py3-none-any.whl",
+          "url": "https://files.pythonhosted.org/packages/0c/e0/fd05782950f87d73eb6d5a4fe9a88cbddf4e57c335b9bdfe527a7553e900/agent_topology_langgraph-0.1.0b3-py3-none-any.whl",
+          "sha256": "c81658d8db2293c1a87255e7437d789592d40131bc5a6db2fc5b7412795312c6",
+          "provenanceUrl": "https://pypi.org/integrity/agent-topology-langgraph/0.1.0b3/agent_topology_langgraph-0.1.0b3-py3-none-any.whl/provenance"
+        },
+        {
+          "filename": "agent_topology_langgraph-0.1.0b3.tar.gz",
+          "url": "https://files.pythonhosted.org/packages/45/4e/dd36126edeee4966fffd2654d5758b2eeff080355aed400fec46375195a5/agent_topology_langgraph-0.1.0b3.tar.gz",
+          "sha256": "d434c07d48ab0b8e00563b623f305e1cf26dc09e3bdf4bb1e805dd5d804d426e",
+          "provenanceUrl": "https://pypi.org/integrity/agent-topology-langgraph/0.1.0b3/agent_topology_langgraph-0.1.0b3.tar.gz/provenance"
+        }
+      ]
+    },
+    {
+      "name": "@agent-topology/spec",
+      "version": "0.1.0-beta.3",
+      "registry": "npm",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/34713842862",
+      "artifacts": [
+        {
+          "filename": "spec-0.1.0-beta.3.tgz",
+          "url": "https://registry.npmjs.org/@agent-topology/spec/-/spec-0.1.0-beta.3.tgz",
+          "sha1": "05af1e343c7772fb96b5fcdc1229cd31b603f482",
+          "integrity": "sha512-URGMhakCLdA4wEbOWNjuZ0khJC8hiLLXZVtenSa0MmKKmY8W/LJYsrBx8tRykz6dzRSw/NjmbO9spjYB0JiZRQ==",
+          "provenanceUrl": "https://registry.npmjs.org/-/npm/v1/attestations/@agent-topology%2fspec@0.1.0-beta.3"
+        }
+      ]
+    },
+    {
+      "name": "@agent-topology/langgraph",
+      "version": "0.1.0-beta.3",
+      "registry": "npm",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/34713955341",
+      "artifacts": [
+        {
+          "filename": "langgraph-0.1.0-beta.3.tgz",
+          "url": "https://registry.npmjs.org/@agent-topology/langgraph/-/langgraph-0.1.0-beta.3.tgz",
+          "sha1": "bbc99a3b996de10108aaa6fd273a614621e4e1cb",
+          "integrity": "sha512-f2XYPBkSnnH8wsJd2Sf6pB61Kf2zH4FfccCC0VuTm19VuSMQqgosgt+fgmn/SliGriGG9RZhGd4O1dFNxgbfiQ==",
+          "provenanceUrl": "https://registry.npmjs.org/-/npm/v1/attestations/@agent-topology%2flanggraph@0.1.0-beta.3"
+        }
+      ]
+    }
+  ],
+  "blockingDiscrepancies": [
+    "The package READMEs embedded in all four beta.3 artifacts still select beta.2 installation commands.",
+    "Repository installation documentation still identifies beta.2 as the latest coordinated public release.",
+    "No GitHub prerelease was created for v0.1.0-beta.3."
+  ]
+}

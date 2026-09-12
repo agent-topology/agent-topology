@@ -1,0 +1,162 @@
+name: Finalize a coordinated release
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: Stage the immutable tag and draft, or publish after closeout
+        required: true
+        type: choice
+        options:
+          - stage
+          - complete
+      coordinated-version:
+        description: Coordinated SemVer label without the v prefix
+        required: true
+        type: string
+      qualified-commit:
+        description: Full commit hash qualified and published to all registries
+        required: true
+        type: string
+      python-spec-run:
+        description: Successful release-python run ID for the specification
+        required: false
+        type: string
+      python-langgraph-run:
+        description: Successful release-python run ID for the producer
+        required: false
+        type: string
+      npm-spec-run:
+        description: Successful release-npm run ID for the specification
+        required: false
+        type: string
+      npm-langgraph-run:
+        description: Successful release-npm run ID for the producer
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  stage:
+    if: inputs.phase == 'stage'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.qualified-commit }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.1"
+          python-version: "3.14"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Require coherent candidate documentation
+        run: python3 scripts/check_release_docs.py --phase candidate
+      - name: Verify public artifacts and bind their workflow runs
+        env:
+          VERSION: ${{ inputs.coordinated-version }}
+          QUALIFIED_COMMIT: ${{ inputs.qualified-commit }}
+          PYTHON_SPEC_RUN: ${{ inputs.python-spec-run }}
+          PYTHON_LANGGRAPH_RUN: ${{ inputs.python-langgraph-run }}
+          NPM_SPEC_RUN: ${{ inputs.npm-spec-run }}
+          NPM_LANGGRAPH_RUN: ${{ inputs.npm-langgraph-run }}
+        run: >-
+          python3 -m scripts.verify_public_release collect
+          --version "$VERSION"
+          --commit "$QUALIFIED_COMMIT"
+          --run "agent-topology-spec=$PYTHON_SPEC_RUN"
+          --run "agent-topology-langgraph=$PYTHON_LANGGRAPH_RUN"
+          --run "@agent-topology/spec=$NPM_SPEC_RUN"
+          --run "@agent-topology/langgraph=$NPM_LANGGRAPH_RUN"
+          --output "${{ runner.temp }}/release-evidence.json"
+      - name: Clean-install and smoke exact public registry versions
+        run: |
+          python_spec="$(jq -r '.candidate.packages[] | select(.name == "agent-topology-spec") | .version' docs/releases/release-state.json)"
+          python_langgraph="$(jq -r '.candidate.packages[] | select(.name == "agent-topology-langgraph") | .version' docs/releases/release-state.json)"
+          npm_spec="$(jq -r '.candidate.packages[] | select(.name == "@agent-topology/spec") | .version' docs/releases/release-state.json)"
+          npm_langgraph="$(jq -r '.candidate.packages[] | select(.name == "@agent-topology/langgraph") | .version' docs/releases/release-state.json)"
+          uv venv "${{ runner.temp }}/public-python"
+          uv pip install --python "${{ runner.temp }}/public-python/bin/python" \
+            "agent-topology-spec==$python_spec" "agent-topology-langgraph==$python_langgraph"
+          "${{ runner.temp }}/public-python/bin/python" scripts/smoke_spec_install.py
+          "${{ runner.temp }}/public-python/bin/python" scripts/smoke_langgraph_installation.py
+          mkdir -p "${{ runner.temp }}/public-npm"
+          npm pack "@agent-topology/spec@$npm_spec" --pack-destination "${{ runner.temp }}/public-npm"
+          npm pack "@agent-topology/langgraph@$npm_langgraph" --pack-destination "${{ runner.temp }}/public-npm"
+          node scripts/smoke_typescript_installation.mjs \
+            --spec-tarball "$(find "${{ runner.temp }}/public-npm" -name 'agent-topology-spec-*.tgz')" \
+            --langgraph-tarball "$(find "${{ runner.temp }}/public-npm" -name 'agent-topology-langgraph-*.tgz')"
+      - uses: actions/upload-artifact@v5
+        with:
+          name: release-evidence-${{ inputs.coordinated-version }}
+          path: ${{ runner.temp }}/release-evidence.json
+          if-no-files-found: error
+      - name: Create or verify the immutable tag and draft prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.coordinated-version }}
+          QUALIFIED_COMMIT: ${{ inputs.qualified-commit }}
+        run: |
+          tag="v$VERSION"
+          remote_target="$(git ls-remote origin "refs/tags/$tag^{}" | awk '{print $1}')"
+          if [ -z "$remote_target" ]; then
+            remote_target="$(git ls-remote origin "refs/tags/$tag" | awk '{print $1}')"
+          fi
+          if [ -n "$remote_target" ] && [ "$remote_target" != "$QUALIFIED_COMMIT" ]; then
+            echo "$tag already identifies $remote_target, not $QUALIFIED_COMMIT" >&2
+            exit 1
+          fi
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            test "$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" = true
+          else
+            printf '%s\n' \
+              "Registry publication is verified. This release remains a draft until the closeout PR updates public documentation and records evidence." \
+              > "${{ runner.temp }}/draft-notes.md"
+            gh release create "$tag" --repo "$GITHUB_REPOSITORY" \
+              --target "$QUALIFIED_COMMIT" --title "$tag" --draft --prerelease \
+              --notes-file "${{ runner.temp }}/draft-notes.md"
+          fi
+
+  complete:
+    if: inputs.phase == 'complete'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require the merged published-document transition
+        run: python3 scripts/check_release_docs.py --phase published
+      - name: Reverify checked-in evidence, tag, and draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.coordinated-version }}
+          QUALIFIED_COMMIT: ${{ inputs.qualified-commit }}
+        run: |
+          state_version="$(jq -r '.coordinatedPublished.coordinatedVersion' docs/releases/release-state.json)"
+          state_commit="$(jq -r '.coordinatedPublished.sourceCommit' docs/releases/release-state.json)"
+          evidence="$(jq -r '.coordinatedPublished.evidence' docs/releases/release-state.json)"
+          notes="$(jq -r '.coordinatedPublished.releaseNotes' docs/releases/release-state.json)"
+          tag="$(jq -r '.coordinatedPublished.tag' docs/releases/release-state.json)"
+          test "$state_version" = "$VERSION"
+          test "$state_commit" = "$QUALIFIED_COMMIT"
+          python3 -m scripts.verify_public_release verify \
+            --version "$VERSION" --evidence "$evidence"
+          remote_target="$(git ls-remote origin "refs/tags/$tag^{}" | awk '{print $1}')"
+          if [ -z "$remote_target" ]; then
+            remote_target="$(git ls-remote origin "refs/tags/$tag" | awk '{print $1}')"
+          fi
+          test "$remote_target" = "$QUALIFIED_COMMIT"
+          test "$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" = true
+          gh release edit "$tag" --repo "$GITHUB_REPOSITORY" \
+            --draft=false --prerelease --notes-file "$notes"
