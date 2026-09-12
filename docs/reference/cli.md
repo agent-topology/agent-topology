@@ -6,6 +6,7 @@ Installing `agent-topology-langgraph` provides `agt` in that Python environment.
 
 ```bash
 agt describe path/to/graph.py:graph --out topology.json
+agt describe path/to/graph.py:graph --out topology.json --graph-id invoice-intake
 agt describe path/to/graph.py:graph --out topology.json --strict
 agt describe --help
 ```
@@ -17,6 +18,9 @@ graph in the file before naming it as the target.
 `--out` is required. The command writes UTF-8 canonical JSON followed by a newline
 and replaces an existing destination file. Its parent directory must already
 exist. Use a distinct output path, not a source filename.
+
+`--graph-id` selects the non-empty document-local graph address and defaults to
+`main`. Supply distinct stable ids when outputs will later be composed.
 
 `--strict` returns status `6` when graph-specific gaps are present. The incomplete
 document is still written, so automation can retain it as an artifact and present

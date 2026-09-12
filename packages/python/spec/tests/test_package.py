@@ -1,9 +1,21 @@
+import json
 import subprocess
 import sys
+from copy import deepcopy
 from importlib.metadata import requires
 from pathlib import Path
 
 import agent_topology.spec
+
+ROOT = Path(__file__).parents[4]
+
+
+def _composed_document() -> dict:
+    return json.loads(
+        (ROOT / "spec/tests/documents/valid/composed-two-graph.json").read_text(
+            encoding="utf-8"
+        )
+    )
 
 
 def _minimal_document() -> dict:
@@ -68,6 +80,17 @@ def test_spec_distribution_does_not_depend_on_langgraph() -> None:
 def test_packaged_schema_validates_a_document() -> None:
     assert agent_topology.spec.load_schema()["$schema"].endswith("2020-12/schema")
     assert agent_topology.spec.validate_document(_minimal_document()) == []
+
+
+def test_composed_graph_ids_are_unique_and_references_are_unambiguous() -> None:
+    document = _composed_document()
+    assert agent_topology.spec.validate_document(document) == []
+
+    duplicate = deepcopy(document)
+    duplicate["graphs"][1]["id"] = "invoice-intake"
+    assert "$.graphs: duplicate graph id 'invoice-intake'" in (
+        agent_topology.spec.validate_document(duplicate)
+    )
 
 
 def test_canonical_utilities_are_public() -> None:

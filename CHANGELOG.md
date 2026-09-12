@@ -15,6 +15,13 @@ This candidate has not been published. See the
 [candidate release notes](docs/releases/v0.1.0-beta.3.md) and the
 [beta.2 to beta.3 upgrade guide](docs/guides/upgrading-beta.3.md).
 
+- Both specification packages explicitly test rejection of duplicate graph ids, and
+  both LangGraph producers now accept a caller-supplied document-local graph id.
+  Derived gap references follow the selected id; `main` remains the default. The
+  Python CLI exposes the same choice through `--graph-id`. Graph authors continue to
+  control the independent display name through `StateGraph.compile(name=...)`. See
+  [ADR 0011](docs/decisions/0011-document-local-consumer-addressable-graph-ids.md).
+
 - Both specification packages now spell `x-*` extension numbers per
   [ADR 0009](docs/decisions/0009-numeric-canonical-form.md)'s byte oracle
   instead of each runtime's default float formatting: `agent_topology.spec`

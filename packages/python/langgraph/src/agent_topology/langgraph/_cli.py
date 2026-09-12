@@ -62,6 +62,11 @@ def _parser() -> argparse.ArgumentParser:
         "--out", required=True, type=Path, help="path for the canonical JSON document"
     )
     describe_parser.add_argument(
+        "--graph-id",
+        default="main",
+        help="document-local graph identifier (default: main)",
+    )
+    describe_parser.add_argument(
         "--strict",
         action="store_true",
         help="return 6 when graph-specific completeness gaps are present",
@@ -121,7 +126,9 @@ def _write_document(document: dict[str, object], output: Path) -> None:
     output.write_text(canonical_json(document) + "\n", encoding="utf-8")
 
 
-def _describe_command(target: str, output: Path, *, strict: bool) -> ExitCode:
+def _describe_command(
+    target: str, output: Path, *, graph_id: str, strict: bool
+) -> ExitCode:
     try:
         graph, target_path, object_name = _load_target(target)
     except _TargetSyntaxError as error:
@@ -141,7 +148,7 @@ def _describe_command(target: str, output: Path, *, strict: bool) -> ExitCode:
 
     result = ExitCode.SUCCESS
     try:
-        document = describe(graph, strict=strict)
+        document = describe(graph, graph_id=graph_id, strict=strict)
     except IncompleteTopologyError as error:
         document = error.document
         result = ExitCode.INCOMPLETE
@@ -188,6 +195,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     arguments = _parser().parse_args(argv)
     if arguments.command == "describe":
         return _describe_command(
-            arguments.target, arguments.out, strict=arguments.strict
+            arguments.target,
+            arguments.out,
+            graph_id=arguments.graph_id,
+            strict=arguments.strict,
         )
     raise AssertionError(f"unhandled command: {arguments.command}")

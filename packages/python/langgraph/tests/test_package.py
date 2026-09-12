@@ -143,7 +143,9 @@ def test_describe_exposes_nested_graph_depth() -> None:
     compiled = builder.compile()
 
     opaque = agent_topology.langgraph.describe(compiled)
-    expanded = agent_topology.langgraph.describe(compiled, depth=1)
+    expanded = agent_topology.langgraph.describe(
+        compiled, graph_id="parent-workflow", depth=1
+    )
 
     assert {node["id"] for node in opaque["graphs"][0]["structure"]["nodes"]} == {
         "__start__",
@@ -165,11 +167,17 @@ def test_describe_exposes_nested_graph_depth() -> None:
                 "Expanded child graphs expose drawable shape, but their join, "
                 "routing, and interrupt declarations are not fully inspected."
             ),
-            "element": {"graphId": "main", "kind": "graph", "id": "main"},
+            "element": {
+                "graphId": "parent-workflow",
+                "kind": "graph",
+                "id": "parent-workflow",
+            },
         }
     ]
     with pytest.raises(agent_topology.langgraph.IncompleteTopologyError) as caught:
-        agent_topology.langgraph.describe(compiled, depth=1, strict=True)
+        agent_topology.langgraph.describe(
+            compiled, graph_id="parent-workflow", depth=1, strict=True
+        )
     assert caught.value.document["completeness"] == expanded["completeness"]
     assert (
         agent_topology.langgraph.describe(inner, depth=1, strict=True)["completeness"][
@@ -267,7 +275,9 @@ def test_describe_records_command_literal_destinations() -> None:
 
 
 def test_describe_records_unknown_router_as_an_element_local_gap() -> None:
-    document = agent_topology.langgraph.describe(_conditional_graph(declaration="none"))
+    document = agent_topology.langgraph.describe(
+        _conditional_graph(declaration="none"), graph_id="invoice-intake"
+    )
     graph = document["graphs"][0]
 
     assert not any(edge["source"] == "router" for edge in graph["structure"]["edges"])
@@ -276,12 +286,26 @@ def test_describe_records_unknown_router_as_an_element_local_gap() -> None:
         "gaps": [
             {
                 "code": "unknown-routing-targets",
-                "element": {"graphId": "main", "id": "router", "kind": "node"},
+                "element": {
+                    "graphId": "invoice-intake",
+                    "id": "router",
+                    "kind": "node",
+                },
                 "message": "Not every destination of this router could be determined.",
             }
         ],
         "status": "incomplete",
     }
+
+
+@pytest.mark.parametrize("graph_id", ["", 1, None])
+def test_describe_rejects_invalid_graph_id(graph_id: object) -> None:
+    error = ValueError if graph_id == "" else TypeError
+    with pytest.raises(error, match="graph_id must be a non-empty string"):
+        agent_topology.langgraph.describe(
+            _compile_minimal_graph(),
+            graph_id=graph_id,  # type: ignore[arg-type]
+        )
 
 
 def test_strict_describe_raises_with_canonical_incomplete_document() -> None:

@@ -90,6 +90,33 @@ A hash match is not authentication: anyone who edits a document can compute a ne
 hash. Retain trusted provenance or artifact-signing evidence separately when your
 application needs to know who produced it.
 
+## Graph identity, names, and composition
+
+`graphs[].id` is a document-local address, not a display label. It must be unique in
+the `graphs` array so `element.graphId` and `subgraphId` resolve to exactly one graph.
+When you intend to compose several producer outputs, choose a distinct stable id as
+each graph is described:
+
+```python
+intake = describe(intake_graph, graph_id="invoice-intake")
+payout = describe(payout_graph, graph_id="vendor-payout")
+```
+
+```typescript
+const intake = await describe(intakeGraph, { graphId: "invoice-intake" });
+const payout = await describe(payoutGraph, { graphId: "vendor-payout" });
+```
+
+The default remains `main` for a single graph. Composition is a consumer operation:
+combine the already identified graph records and carry their associated gaps into the
+new document; do not rewrite graph ids or gap references after extraction. Validate
+and finalize the composed document before publishing it.
+
+`graphs[].name` is separate, optional display metadata. In both LangGraph producers
+it comes from the compiled graph's name, set by the graph author with
+`StateGraph.compile(name=...)`. Names need not be unique and are excluded from
+structure hash version 1; ids are included.
+
 `canonical_json` and `canonicalStringify` serialize a document deterministically.
 `finalize_document` and `finalizeDocument` replace its hash and return a canonical
 copy. These utilities are not validators; validate externally supplied JSON before
