@@ -1,0 +1,6 @@
+{
+  "node": "v22.16.0",
+  "esmValidation": "passed",
+  "frameworkAbsent": true,
+  "requireCode": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+}
