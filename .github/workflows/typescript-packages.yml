@@ -39,6 +39,19 @@ jobs:
         run: npm --prefix packages/typescript/spec run build
       - run: npm ci --prefix packages/typescript/${{ matrix.package }}
       - run: npm --prefix packages/typescript/${{ matrix.package }} run check
+      - name: Cross-language producer-to-consumer regression
+        if: matrix.package == 'langgraph'
+        run: >-
+          uv run --project packages/python/spec --group test
+          python -m pytest tests/test_consumer_regression.py
+          --basetemp "${{ runner.temp }}/consumer-regression"
+      - name: Preserve producer-generated consumer evidence
+        if: always() && matrix.package == 'langgraph'
+        uses: actions/upload-artifact@v5
+        with:
+          name: consumer-regression-node-${{ matrix.node }}
+          path: ${{ runner.temp }}/consumer-regression
+          if-no-files-found: error
 
   typescript-quality:
     runs-on: ubuntu-latest

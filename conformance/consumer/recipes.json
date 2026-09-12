@@ -1,0 +1,183 @@
+{
+  "direct": {
+    "nodes": [
+      {
+        "id": "router"
+      },
+      {
+        "id": "left"
+      },
+      {
+        "id": "right"
+      }
+    ],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"],
+      ["router", "left"],
+      ["router", "right"]
+    ]
+  },
+  "single": {
+    "nodes": [
+      {
+        "id": "router"
+      },
+      {
+        "id": "left"
+      },
+      {
+        "id": "right"
+      }
+    ],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"]
+    ],
+    "routes": [
+      {
+        "source": "router",
+        "targets": ["left", "right"],
+        "returns": "single"
+      }
+    ]
+  },
+  "list": {
+    "nodes": [
+      {
+        "id": "router"
+      },
+      {
+        "id": "left"
+      },
+      {
+        "id": "right"
+      }
+    ],
+    "edges": [
+      ["__start__", "router"],
+      ["left", "__end__"],
+      ["right", "__end__"]
+    ],
+    "routes": [
+      {
+        "source": "router",
+        "targets": ["left", "right"],
+        "returns": "list"
+      }
+    ]
+  },
+  "orphan": {
+    "nodes": [
+      {
+        "id": "router"
+      },
+      {
+        "id": "target"
+      }
+    ],
+    "edges": [
+      ["__start__", "router"],
+      ["target", "__end__"]
+    ],
+    "routes": [
+      {
+        "source": "router",
+        "returns": "single"
+      }
+    ]
+  },
+  "ordinary": {
+    "nodes": [
+      {
+        "id": "child"
+      }
+    ],
+    "edges": [
+      ["__start__", "child"],
+      ["child", "__end__"]
+    ]
+  },
+  "child": {
+    "nodes": [
+      {
+        "id": "child",
+        "child": {
+          "nodes": [
+            {
+              "id": "step"
+            }
+          ],
+          "edges": [
+            ["__start__", "step"],
+            ["step", "__end__"]
+          ]
+        }
+      }
+    ],
+    "edges": [
+      ["__start__", "child"],
+      ["child", "__end__"]
+    ]
+  },
+  "join": {
+    "nodes": [
+      {
+        "id": ""
+      },
+      {
+        "id": "𐀀"
+      },
+      {
+        "id": "joined"
+      }
+    ],
+    "edges": [
+      ["__start__", ""],
+      ["__start__", "𐀀"],
+      ["joined", "__end__"]
+    ],
+    "joins": [[["", "𐀀"], "joined"]]
+  },
+  "independent": {
+    "nodes": [
+      {
+        "id": ""
+      },
+      {
+        "id": "𐀀"
+      },
+      {
+        "id": "joined"
+      }
+    ],
+    "edges": [
+      ["__start__", ""],
+      ["__start__", "𐀀"],
+      ["joined", "__end__"],
+      ["", "joined"],
+      ["𐀀", "joined"]
+    ]
+  },
+  "sentinel-names": {
+    "nodes": [
+      {
+        "id": "start"
+      },
+      {
+        "id": "end"
+      },
+      {
+        "id": "__start__-user"
+      }
+    ],
+    "edges": [
+      ["__start__", "start"],
+      ["start", "end"],
+      ["end", "__start__-user"],
+      ["__start__-user", "__end__"]
+    ]
+  }
+}
