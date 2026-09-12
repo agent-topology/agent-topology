@@ -76,8 +76,11 @@ The format version, structure-hash algorithm version, and package versions are
 separate axes:
 
 - change the format version when the document contract changes;
-- change the hash algorithm version when canonicalisation or hashed structural
-  properties change;
+- change the hash algorithm version when a canonicalisation change can alter
+  the version-1 hash projection's byte output, or when the set of hashed
+  structural properties changes (see
+  [ADR 0009](docs/decisions/0009-numeric-canonical-form.md) for the numeric
+  case);
 - change only the affected package version for implementation or release work.
 
 Do not infer one version from another or release the monorepo as a unit.
