@@ -4,6 +4,11 @@
 - Date: 2026-09-12
 - Scope: workspace
 - Issue: [#117](https://github.com/agent-topology/agent-topology/issues/117)
+- Amended by: [ADR 0010](0010-numeric-domain-parsed-value-narrowing.md) —
+  the integer-literal `2^53` domain-boundary clause under "Supported numeric
+  domain and its error behavior" below is superseded by ADR 0010's narrowing
+  rule; the byte-spelling algorithm and hash-boundary reasoning in this
+  document stand unchanged.
 
 ## Context
 

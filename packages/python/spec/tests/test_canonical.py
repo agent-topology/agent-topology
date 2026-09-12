@@ -147,8 +147,10 @@ def test_canonicalize_document_sorts_graphs() -> None:
     ]
 
 
-# ADR 0009 byte oracle: https://docs/decisions/0009-numeric-canonical-form.md
-# and its implementation criteria at 0009-implementation-criteria.md.
+# ADR 0009 byte oracle, amended by ADR 0010:
+# https://docs/decisions/0009-numeric-canonical-form.md and
+# https://docs/decisions/0010-numeric-domain-parsed-value-narrowing.md, and
+# their implementation criteria at 0009-implementation-criteria.md.
 NUMERIC_BYTE_ORACLE = [
     ("signed-zero-positive", 0.0, "0"),
     ("signed-zero-negative", -0.0, "0"),
@@ -160,7 +162,13 @@ NUMERIC_BYTE_ORACLE = [
     ("exponent-lower-threshold-exponential", 1e-7, "1e-7"),
     ("exponent-upper-threshold-fixed", 1e20, "100000000000000000000"),
     ("exponent-upper-threshold-exponential", 1e21, "1e+21"),
-    ("in-domain-integer-boundary", 9007199254740992, "9007199254740992"),
+    ("in-domain-integer-boundary-positive", 9007199254740992, "9007199254740992"),
+    ("in-domain-integer-boundary-negative", -9007199254740992, "-9007199254740992"),
+    # ADR 0010: a bare integer literal beyond 2^53 narrows to its nearest
+    # binary64 double rather than being rejected, exactly as `JSON.parse`
+    # already narrows it in TypeScript.
+    ("narrowed-integer-boundary-positive", 9007199254740993, "9007199254740992"),
+    ("narrowed-integer-boundary-negative", -9007199254740993, "-9007199254740992"),
 ]
 
 
@@ -207,18 +215,50 @@ def test_f8_e1_retained_minimized_candidate_canonical_bytes() -> None:
     assert computed_hash["algorithmVersion"] == "1"
 
 
-def test_out_of_domain_integer_extension_is_rejected() -> None:
-    out_of_domain = 9007199254740993  # 2**53 + 1
+def test_out_of_safe_range_integer_extension_narrows_instead_of_rejecting() -> None:
+    # ADR 0010: Python could hold this exactly as an arbitrary-precision
+    # `int`, but TypeScript's `number` structurally cannot, so both languages
+    # narrow it to the nearest binary64 double (round-half-to-even) instead
+    # of one language rejecting what the other silently rounds.
+    beyond_safe_range = 9007199254740993  # 2**53 + 1
 
     document_level = _document()
-    document_level["x-value"] = out_of_domain
-    with pytest.raises(ValueError, match="Out of range"):
-        canonical_json(document_level)
+    document_level["x-value"] = beyond_safe_range
+    assert '"x-value":9007199254740992' in canonical_json(document_level)
 
     nested = _document()
-    nested["graphs"][0]["x-nested"] = {"list": [out_of_domain]}
+    nested["graphs"][0]["x-nested"] = {"list": [beyond_safe_range]}
+    assert '"x-nested":{"list":[9007199254740992]}' in canonical_json(nested)
+
+
+def test_astronomically_large_integer_extension_is_rejected() -> None:
+    # No finite binary64 double can represent this magnitude at all, unlike
+    # the merely-imprecise 2**53-neighborhood case above.
+    beyond_double_range = 10**400
+
+    document = _document()
+    document["x-value"] = beyond_double_range
     with pytest.raises(ValueError, match="Out of range"):
-        canonical_json(nested)
+        canonical_json(document)
+
+
+def test_numeric_extension_survives_serialize_parse_canonicalize_round_trip() -> None:
+    # ADR 0010's closure requirement: a value's canonical output, re-parsed
+    # and canonicalized again, must be byte-identical to the first pass. This
+    # is the exact regression from issue #124 - comparing two calls on the
+    # *original* Python object (as the older idempotence test below does) is
+    # insufficient, because it never exercises the type flip that JSON text
+    # introduces between an integer-shaped float and a bare integer literal.
+    for value in (1e20, 9007199254740993, -9007199254740993, 1e21, 0.5, -0.0):
+        document = _document()
+        document["x-value"] = value
+        document["graphs"][0]["x-nested"] = {"list": [value]}
+
+        first_pass = canonical_json(document)
+        reparsed = json.loads(first_pass)
+        second_pass = canonical_json(reparsed)
+
+        assert second_pass == first_pass, value
 
 
 def test_non_finite_numeric_extension_is_rejected() -> None:

@@ -10,8 +10,10 @@ import * as spec from "../dist/index.js";
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const fixturesRoot = resolve(packageRoot, "../../../conformance/fixtures");
 
-// ADR 0009 byte oracle: docs/decisions/0009-numeric-canonical-form.md and
-// its implementation criteria at 0009-implementation-criteria.md.
+// ADR 0009 byte oracle, amended by ADR 0010:
+// docs/decisions/0009-numeric-canonical-form.md,
+// docs/decisions/0010-numeric-domain-parsed-value-narrowing.md, and their
+// implementation criteria at 0009-implementation-criteria.md.
 /** @type {[string, number, string][]} */
 const NUMERIC_BYTE_ORACLE = [
   ["signed-zero-positive", 0, "0"],
@@ -24,7 +26,21 @@ const NUMERIC_BYTE_ORACLE = [
   ["exponent-lower-threshold-exponential", 1e-7, "1e-7"],
   ["exponent-upper-threshold-fixed", 1e20, "100000000000000000000"],
   ["exponent-upper-threshold-exponential", 1e21, "1e+21"],
-  ["in-domain-integer-boundary", 9007199254740992, "9007199254740992"],
+  ["in-domain-integer-boundary-positive", 9007199254740992, "9007199254740992"],
+  [
+    "in-domain-integer-boundary-negative",
+    -9007199254740992,
+    "-9007199254740992",
+  ],
+  // ADR 0010: a bare integer literal beyond 2^53 narrows to its nearest
+  // binary64 double (this JS source literal is already narrowed by the
+  // engine at parse time) rather than being rejected.
+  ["narrowed-integer-boundary-positive", 9007199254740993, "9007199254740992"],
+  [
+    "narrowed-integer-boundary-negative",
+    -9007199254740993,
+    "-9007199254740992",
+  ],
 ];
 
 async function expectedDocuments() {
@@ -102,22 +118,19 @@ test("canonical bytes and hashes agree with the Python contract implementation",
   unicode.completeness = { status: "complete", gaps: [] };
   cases.push({ name: "unicode structural identifiers", document: unicode });
 
-  // ADR 0009 byte oracle (docs/decisions/0009-numeric-canonical-form.md and
-  // its implementation criteria): every case both as a document-level
-  // extension value and nested inside an extension object/array. This
-  // harness transports documents to Python as JSON text (`JSON.stringify`
-  // below), which re-spells each JS number per ECMAScript's own fixed/
-  // exponential threshold — not the literal shape it started with. That
-  // reshaping turns "exponent-upper-threshold-fixed" (1e20) into a bare
-  // digit-string integer literal (JS writes magnitudes up to 1e21 in fixed
-  // form), which Python then correctly rejects as an out-of-domain integer
-  // literal per ADR 0009 — not a cross-language divergence, but an artifact
-  // of this test's JSON-text transport. Skip it here; the standalone
-  // "numeric extension canonical bytes match the ADR 0009 oracle directly"
-  // test below already covers it without a JSON-text round trip.
-  for (const [name, value] of NUMERIC_BYTE_ORACLE.filter(
-    ([caseName]) => caseName !== "exponent-upper-threshold-fixed",
-  )) {
+  // ADR 0009 byte oracle, amended by ADR 0010 (docs/decisions/0009-numeric-
+  // canonical-form.md, docs/decisions/0010-numeric-domain-parsed-value-
+  // narrowing.md, and their implementation criteria): every case both as a
+  // document-level extension value and nested inside an extension
+  // object/array. This harness transports documents to Python as JSON text
+  // (`JSON.stringify` below), which re-spells each JS number per
+  // ECMAScript's own fixed/exponential threshold — not the literal shape it
+  // started with. That reshaping turns "exponent-upper-threshold-fixed"
+  // (1e20) into a bare digit-string integer literal on the wire (JS writes
+  // magnitudes up to 1e21 in fixed form); ADR 0010 requires this to
+  // round-trip identically rather than be rejected, so every case, including
+  // this one, is exercised here without a skip.
+  for (const [name, value] of NUMERIC_BYTE_ORACLE) {
     const documentLevel = structuredClone(firstCase.document);
     documentLevel["x-value"] = value;
     cases.push({
@@ -239,6 +252,56 @@ test("numeric extension canonical bytes match the ADR 0009 oracle directly", () 
         .includes(`"x-nested":{"list":[${expectedBytes}]}`),
       name,
     );
+  }
+});
+
+test("numeric extension survives serialize -> JSON.parse -> canonicalize round trip", () => {
+  // ADR 0010's closure requirement, mirrored from the Python suite's
+  // equivalent test: a value's canonical output, re-parsed and
+  // canonicalized again, must be byte-identical to the first pass.
+  /** @type {import("../dist/index.js").TopologyDocument} */
+  const base = {
+    topologyVersion: "0.1",
+    provenance: {
+      generatedAt: "2026-09-10T19:00:00Z",
+      producer: { name: "test", version: "1" },
+      framework: { name: "test", version: "1" },
+    },
+    producerLimitations: [],
+    structureHash: {
+      algorithm: "sha256",
+      algorithmVersion: "1",
+      value: "0".repeat(64),
+    },
+    graphs: [
+      {
+        id: "main",
+        structure: {
+          nodes: [],
+          edges: [],
+          joins: [],
+          entryNodeIds: [],
+          exitNodeIds: [],
+        },
+      },
+    ],
+    completeness: { status: "complete", gaps: [] },
+  };
+
+  for (const value of [
+    1e20, 9007199254740993, -9007199254740993, 1e21, 0.5, -0,
+  ]) {
+    const document = structuredClone(base);
+    document["x-value"] = value;
+    const graph = document.graphs[0];
+    assert.ok(graph);
+    graph["x-nested"] = { list: [value] };
+
+    const firstPass = spec.canonicalStringify(document);
+    const reparsed = JSON.parse(firstPass);
+    const secondPass = spec.canonicalStringify(reparsed);
+
+    assert.equal(secondPass, firstPass, String(value));
   }
 });
 

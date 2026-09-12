@@ -19,9 +19,10 @@ This candidate has not been published. See the
   [ADR 0009](docs/decisions/0009-numeric-canonical-form.md)'s byte oracle
   instead of each runtime's default float formatting: `agent_topology.spec`
   no longer emits Python's `repr(float)` spelling (`0.0` for a document that
-  should read `0`), and both packages now reject a bare JSON integer literal
-  beyond magnitude `2^53` rather than silently narrowing it. `structureHash`
-  is unaffected; no core field is numeric. See the
+  should read `0`), and both packages narrow a bare JSON integer literal
+  beyond magnitude `2^53` to its nearest `binary64` double, identically in
+  both languages, per [ADR 0010](docs/decisions/0010-numeric-domain-parsed-value-narrowing.md).
+  `structureHash` is unaffected; no core field is numeric. See the
   [contract's numeric canonical form section](docs/0.1-contract.md#numeric-canonical-form).
 
 - Both LangGraph producers distinguish observed roots from confirmed execution
