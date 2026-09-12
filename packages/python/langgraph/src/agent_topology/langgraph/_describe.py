@@ -365,6 +365,7 @@ def _entry_interpretation(
 def describe(
     compiled_graph: CompiledStateGraph,
     *,
+    graph_id: str = "main",
     depth: int = 0,
     strict: bool = False,
 ) -> dict[str, Any]:
@@ -372,6 +373,8 @@ def describe(
 
     Args:
         compiled_graph: A graph returned by ``StateGraph.compile()``.
+        graph_id: Document-local identifier for the graph. Callers composing
+            producer outputs should supply a distinct stable value for each graph.
         depth: Number of nested graph levels to expand. The default, ``0``, keeps
             subgraphs opaque. A positive value is passed to LangGraph's drawable
             graph traversal.
@@ -385,8 +388,9 @@ def describe(
         UnsupportedLangGraphVersionError: If the installed LangGraph release has
             not passed this producer's conformance suite.
         TypeError: If ``compiled_graph`` is not a compiled LangGraph state graph,
-            if ``depth`` is not an integer, or if ``strict`` is not a boolean.
-        ValueError: If ``depth`` is negative.
+            if ``graph_id`` is not a string, if ``depth`` is not an integer, or if
+            ``strict`` is not a boolean.
+        ValueError: If ``graph_id`` is empty or ``depth`` is negative.
         IncompleteTopologyError: If ``strict`` is true and the resulting document
             contains one or more graph-specific gaps. The exception's ``document``
             attribute contains the canonical incomplete document.
@@ -398,6 +402,10 @@ def describe(
             "compiled_graph must be a CompiledStateGraph returned by "
             "StateGraph.compile()"
         )
+    if not isinstance(graph_id, str):
+        raise TypeError("graph_id must be a non-empty string")
+    if not graph_id:
+        raise ValueError("graph_id must be a non-empty string")
     if isinstance(depth, bool) or not isinstance(depth, int):
         raise TypeError("depth must be a non-negative integer")
     if depth < 0:
@@ -432,7 +440,7 @@ def describe(
     )
     graph_name = compiled_graph.get_name()
     graph_document: dict[str, Any] = {
-        "id": "main",
+        "id": graph_id,
         "structure": {
             "nodes": nodes,
             "edges": edges,
@@ -453,7 +461,7 @@ def describe(
         {
             "code": "unknown-routing-targets",
             "message": "Not every destination of this router could be determined.",
-            "element": {"graphId": "main", "kind": "node", "id": source},
+            "element": {"graphId": graph_id, "kind": "node", "id": source},
         }
         for source in sorted(unknown_routers)
     ]
@@ -466,7 +474,7 @@ def describe(
                     "Expanded child graphs expose drawable shape, but their join, "
                     "routing, and interrupt declarations are not fully inspected."
                 ),
-                "element": {"graphId": "main", "kind": "graph", "id": "main"},
+                "element": {"graphId": graph_id, "kind": "graph", "id": graph_id},
             }
         )
 

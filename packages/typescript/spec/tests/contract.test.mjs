@@ -9,6 +9,10 @@ import * as spec from "../dist/index.js";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const fixturesRoot = resolve(packageRoot, "../../../conformance/fixtures");
+const composedDocumentPath = resolve(
+  packageRoot,
+  "../../../spec/tests/documents/valid/composed-two-graph.json",
+);
 
 // ADR 0009 byte oracle, amended by ADR 0010:
 // docs/decisions/0009-numeric-canonical-form.md,
@@ -624,6 +628,25 @@ test("validation enforces extensions, references, and completeness", () => {
       message: 'must be "complete" when gaps contains 0 item(s)',
     },
   ]);
+});
+
+test("composed graph ids are unique and references are unambiguous", async () => {
+  const document = JSON.parse(await readFile(composedDocumentPath, "utf8"));
+  const valid = spec.validateDocument(document);
+  assert.equal(valid.valid, true, JSON.stringify(valid));
+  assert.deepEqual(spec.computeStructureHash(document), document.structureHash);
+
+  const duplicate = structuredClone(document);
+  duplicate.graphs[1].id = "invoice-intake";
+  const invalid = spec.validateDocument(duplicate);
+  assert.equal(invalid.valid, false);
+  assert.ok(
+    invalid.errors.some(
+      (error) =>
+        error.path === "$.graphs" &&
+        error.message === 'duplicate graph id "invoice-intake"',
+    ),
+  );
 });
 
 test("format, hash algorithm, and package versions are independent", () => {

@@ -12,6 +12,12 @@ by inferred annotations. Expanded subgraphs are linked from a node with
 locations may be recorded on nodes, while framework-only details remain in an
 extension.
 
+Each `graphs[].id` is a unique document-local address. `element.graphId` and
+`subgraphId` resolve against that unique set, and validation names any repeated id.
+Producer callers choose stable ids when several outputs will be composed; `name` is
+an independent, optional display value and need not be unique. See
+[ADR 0011](../docs/decisions/0011-document-local-consumer-addressable-graph-ids.md).
+
 Producer-wide `producerLimitations` are separate from graph-specific
 `completeness.gaps`. Each gap names a graph element, and the validator requires
 `completeness.status` to be `complete` exactly when the gap collection is empty.

@@ -15,10 +15,12 @@ are camelCase in both; Python utility names use snake_case.
 Import from `agent_topology.langgraph`:
 
 ```python
-describe(compiled_graph, *, depth=0, strict=False) -> dict
+describe(compiled_graph, *, graph_id="main", depth=0, strict=False) -> dict
 ```
 
 The input must be a `CompiledStateGraph` returned by `StateGraph.compile()`.
+`graph_id` is a non-empty document-local address; choose a distinct stable value
+when the output will be composed with other graphs.
 `depth` is a non-negative integer; `0` leaves subgraphs opaque. `strict` must be a
 boolean. The function returns a canonical document with a computed structure hash.
 It inspects the graph without invoking node functions.
@@ -26,8 +28,8 @@ It inspects the graph without invoking node functions.
 | Exception | Condition |
 | --- | --- |
 | `UnsupportedLangGraphVersionError` | Installed framework release has no conformance evidence |
-| `TypeError` | Input is not a compiled state graph, depth is not an integer, or strict is not a boolean |
-| `ValueError` | Depth is negative |
+| `TypeError` | Input is not a compiled state graph, graph id is not a string, depth is not an integer, or strict is not a boolean |
+| `ValueError` | Graph id is empty or depth is negative |
 | `IncompleteTopologyError` | Strict mode found graph-specific gaps; `.document` retains the canonical result |
 
 The compatibility exception exposes `installed_version`, `supported_specifier`,
@@ -39,10 +41,11 @@ error, especially during expanded traversal.
 Import from `@agent-topology/langgraph`:
 
 ```typescript
-describe(compiledGraph: CompiledStateGraph, options?: { depth?: number }): Promise<TopologyDocument>
+describe(compiledGraph: CompiledStateGraph, options?: { graphId?: string; depth?: number }): Promise<TopologyDocument>
 ```
 
-Use `await`. Invalid graph inputs or invalid depths reject with `TypeError`;
+Use `await`. `graphId` is the same non-empty document-local address and defaults to
+`main`. Invalid graph inputs, graph ids, or depths reject with `TypeError`;
 unsupported framework versions reject with `UnsupportedLangGraphVersionError`.
 That exception exposes `installedVersion`, `supportedRange`, and `testedVersions`.
 There is no strict option or incomplete-topology exception; inspect the returned

@@ -90,12 +90,13 @@ test("describes direct structure, entry and exit points, and static interrupts",
       interruptAfter: ["last"],
     });
 
-  const document = await describe(compiled);
+  const document = await describe(compiled, { graphId: "linear-flow" });
   const graph = document.graphs[0];
   assert.ok(graph);
   assert.equal(validateDocument(document).valid, true);
   assert.equal(canonicalStringify(document), JSON.stringify(document));
   assert.equal(graph.name, "linear");
+  assert.equal(graph.id, "linear-flow");
   assert.deepEqual(
     graph.structure.nodes.map((node) => node.id),
     [END, START, "first", "last"],
@@ -165,13 +166,13 @@ test("extracts declared branches and reports undeclared targets as a local gap",
     .addConditionalEdges("route", () => "target")
     .addEdge("target", END)
     .compile();
-  const unknownDocument = await describe(unknown);
+  const unknownDocument = await describe(unknown, { graphId: "routing" });
   assert.equal(unknownDocument.completeness.status, "incomplete");
   assert.deepEqual(unknownDocument.completeness.gaps, [
     {
       code: "unknown-routing-targets",
       message: "Not every destination of this router could be determined.",
-      element: { graphId: "main", kind: "node", id: "route" },
+      element: { graphId: "routing", kind: "node", id: "route" },
     },
   ]);
   assert.ok(
@@ -267,7 +268,10 @@ test("expands nested graphs only to the requested depth", async () => {
   assert.ok(
     opaque.graphs[0]?.structure.nodes.some((node) => node.id === "child"),
   );
-  const expanded = await describe(parent, { depth: 1 });
+  const expanded = await describe(parent, {
+    depth: 1,
+    graphId: "parent-workflow",
+  });
   assert.ok(
     expanded.graphs[0]?.structure.nodes.some(
       (node) => node.id === "child:innerFirst",
@@ -287,7 +291,11 @@ test("expands nested graphs only to the requested depth", async () => {
         code: "expanded-subgraph-metadata",
         message:
           "Expanded child graphs expose drawable shape, but their join, routing, and interrupt declarations are not fully inspected.",
-        element: { graphId: "main", kind: "graph", id: "main" },
+        element: {
+          graphId: "parent-workflow",
+          kind: "graph",
+          id: "parent-workflow",
+        },
       },
     ],
   });
@@ -295,6 +303,25 @@ test("expands nested graphs only to the requested depth", async () => {
   assert.equal(
     (await describe(child, { depth: 1 })).completeness.status,
     "complete",
+  );
+});
+
+test("rejects invalid caller-supplied graph ids", async () => {
+  const compiled = new StateGraph(State)
+    .addNode("step", step)
+    .addEdge(START, "step")
+    .addEdge("step", END)
+    .compile();
+  await assert.rejects(describe(compiled, { graphId: "" }), {
+    name: "TypeError",
+    message: "graphId must be a non-empty string",
+  });
+  await assert.rejects(
+    describe(compiled, /** @type {any} */ ({ graphId: 1 })),
+    {
+      name: "TypeError",
+      message: "graphId must be a non-empty string",
+    },
   );
 });
 

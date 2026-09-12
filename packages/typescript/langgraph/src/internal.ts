@@ -72,6 +72,7 @@ interface RuntimeCompiledGraph {
 
 export interface DescribeOptions {
   depth?: number;
+  graphId?: string;
 }
 
 export function supportedRangeFromTestedVersions(
@@ -270,6 +271,14 @@ function checkedDepth(options: DescribeOptions): number {
     throw new TypeError("depth must be a non-negative integer");
   }
   return depth;
+}
+
+function checkedGraphId(options: DescribeOptions): string {
+  const graphId = options.graphId === undefined ? "main" : options.graphId;
+  if (typeof graphId !== "string" || graphId.length === 0) {
+    throw new TypeError("graphId must be a non-empty string");
+  }
+  return graphId;
 }
 
 function branchInterpretation(
@@ -542,6 +551,7 @@ export async function describeWithVersion(
     );
   }
   const depth = checkedDepth(options);
+  const graphId = checkedGraphId(options);
   const runtimeGraph = compiledGraph as unknown as RuntimeCompiledGraph;
   const drawable = await runtimeGraph.getGraphAsync({ xray: depth });
   const nodeIds = Object.keys(drawable.nodes).map(String);
@@ -563,7 +573,7 @@ export async function describeWithVersion(
   ]);
   const name = runtimeGraph.getName();
   const graph: TopologyGraph = {
-    id: "main",
+    id: graphId,
     ...(typeof name === "string" && name.length > 0 ? { name } : {}),
     structure: {
       nodes,
@@ -583,7 +593,7 @@ export async function describeWithVersion(
     .map((source) => ({
       code: "unknown-routing-targets",
       message: "Not every destination of this router could be determined.",
-      element: { graphId: "main", kind: "node" as const, id: source },
+      element: { graphId, kind: "node" as const, id: source },
     }));
   const rootNodeIds = new Set([
     START,
@@ -595,7 +605,7 @@ export async function describeWithVersion(
       code: "expanded-subgraph-metadata",
       message:
         "Expanded child graphs expose drawable shape, but their join, routing, and interrupt declarations are not fully inspected.",
-      element: { graphId: "main", kind: "graph", id: "main" },
+      element: { graphId, kind: "graph", id: graphId },
     });
   }
   return finalizeDocument({

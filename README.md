@@ -81,6 +81,16 @@ from agent_topology.langgraph import describe
 document = describe(compiled_graph)
 ```
 
+For output that will be composed with other graphs, choose its document-local
+address during extraction:
+
+```python
+document = describe(compiled_graph, graph_id="invoice-intake")
+```
+
+The default id is `main`. LangGraph graph authors independently control the optional
+display name with `StateGraph.compile(name=...)`.
+
 The LangGraph producer supports only releases with explicit conformance evidence.
 The current tested range is 1.2.10 through 1.2.11; `describe` raises
 `UnsupportedLangGraphVersionError` with an installation command before inspecting a
@@ -123,6 +133,9 @@ byte-stable canonical document without executing the graph:
 agt describe path/to/graph.py:graph --out topology.json
 ```
 
+Use `--graph-id invoice-intake` when the output will be composed with other graph
+records.
+
 The target syntax is `path.py:object`. Use `--strict` to require graph-specific
 completeness. When gaps are present, strict mode still writes the canonical incomplete
 document and exits with status 6.
@@ -161,6 +174,9 @@ import { describe } from "@agent-topology/langgraph";
 const document = await describe(compiledGraph);
 const expanded = await describe(compiledGraph, { depth: 1 });
 ```
+
+Set `{ graphId: "invoice-intake" }` to choose a document-local address before
+composition. The default remains `main`.
 
 The TypeScript producer currently supports LangGraph.js 1.4.14 and refuses other
 versions before graph inspection with an actionable installation command. It has no

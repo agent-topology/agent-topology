@@ -1,0 +1,48 @@
+{
+  "topologyVersion": "0.1",
+  "provenance": {
+    "generatedAt": "2026-09-12T12:00:00Z",
+    "producer": {"name": "agent-topology-composer", "version": "1"},
+    "framework": {"name": "mixed", "version": "1"}
+  },
+  "producerLimitations": [],
+  "structureHash": {
+    "algorithm": "sha256",
+    "algorithmVersion": "1",
+    "value": "7d2a554448bea531d9cbd6139599a107b3280b3fd03cdf1efdb4857d799e2661"
+  },
+  "graphs": [
+    {
+      "id": "invoice-intake",
+      "name": "invoice-intake",
+      "structure": {
+        "nodes": [{"id": "triage"}],
+        "edges": [],
+        "joins": [],
+        "entryNodeIds": ["triage"],
+        "exitNodeIds": ["triage"]
+      }
+    },
+    {
+      "id": "vendor-payout",
+      "name": "vendor-payout",
+      "structure": {
+        "nodes": [{"id": "settle"}],
+        "edges": [],
+        "joins": [],
+        "entryNodeIds": ["settle"],
+        "exitNodeIds": ["settle"]
+      }
+    }
+  ],
+  "completeness": {
+    "status": "incomplete",
+    "gaps": [
+      {
+        "code": "unknown-routing-targets",
+        "message": "Not every destination of this router could be determined.",
+        "element": {"graphId": "invoice-intake", "kind": "node", "id": "triage"}
+      }
+    ]
+  }
+}

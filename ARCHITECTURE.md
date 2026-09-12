@@ -81,7 +81,24 @@ without false confidence.
 - Collections are canonicalised before output and hashing.
 - The format version, hash-algorithm version, and package versions are separate.
 - Multi-source joins remain distinct from several independent incoming edges.
+- Graph identifiers are unique document-local addresses selected by producer callers;
+  display names are independent and author-owned.
 - Vendor neutrality is provisional while only one framework model is observed.
+
+## Graph identity and composition
+
+[ADR 0011](docs/decisions/0011-document-local-consumer-addressable-graph-ids.md)
+defines `graphs[].id` as a document-local address. Producers accept a caller-supplied
+identifier and retain `main` as the single-graph default. Derived `element.graphId`
+references use that identifier, and both specification packages reject duplicates so
+`element.graphId` and `subgraphId` resolve to exactly one graph.
+
+Composition remains downstream: a caller chooses distinct identifiers before
+extracting each graph, then combines graph records and their associated gaps without
+rewriting derived identities. The optional `graphs[].name` is descriptive rather
+than identifying. LangGraph authors supply it through `StateGraph.compile(name=...)`.
+Changing an identifier changes the existing version-1 structure hash because graph
+ids were already covered; no format or hash-algorithm transition is required.
 
 ## Accepted experimental interpretation
 

@@ -92,12 +92,22 @@ def test_describe_writes_canonical_document(tmp_path: Path) -> None:
     output = tmp_path / "topology.json"
     _write_graph(target)
 
-    result = _cli.main(["describe", f"{target}:graph", "--out", str(output)])
+    result = _cli.main(
+        [
+            "describe",
+            f"{target}:graph",
+            "--out",
+            str(output),
+            "--graph-id",
+            "invoice-intake",
+        ]
+    )
 
     document = json.loads(output.read_text(encoding="utf-8"))
     assert result == _cli.ExitCode.SUCCESS
     assert output.read_text(encoding="utf-8") == canonical_json(document) + "\n"
     assert document["completeness"]["status"] == "complete"
+    assert document["graphs"][0]["id"] == "invoice-intake"
 
 
 def test_strict_incomplete_writes_document_and_returns_documented_status(
@@ -182,7 +192,10 @@ def test_unsupported_version_has_its_own_status(
     target = tmp_path / "graph.py"
     target.write_text("graph = object()\n", encoding="utf-8")
 
-    def unsupported(_graph: object, *, strict: bool) -> dict[str, object]:
+    def unsupported(
+        _graph: object, *, graph_id: str, strict: bool
+    ) -> dict[str, object]:
+        assert graph_id == "main"
         raise _cli.UnsupportedLangGraphVersionError(
             installed_version="1.2.12",
             supported_specifier=">=1.2.10,<=1.2.11",

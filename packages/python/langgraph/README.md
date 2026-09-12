@@ -18,13 +18,16 @@ from agent_topology.langgraph import IncompleteTopologyError, describe
 
 # compiled_graph is the result of your application's StateGraph.compile().
 try:
-    document = describe(compiled_graph, strict=True)
+    document = describe(compiled_graph, graph_id="invoice-intake", strict=True)
 except IncompleteTopologyError as error:
     document = error.document
     print(document["completeness"]["gaps"])
 ```
 
-The optional `depth` argument defaults to `0`, keeping subgraphs opaque. Read
+The optional `graph_id` is a non-empty document-local address and defaults to
+`main`; choose a distinct stable value before composing several outputs. The CLI
+spells it `--graph-id`. The optional `depth` argument defaults to `0`, keeping
+subgraphs opaque. Read
 both graph-specific gaps and producer-wide limitations. Only gaps fail strict
 mode. The CLI's `--strict` option still writes an incomplete document and exits
 with status `6`.
