@@ -17,6 +17,7 @@ authority for why a choice was made and when it may be revisited.
 | Stable output, canonical ordering, structure hashes, join identity, or supported framework-version ranges | [ADR 0003](0003-canonical-ordering-and-versioned-structure-hash.md) |
 | Diagram data, renderers, visual output, or what conformance compares | [ADR 0004](0004-rendering-is-not-part-of-the-core-document.md) |
 | Core versus `x-*` extensions, vendor neutrality, v0 status, or the evidence required from a second framework | [ADR 0005](0005-vendor-neutrality-is-provisional-at-v0.md) |
+| Experimental consumer interpretation, branch selection evidence, opaque children, sentinel roles, or observed roots versus confirmed entries | [ADR 0008](0008-experimental-consumer-interpretation.md) |
 | Monorepo/package boundaries, Python versus TypeScript, independent releases, published names/imports, or the `agt` command name | [ADR 0006](0006-repository-layout-and-language-boundaries.md) |
 | Ownership of the `agt` executable, `describe` dispatch, CLI producer discovery, command collisions, or `agt diff` ownership | [ADR 0007](0007-langgraph-owns-the-foundation-cli.md) |
 
@@ -39,6 +40,7 @@ For a change spanning several rows, read every routed ADR. Common paths are:
 | [0005](0005-vendor-neutrality-is-provisional-at-v0.md) | Accepted | Treat the core as provisional until a structurally different framework tests it. |
 | [0006](0006-repository-layout-and-language-boundaries.md) | Accepted | Use independently versioned, framework-named packages with explicit published names and `agt` as the short CLI name. |
 | [0007](0007-langgraph-owns-the-foundation-cli.md) | Accepted | Let the LangGraph distribution alone publish the Foundation `agt describe` command and defer a unified CLI until evidence requires one. |
+| [0008](0008-experimental-consumer-interpretation.md) | Accepted | Define revision 1 of the experimental graph interpretation extension, independent validation, and T3–T6 implementation criteria without changing core/hash semantics. |
 
 ## Adding or changing a decision
 

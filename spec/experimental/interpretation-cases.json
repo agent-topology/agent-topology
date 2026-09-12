@@ -1,0 +1,2036 @@
+[
+  {
+    "name": "legacy-absent",
+    "extensionStatus": "absent",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "1ee36112e66dc64175eaead8a95c6e71af89009e81f19bf31aa1d1044b277be9"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "165f1e1d2e54d9fafb9aaef3a29809686acd14145977852c6474da1df319571c"
+  },
+  {
+    "name": "known-negative-ordinary",
+    "extensionStatus": "valid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "node",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "ordinary"
+                },
+                "subgraph": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "not-child"
+                }
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "1ee36112e66dc64175eaead8a95c6e71af89009e81f19bf31aa1d1044b277be9"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "dbc8be2aacac5169e441e4864a15f1576e62a4486dc768e5b5ea62c28735e357"
+  },
+  {
+    "name": "known-positive-opaque",
+    "extensionStatus": "valid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "node",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "ordinary"
+                },
+                "subgraph": {
+                  "evidence": {
+                    "kind": "compiled-child",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "opaque-child"
+                }
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "1ee36112e66dc64175eaead8a95c6e71af89009e81f19bf31aa1d1044b277be9"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "a9294e3c0dbe62f8f8043de3b17e6140ca81ca5306eee0bd1683f1fd34ef36b1"
+  },
+  {
+    "name": "unknown-identity",
+    "extensionStatus": "valid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "node",
+                "sentinel": {
+                  "reason": "identity-unavailable",
+                  "status": "unknown"
+                },
+                "subgraph": {
+                  "reason": "identity-unavailable",
+                  "status": "unknown"
+                }
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "1ee36112e66dc64175eaead8a95c6e71af89009e81f19bf31aa1d1044b277be9"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "24d9e96a19d14b97b6102f71adc39743ff97e41ba04a1fa38fd99cfa295f6c3b"
+  },
+  {
+    "name": "known-direct-declarations",
+    "extensionStatus": "valid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [
+              {
+                "id": "split-a",
+                "kind": "direct",
+                "source": "split",
+                "target": "a"
+              },
+              {
+                "id": "split-b",
+                "kind": "direct",
+                "source": "split",
+                "target": "b"
+              }
+            ],
+            "entryNodeIds": [
+              "split"
+            ],
+            "exitNodeIds": [
+              "a",
+              "b"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "a"
+              },
+              {
+                "id": "b"
+              },
+              {
+                "id": "split"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "branch": {
+                  "evidence": {
+                    "kind": "unconditional-edges",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "all-declared"
+                },
+                "nodeId": "split"
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "b04ebc28ade7087e87b622aaf7cded86634f96ab41554cfeb2d07ff6fe13457f"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "4053ca60ea498b5a21cc7300144cdcf51dad8d3d12ffbe56d4c556745c7c2971"
+  },
+  {
+    "name": "conditional-selection-unknown",
+    "extensionStatus": "valid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [
+              {
+                "id": "router-a",
+                "kind": "conditional",
+                "source": "router",
+                "target": "a"
+              },
+              {
+                "id": "router-b",
+                "kind": "conditional",
+                "source": "router",
+                "target": "b"
+              }
+            ],
+            "entryNodeIds": [
+              "router"
+            ],
+            "exitNodeIds": [
+              "a",
+              "b"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "a"
+              },
+              {
+                "id": "b"
+              },
+              {
+                "id": "router"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "branch": {
+                  "reason": "selection-not-observable",
+                  "status": "unknown"
+                },
+                "nodeId": "router"
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "b4a53104590b7718c04fe397ee8afb323fb73327c78770864470830818e09300"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "237a0f895aad1e15e3c4f5e515f2183cd44b4aca4df6564359c1530ab4fff6a3"
+  },
+  {
+    "name": "observed-root-is-not-confirmed-entry",
+    "extensionStatus": "valid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [
+          {
+            "code": "unknown-routing-targets",
+            "element": {
+              "graphId": "main",
+              "id": "router",
+              "kind": "node"
+            },
+            "message": "Targets unavailable."
+          }
+        ],
+        "status": "incomplete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [
+              {
+                "id": "start-router",
+                "kind": "direct",
+                "source": "start",
+                "target": "router"
+              },
+              {
+                "id": "target-end",
+                "kind": "direct",
+                "source": "target",
+                "target": "end"
+              }
+            ],
+            "entryNodeIds": [
+              "start",
+              "target"
+            ],
+            "exitNodeIds": [
+              "end",
+              "router"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "end"
+              },
+              {
+                "id": "router"
+              },
+              {
+                "id": "start"
+              },
+              {
+                "id": "target"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "evidence": {
+                    "kind": "framework-entry",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "observedRoot": false,
+                  "status": "known",
+                  "value": "not-entry"
+                },
+                "nodeId": "end",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "framework-sentinel",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "end"
+                }
+              },
+              {
+                "branch": {
+                  "reason": "selection-not-observable",
+                  "status": "unknown"
+                },
+                "entry": {
+                  "observedRoot": false,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "router"
+              },
+              {
+                "entry": {
+                  "evidence": {
+                    "kind": "framework-entry",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "observedRoot": true,
+                  "status": "known",
+                  "value": "confirmed"
+                },
+                "nodeId": "start",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "framework-sentinel",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "start"
+                }
+              },
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "target"
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "405ad51127cd3cb6ce5f569fb908291f0c368af0e543c3c10e80f67ff5e225d4"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "2a87ba53fb1cc4d617ac696f73f1952b0b8ce70f7cc871cb0ea9dace3c569470"
+  },
+  {
+    "name": "join-target-not-root",
+    "extensionStatus": "valid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "a",
+              "b"
+            ],
+            "exitNodeIds": [
+              "joined"
+            ],
+            "joins": [
+              {
+                "id": "join",
+                "sources": [
+                  "a",
+                  "b"
+                ],
+                "target": "joined"
+              }
+            ],
+            "nodes": [
+              {
+                "id": "a"
+              },
+              {
+                "id": "b"
+              },
+              {
+                "id": "joined"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "observedRoot": false,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "joined"
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "fc36bb92c911fb7648836666d7abf4765cc52a7a24ec8d8805edd7b891e11e3b"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "7455e71fd670d5443b0e98d43c7e8ef1de0e8cf076ea9daefb69a8739a055429"
+  },
+  {
+    "name": "confirmed-entry-with-incoming-cycle",
+    "extensionStatus": "valid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [
+              {
+                "id": "a-start",
+                "kind": "direct",
+                "source": "a",
+                "target": "start"
+              },
+              {
+                "id": "start-a",
+                "kind": "direct",
+                "source": "start",
+                "target": "a"
+              }
+            ],
+            "entryNodeIds": [],
+            "exitNodeIds": [],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "a"
+              },
+              {
+                "id": "start"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "evidence": {
+                    "kind": "framework-entry",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "observedRoot": false,
+                  "status": "known",
+                  "value": "confirmed"
+                },
+                "nodeId": "start"
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "aee146cd18a189455f0459039b3c6d60fc29f1dbd60cec6d0fca67a8efa1481b"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "46ff4957faa27d69e9ebdcf924ef82ba2d7f9ff8951c39bbe5bc41545d77e8b6"
+  },
+  {
+    "name": "expanded-unmapped-unknown",
+    "extensionStatus": "valid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "child"
+            ],
+            "exitNodeIds": [
+              "child"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "child"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "scope-not-inspected",
+                  "status": "unknown"
+                },
+                "nodeId": "child",
+                "subgraph": {
+                  "reason": "scope-not-inspected",
+                  "status": "unknown"
+                }
+              }
+            ],
+            "traversalDepth": 2,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "5cab5177bd58c7c634283341bc42f9972b813e045a6bce97cafbdbf5d9331659"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "afb54906e296bd28b90a6b184bd233683d8b360b35f0ad088ddeafd39609ed42"
+  },
+  {
+    "name": "unsupported-revision",
+    "extensionStatus": "unsupported",
+    "shapeValid": false,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "node",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "ordinary"
+                },
+                "subgraph": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "not-child"
+                }
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "2"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "1ee36112e66dc64175eaead8a95c6e71af89009e81f19bf31aa1d1044b277be9"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "157da2559136e8d77f9cdbdcb1bbb62164d4a9711b90d87999c45a8d46f34fc3"
+  },
+  {
+    "name": "known-without-evidence",
+    "extensionStatus": "invalid",
+    "shapeValid": false,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "node",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "ordinary"
+                },
+                "subgraph": {
+                  "status": "known",
+                  "value": "opaque-child"
+                }
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "1ee36112e66dc64175eaead8a95c6e71af89009e81f19bf31aa1d1044b277be9"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "0e47e60eda660e2fec5434a8f75c79f9717626a930cb27120cd027b19953ace6"
+  },
+  {
+    "name": "unknown-with-value",
+    "extensionStatus": "invalid",
+    "shapeValid": false,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [
+              {
+                "id": "router-a",
+                "kind": "conditional",
+                "source": "router",
+                "target": "a"
+              },
+              {
+                "id": "router-b",
+                "kind": "conditional",
+                "source": "router",
+                "target": "b"
+              }
+            ],
+            "entryNodeIds": [
+              "router"
+            ],
+            "exitNodeIds": [
+              "a",
+              "b"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "a"
+              },
+              {
+                "id": "b"
+              },
+              {
+                "id": "router"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "branch": {
+                  "reason": "selection-not-observable",
+                  "status": "unknown",
+                  "value": "all-declared"
+                },
+                "nodeId": "router"
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "b4a53104590b7718c04fe397ee8afb323fb73327c78770864470830818e09300"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "3af6c67160bb0079df808ab7ec48be631ae613051ab82128a9ff8d9c3b6caed8"
+  },
+  {
+    "name": "unapproved-exclusive",
+    "extensionStatus": "invalid",
+    "shapeValid": false,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [
+              {
+                "id": "split-a",
+                "kind": "direct",
+                "source": "split",
+                "target": "a"
+              },
+              {
+                "id": "split-b",
+                "kind": "direct",
+                "source": "split",
+                "target": "b"
+              }
+            ],
+            "entryNodeIds": [
+              "split"
+            ],
+            "exitNodeIds": [
+              "a",
+              "b"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "a"
+              },
+              {
+                "id": "b"
+              },
+              {
+                "id": "split"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "branch": {
+                  "evidence": {
+                    "kind": "unconditional-edges",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "exclusive"
+                },
+                "nodeId": "split"
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "b04ebc28ade7087e87b622aaf7cded86634f96ab41554cfeb2d07ff6fe13457f"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "639b3e647e020f2658247ba186448e8efec736bc8977e00dc510e678e86a5922"
+  },
+  {
+    "name": "mismatched-evidence",
+    "extensionStatus": "invalid",
+    "shapeValid": false,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "node",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "ordinary"
+                },
+                "subgraph": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "opaque-child"
+                }
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "1ee36112e66dc64175eaead8a95c6e71af89009e81f19bf31aa1d1044b277be9"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "a4ecee864138a27622438d1659547a284fb67b3aedee9473511c0ba39d481cb5"
+  },
+  {
+    "name": "dangling-node",
+    "extensionStatus": "invalid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "missing",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "ordinary"
+                },
+                "subgraph": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "not-child"
+                }
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "1ee36112e66dc64175eaead8a95c6e71af89009e81f19bf31aa1d1044b277be9"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "a55419d105023c2c415768da4f55b6594deb9850fe097f9034c9983804d1708e"
+  },
+  {
+    "name": "duplicate-node",
+    "extensionStatus": "invalid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "node",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "ordinary"
+                },
+                "subgraph": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "not-child"
+                }
+              },
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "node",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "ordinary"
+                },
+                "subgraph": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "not-child"
+                }
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "1ee36112e66dc64175eaead8a95c6e71af89009e81f19bf31aa1d1044b277be9"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "f1e01c169d5aca5254c2c71169579319445391b879faa7e77c3ef358aecf99be"
+  },
+  {
+    "name": "wrong-observed-root",
+    "extensionStatus": "invalid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "observedRoot": false,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "node",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "ordinary"
+                },
+                "subgraph": {
+                  "evidence": {
+                    "kind": "ordinary-node",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "not-child"
+                }
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "1ee36112e66dc64175eaead8a95c6e71af89009e81f19bf31aa1d1044b277be9"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "5ebcfa94d4b66011724202bb1d8303a17985e0fa79b99d99741a3d238d967bab"
+  },
+  {
+    "name": "conditional-cannot-prove-all",
+    "extensionStatus": "invalid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [
+              {
+                "id": "router-a",
+                "kind": "conditional",
+                "source": "router",
+                "target": "a"
+              },
+              {
+                "id": "router-b",
+                "kind": "conditional",
+                "source": "router",
+                "target": "b"
+              }
+            ],
+            "entryNodeIds": [
+              "router"
+            ],
+            "exitNodeIds": [
+              "a",
+              "b"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "a"
+              },
+              {
+                "id": "b"
+              },
+              {
+                "id": "router"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "branch": {
+                  "evidence": {
+                    "kind": "unconditional-edges",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "all-declared"
+                },
+                "nodeId": "router"
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "b4a53104590b7718c04fe397ee8afb323fb73327c78770864470830818e09300"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "0b3a8ea01e2622814e59ba6b3456e54d46687fe41b7502d01d411f1c3d3cb8e4"
+  },
+  {
+    "name": "sentinel-entry-contradiction",
+    "extensionStatus": "invalid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [
+          {
+            "code": "unknown-routing-targets",
+            "element": {
+              "graphId": "main",
+              "id": "router",
+              "kind": "node"
+            },
+            "message": "Targets unavailable."
+          }
+        ],
+        "status": "incomplete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [
+              {
+                "id": "start-router",
+                "kind": "direct",
+                "source": "start",
+                "target": "router"
+              },
+              {
+                "id": "target-end",
+                "kind": "direct",
+                "source": "target",
+                "target": "end"
+              }
+            ],
+            "entryNodeIds": [
+              "start",
+              "target"
+            ],
+            "exitNodeIds": [
+              "end",
+              "router"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "end"
+              },
+              {
+                "id": "router"
+              },
+              {
+                "id": "start"
+              },
+              {
+                "id": "target"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "evidence": {
+                    "kind": "framework-entry",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "observedRoot": false,
+                  "status": "known",
+                  "value": "confirmed"
+                },
+                "nodeId": "end",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "framework-sentinel",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "end"
+                }
+              },
+              {
+                "branch": {
+                  "reason": "selection-not-observable",
+                  "status": "unknown"
+                },
+                "entry": {
+                  "observedRoot": false,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "router"
+              },
+              {
+                "entry": {
+                  "evidence": {
+                    "kind": "framework-entry",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "observedRoot": true,
+                  "status": "known",
+                  "value": "confirmed"
+                },
+                "nodeId": "start",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "framework-sentinel",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "start"
+                }
+              },
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "target"
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "405ad51127cd3cb6ce5f569fb908291f0c368af0e543c3c10e80f67ff5e225d4"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "041189a384af49a3dc57e2473c097d63e39bf69f9c8a5d40f9c7b58d6906b683"
+  },
+  {
+    "name": "unsorted-records",
+    "extensionStatus": "invalid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [
+          {
+            "code": "unknown-routing-targets",
+            "element": {
+              "graphId": "main",
+              "id": "router",
+              "kind": "node"
+            },
+            "message": "Targets unavailable."
+          }
+        ],
+        "status": "incomplete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [
+              {
+                "id": "start-router",
+                "kind": "direct",
+                "source": "start",
+                "target": "router"
+              },
+              {
+                "id": "target-end",
+                "kind": "direct",
+                "source": "target",
+                "target": "end"
+              }
+            ],
+            "entryNodeIds": [
+              "start",
+              "target"
+            ],
+            "exitNodeIds": [
+              "end",
+              "router"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "end"
+              },
+              {
+                "id": "router"
+              },
+              {
+                "id": "start"
+              },
+              {
+                "id": "target"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "target"
+              },
+              {
+                "entry": {
+                  "evidence": {
+                    "kind": "framework-entry",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "observedRoot": true,
+                  "status": "known",
+                  "value": "confirmed"
+                },
+                "nodeId": "start",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "framework-sentinel",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "start"
+                }
+              },
+              {
+                "branch": {
+                  "reason": "selection-not-observable",
+                  "status": "unknown"
+                },
+                "entry": {
+                  "observedRoot": false,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "router"
+              },
+              {
+                "entry": {
+                  "evidence": {
+                    "kind": "framework-entry",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "observedRoot": false,
+                  "status": "known",
+                  "value": "not-entry"
+                },
+                "nodeId": "end",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "framework-sentinel",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "end"
+                }
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "405ad51127cd3cb6ce5f569fb908291f0c368af0e543c3c10e80f67ff5e225d4"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "1d5fcdd705164fe1e49409cf2f690b23691068f96db7eb236c51ca8c2421eb57"
+  },
+  {
+    "name": "wrong-placement",
+    "extensionStatus": "invalid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "1ee36112e66dc64175eaead8a95c6e71af89009e81f19bf31aa1d1044b277be9"
+      },
+      "topologyVersion": "0.1",
+      "x-topology-interpretation": {
+        "nodes": [
+          {
+            "entry": {
+              "observedRoot": true,
+              "reason": "entry-not-established",
+              "status": "unknown"
+            },
+            "nodeId": "node",
+            "sentinel": {
+              "evidence": {
+                "kind": "ordinary-node",
+                "source": "contract-example.structural-surface"
+              },
+              "status": "known",
+              "value": "ordinary"
+            },
+            "subgraph": {
+              "evidence": {
+                "kind": "ordinary-node",
+                "source": "contract-example.structural-surface"
+              },
+              "status": "known",
+              "value": "not-child"
+            }
+          }
+        ],
+        "traversalDepth": 0,
+        "version": "1"
+      }
+    },
+    "canonicalSha256": "1d3db06fb0f9060327add5712d4f2382053b1a7c57c6b3ebf5e49cc1b2921512"
+  }
+]

@@ -103,3 +103,12 @@ python3 -m unittest discover -s spec/tests -v
 
 The examples under `tests/documents` measure schema behavior only. Shared graph
 meanings and producer conformance fixtures live under `conformance/`.
+
+## Experimental interpretation contract
+
+[ADR 0008](../docs/decisions/0008-experimental-consumer-interpretation.md) defines
+a separately validated `x-topology-interpretation` revision 1. Its schema and
+authored positive, negative and unknown examples live in `experimental/`; they
+do not alter the core schema or public validator API. Core validation alone
+does not validate extension meaning. Equal structure hashes do not establish
+equal extension metadata. Producer implementation follows in #97–#100.
