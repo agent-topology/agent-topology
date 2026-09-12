@@ -145,6 +145,62 @@ The [shared cases](../../spec/derived-join-edges-cases.json) exercise this API i
 both languages. The helper adds no document fields and changes neither the core
 schema nor structure-hash algorithm 1.
 
+## OR convergence and first-trigger firing
+
+Three separate claims are easy to conflate at a target with multiple incoming
+connections: **connectivity** (an edge records that a source can reach a
+target), **all-source-required convergence** (a declared multi-source join
+records that every listed source is required, per
+[ADR 0003](../decisions/0003-canonical-ordering-and-versioned-structure-hash.md)),
+and **invocation/reset policy** (how many times the target actually fires, and
+whether one trigger suppresses or is suppressed by a later one). The core
+contract asserts only the first two.
+[ADR 0001](../decisions/0001-scope-topology-extraction-and-trace-correlation.md)
+scopes fan-out width and anything decided at runtime out of the document, and
+[ADR 0008](../decisions/0008-experimental-consumer-interpretation.md)'s
+revision `1` of `x-topology-interpretation` adds `branch`, `subgraph`,
+`sentinel`, and `entry` facts and deliberately no convergence firing-policy
+fact. Joins retain their existing all-source-required meaning; nothing here
+changes it.
+
+[F7](https://github.com/agent-topology/agent-topology-testbed/blob/e0e23c5e111db5a25fba736377d05f43df9fd5a0/findings/F7-or-firing-policy/README.md)
+inspects the boundary against pinned CrewAI `1.15.21` execution (source tag
+`4ed3dc929d0ee6b6981be452b2094c56fbbe7457`, CPython `3.11.16`). Its four
+retained C1 cases, execution order preserved with no deduplication:
+
+| Case | Execution log | Join invocations |
+| --- | --- | --- |
+| AND, both sources | `a, route, b, join` | 1 |
+| AND, only `a` | `a, route` | 0 |
+| OR, both sources | `a, route, join, b` | 1 |
+| OR, only `a` | `a, route, join` | 1 |
+
+In the OR cases, `join` fires before the second source (`b`) completes and
+does not fire again once it does. F7's authored counterexample maps that OR
+connectivity to ordinary edges with no declared join —
+`{"source": "a", "target": "join"}` and `{"source": "b", "target": "join"}` —
+and compares two hypothetical consumer policies against the same observed
+arrivals: firing on every incoming trigger reaches invocation count 2 after
+`b` and fails the once-only case; firing on the first trigger and latching
+until reset matches all four runs but requires a reset rule the mapping does
+not express or scope. **Direct edges alone cannot choose between per-trigger
+firing and first-trigger firing with a latch.** Do not infer either policy
+from ordinary edges, and do not turn this missing guarantee into a new
+completeness gap — it is not a gap on any graph element, it is an unmodeled
+policy question.
+
+This is contract inspection backed by saved, pinned framework execution plus
+comparison against this repository's target contract. It is **not** output of
+a CrewAI producer for this contract, **not** a claim about universal CrewAI
+semantics beyond the inspected release, and **not** a measured
+`agent-topology` scheduler — there is no execution engine here to measure.
+Treat this as an explicit **beta.3 limitation**: the current contract has no
+field for first-trigger/once-only firing or its reset scope, and none is
+added by this note. A stronger OR representation remains future work
+requiring its own evidence and contract decision. Migration and release-note
+wording for beta.3 is tracked in
+[#104](https://github.com/agent-topology/agent-topology/issues/104), not here.
+
 ## Experimental branch interpretation
 
 Current source (unreleased, after published beta.2) emits the `branch`, `subgraph`, `sentinel` and `entry` facts
