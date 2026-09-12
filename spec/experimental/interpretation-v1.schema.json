@@ -1,0 +1,413 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Experimental graph interpretation revision 1",
+  "type": "object",
+  "properties": {
+    "version": {
+      "const": "1"
+    },
+    "traversalDepth": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "branch": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  },
+                  "value": {
+                    "const": "all-declared"
+                  },
+                  "evidence": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "unconditional-edges"
+                      },
+                      "source": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "source"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "status",
+                  "value",
+                  "evidence"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "unknown"
+                  },
+                  "reason": {
+                    "enum": [
+                      "selection-not-observable",
+                      "scope-not-inspected"
+                    ]
+                  }
+                },
+                "required": [
+                  "status",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "subgraph": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  },
+                  "value": {
+                    "const": "opaque-child"
+                  },
+                  "evidence": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "compiled-child"
+                      },
+                      "source": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "source"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "status",
+                  "value",
+                  "evidence"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  },
+                  "value": {
+                    "const": "not-child"
+                  },
+                  "evidence": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "ordinary-node"
+                      },
+                      "source": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "source"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "status",
+                  "value",
+                  "evidence"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "unknown"
+                  },
+                  "reason": {
+                    "enum": [
+                      "identity-unavailable",
+                      "scope-not-inspected"
+                    ]
+                  }
+                },
+                "required": [
+                  "status",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "sentinel": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  },
+                  "value": {
+                    "const": "start"
+                  },
+                  "evidence": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "framework-sentinel"
+                      },
+                      "source": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "source"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "status",
+                  "value",
+                  "evidence"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  },
+                  "value": {
+                    "const": "end"
+                  },
+                  "evidence": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "framework-sentinel"
+                      },
+                      "source": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "source"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "status",
+                  "value",
+                  "evidence"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  },
+                  "value": {
+                    "const": "ordinary"
+                  },
+                  "evidence": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "ordinary-node"
+                      },
+                      "source": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "source"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "status",
+                  "value",
+                  "evidence"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "unknown"
+                  },
+                  "reason": {
+                    "enum": [
+                      "identity-unavailable",
+                      "scope-not-inspected"
+                    ]
+                  }
+                },
+                "required": [
+                  "status",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "entry": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  },
+                  "value": {
+                    "const": "confirmed"
+                  },
+                  "evidence": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "framework-entry"
+                      },
+                      "source": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "source"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "observedRoot": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "status",
+                  "value",
+                  "evidence",
+                  "observedRoot"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  },
+                  "value": {
+                    "const": "not-entry"
+                  },
+                  "evidence": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "framework-entry"
+                      },
+                      "source": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "source"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "observedRoot": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "status",
+                  "value",
+                  "evidence",
+                  "observedRoot"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "unknown"
+                  },
+                  "reason": {
+                    "enum": [
+                      "entry-not-established",
+                      "scope-not-inspected"
+                    ]
+                  },
+                  "observedRoot": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "status",
+                  "reason",
+                  "observedRoot"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "required": [
+          "nodeId"
+        ],
+        "additionalProperties": false,
+        "minProperties": 2
+      }
+    }
+  },
+  "required": [
+    "version",
+    "traversalDepth",
+    "nodes"
+  ],
+  "additionalProperties": false
+}
