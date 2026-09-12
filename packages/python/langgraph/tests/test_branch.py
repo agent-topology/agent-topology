@@ -89,7 +89,9 @@ def compile_case(case, reverse=False):
 
 
 def meaning(document):
-    records = copy.deepcopy(document["graphs"][0][KEY]["nodes"])
+    records = [
+        r for r in copy.deepcopy(document["graphs"][0][KEY]["nodes"]) if "branch" in r
+    ]
     for record in records:
         if "evidence" in record["branch"]:
             assert (
@@ -124,6 +126,7 @@ def test_shared_branch_meaning(case, depth, monkeypatch):
     # Compare the full historical core path, including x-langgraph and completeness.
     with monkeypatch.context() as context:
         context.setattr(module, "_branch_interpretation", lambda *args: None)
+        context.setattr(module, "_subgraph_interpretation", lambda *args: None)
         baseline = describe(compiled, depth=depth)
     stripped = copy.deepcopy(actual)
     del stripped["graphs"][0][KEY]
@@ -238,7 +241,9 @@ def test_hidden_dynamic_declaration_requires_producer_conformance():
     document = describe(compile_case(case))
     assert meaning(document)["router"]["status"] == "unknown"
     # The document cannot refute this lie: only inspection of real declarations can.
-    document["graphs"][0][KEY]["nodes"][0]["branch"] = {
+    next(r for r in document["graphs"][0][KEY]["nodes"] if r["nodeId"] == "router")[
+        "branch"
+    ] = {
         **CASES[0]["expected"]["router"],
         "evidence": {"kind": "unconditional-edges", "source": "authored-test"},
     }

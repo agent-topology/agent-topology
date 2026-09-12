@@ -229,6 +229,42 @@ def _branch_interpretation(
     extension["nodes"] = [records[node_id] for node_id in sorted(records)]
 
 
+def _subgraph_interpretation(
+    compiled_graph: CompiledStateGraph, drawable: Any, graph: dict[str, Any], depth: int
+) -> None:
+    """Confirm exposed compiled children without looking inside user callables."""
+    extension = graph.setdefault(
+        "x-topology-interpretation",
+        {"version": "1", "traversalDepth": depth, "nodes": []},
+    )
+    records = {record["nodeId"]: record for record in extension["nodes"]}
+    for node in graph["structure"]["nodes"]:
+        node_id = node["id"]
+        if node_id in {START, END} or "subgraphId" in node:
+            continue
+        runtime_node = compiled_graph.nodes.get(node_id)
+        mapped = (
+            runtime_node is not None
+            and drawable.nodes[node_id].data is runtime_node.bound
+        )
+        if not mapped:
+            fact = {"status": "unknown", "reason": "scope-not-inspected"}
+        elif isinstance(runtime_node.bound, CompiledStateGraph):
+            fact = {
+                "status": "known",
+                "value": "opaque-child",
+                "evidence": {
+                    "kind": "compiled-child",
+                    "source": "compiled.nodes.bound",
+                },
+            }
+        else:
+            # Functions and wrappers may hide child invocation; absence is not proved.
+            fact = {"status": "unknown", "reason": "identity-unavailable"}
+        records.setdefault(node_id, {"nodeId": node_id})["subgraph"] = fact
+    extension["nodes"] = [records[node_id] for node_id in sorted(records)]
+
+
 def describe(
     compiled_graph: CompiledStateGraph,
     *,
@@ -310,6 +346,7 @@ def describe(
         "x-langgraph": {"traversalDepth": depth},
     }
     _branch_interpretation(compiled_graph, drawable, graph_document, depth)
+    _subgraph_interpretation(compiled_graph, drawable, graph_document, depth)
     if isinstance(graph_name, str) and graph_name:
         graph_document["name"] = graph_name
 

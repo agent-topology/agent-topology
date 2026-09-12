@@ -101,7 +101,7 @@ For an offline consumer with sample trace data, continue to the
 
 ## Experimental branch interpretation
 
-Current source (unreleased, after published beta.2) emits only the `branch` fact
+Current source (unreleased, after published beta.2) emits the `branch` and `subgraph` facts
 of graph-level `x-topology-interpretation` revision `"1"`. The requested
 `traversalDepth` describes the snapshot; records refer to visible node IDs and
 are sorted by Unicode code point. Other experimental fact families remain
@@ -131,3 +131,33 @@ not proven vendor neutrality or a promoted core contract.
 
 The [producer evidence record](../../conformance/branch-evidence.md) identifies
 the supported framework versions, inspected declarations, and shared tests.
+
+## Experimental opaque children
+
+Current unreleased source also emits `subgraph` under revision `"1"`; published
+beta.2 does not. A supported-valid `known/opaque-child` fact with
+`compiled-child` evidence confirms a compiled child behind that visible node.
+A consumer may offer an expansion attempt using a higher requested depth, but
+must not promise that depth 1 succeeds or provides complete child metadata.
+The extension creates no `subgraphId`, placeholder graph, or new core structure.
+
+Functions and wrappers can hide a child. The current producers therefore emit
+`unknown/identity-unavailable` for those root nodes, including ordinary functions
+with the same ID and display name as a child. They do not emit `not-child` from
+callable type or naming. The contract reserves known `not-child` for positive
+structural evidence excluding a child. Unmapped expanded child and grandchild
+nodes use `unknown/scope-not-inspected`; removed parents have no record.
+Retained root identities can keep their facts. Existing
+`expanded-subgraph-metadata` gaps remain visible.
+
+After core validation, validate the separate extension schema and semantic
+references before selecting nodes with known `opaque-child`. A materialized
+`subgraphId` and an opaque-child assertion on the same node are invalid. Legacy
+absence means no assertion; invalid and unsupported-revision extensions provide
+no trusted child interpretation. Show the valid core and local interpretation
+status without interpreting missing facts as ordinary nodes. Unknown facts do
+not change core completeness or strict mode, and equal structure hashes do not
+mean equal child metadata. Preserve the source document when offering expansion.
+
+See the [child evidence and conformance record](../../conformance/subgraph-evidence.md)
+for structural surfaces, framework versions, and counterexamples.
