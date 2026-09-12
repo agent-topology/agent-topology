@@ -101,11 +101,10 @@ For an offline consumer with sample trace data, continue to the
 
 ## Experimental branch interpretation
 
-Current source (unreleased, after published beta.2) emits the `branch`, `subgraph` and `sentinel` facts
+Current source (unreleased, after published beta.2) emits the `branch`, `subgraph`, `sentinel` and `entry` facts
 of graph-level `x-topology-interpretation` revision `"1"`. The requested
 `traversalDepth` describes the snapshot; records refer to visible node IDs and
-are sorted by Unicode code point. Other experimental fact families remain
-separate implementation work. See [ADR 0008](../decisions/0008-experimental-consumer-interpretation.md).
+are sorted by Unicode code point. See [ADR 0008](../decisions/0008-experimental-consumer-interpretation.md).
 
 | Branch fact | Consumer meaning |
 | --- | --- |
@@ -193,3 +192,49 @@ local extension status. Core validation alone cannot certify a role. Equal core
 hashes do not establish equal role metadata; compare extension revision and
 canonical content for interpretation caches. This is an experimental consumer
 contract, not a renderer, core promotion or proof of vendor neutrality.
+
+## Experimental entry interpretation
+
+Current unreleased Python and TypeScript producers emit `entry` for every visible
+node in graph-level `x-topology-interpretation` revision `"1"`. Published beta.2
+does not. Validate the core, then the separate extension schema and semantic
+checks before trusting a fact; core validation alone cannot certify metadata.
+
+`observedRoot` is true exactly when no emitted edge or join targets that node.
+It describes this snapshot's connectivity independently of the entry assertion
+and `entryNodeIds`. A confirmed entry may have incoming cycle edges, and a join
+target is not an observed root. Neither incoming connections nor their absence
+establish execution-entry meaning.
+
+| Entry fact | Consumer meaning |
+| --- | --- |
+| `known/confirmed`, evidence `framework-entry` | The inspected framework declares this execution entry. Current LangGraph producers assert this only for the confirmed START sentinel. |
+| `known/not-entry`, evidence `framework-entry` | Affirmative framework evidence excludes this entry. Current LangGraph producers assert this only for the confirmed END sentinel. |
+| `unknown/entry-not-established` | Entry meaning could not be established for this inspected root-scope node. Show candidate uncertainty locally when `observedRoot` is true. |
+| `unknown/scope-not-inspected` | No mapping to inspected scope supports entry meaning, including expanded child identities. The observed-root calculation still applies. |
+| Absent extension, record or entry fact | No assertion. Absence is not a negative, and other fact families do not supply a missing entry assertion. |
+
+In the minimal unknown-routing example, `entryNodeIds` still contains START and
+`target`. START is confirmed; target is an observed candidate with unknown entry
+meaning. Keep the `unknown-routing-targets` gap on `router`. Do not attribute the
+candidate to a particular router, invent a connecting edge, or remove the
+candidate to improve a drawing. The same uncertainty applies to a disconnected
+candidate even when `completeness.status` is `complete` and there are no gaps:
+show “observed candidate; entry not established” at that node. Unknown entry
+facts do not change core completeness or Python strict extraction.
+
+For migration, treat legacy entry arrays as observed candidates for this
+interpretation. Keep unsupported revisions opaque; invalid or unsupported
+metadata supplies no trusted entry facts. Expose the valid core and local
+interpretation status, retaining connections, identities and existing gaps.
+Do not match literal sentinel IDs to manufacture missing entry metadata.
+
+Hash equality is not metadata equality. Algorithm 1 excludes this extension;
+adding, removing or correcting entry facts leaves the structure hash unchanged.
+Caches must compare extension revision and canonical content as well as core
+identity. Do not rewrite stored beta.2 documents or treat current source as a
+published beta.3 release. This is experimental interpretation, with no core
+promotion, new renderer API or proven vendor-neutrality claim.
+
+See the [version-pinned evidence and native recipes](../../conformance/entry-evidence.md)
+and [framework-free consumer assertions](../../spec/tests/test_entry_consumer.py).

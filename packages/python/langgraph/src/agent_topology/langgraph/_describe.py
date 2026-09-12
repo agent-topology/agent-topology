@@ -265,6 +265,51 @@ def _subgraph_interpretation(
     extension["nodes"] = [records[node_id] for node_id in sorted(records)]
 
 
+def _node_identity(
+    compiled_graph: CompiledStateGraph, drawable: Any, node_id: str, depth: int
+) -> dict[str, Any]:
+    """Inspect framework ownership for sentinel and entry interpretations."""
+    builder_nodes = compiled_graph.builder.nodes
+    data = drawable.nodes[node_id].data
+    runtime_node = compiled_graph.nodes.get(node_id)
+    mapped = runtime_node is not None and data is runtime_node.bound
+    fact: dict[str, Any] = {
+        "status": "unknown",
+        "reason": "scope-not-inspected" if depth > 0 else "identity-unavailable",
+    }
+    if node_id in {START, END}:
+        fact["reason"] = "identity-unavailable"
+        owned = (
+            compiled_graph.input_channels == START
+            and node_id not in builder_nodes
+            and (
+                (node_id == START and mapped)
+                or (node_id == END and runtime_node is None and data is None)
+            )
+        )
+        if owned:
+            fact = {
+                "status": "known",
+                "value": "start" if node_id == START else "end",
+                "evidence": {
+                    "kind": "framework-sentinel",
+                    "source": (
+                        "compiled.input_channels+nodes+get_graph.reserved-sentinels"
+                    ),
+                },
+            }
+    elif node_id in builder_nodes and mapped:
+        fact = {
+            "status": "known",
+            "value": "ordinary",
+            "evidence": {
+                "kind": "ordinary-node",
+                "source": "compiled.builder.nodes+nodes.bound",
+            },
+        }
+    return fact
+
+
 def _sentinel_interpretation(
     compiled_graph: CompiledStateGraph, drawable: Any, graph: dict[str, Any], depth: int
 ) -> None:
@@ -274,47 +319,46 @@ def _sentinel_interpretation(
         {"version": "1", "traversalDepth": depth, "nodes": []},
     )
     records = {record["nodeId"]: record for record in extension["nodes"]}
-    builder_nodes = compiled_graph.builder.nodes
     for node in graph["structure"]["nodes"]:
         node_id = node["id"]
-        data = drawable.nodes[node_id].data
-        runtime_node = compiled_graph.nodes.get(node_id)
-        mapped = runtime_node is not None and data is runtime_node.bound
+        fact = _node_identity(compiled_graph, drawable, node_id, depth)
+        records.setdefault(node_id, {"nodeId": node_id})["sentinel"] = fact
+    extension["nodes"] = [records[node_id] for node_id in sorted(records)]
+
+
+def _entry_interpretation(
+    compiled_graph: CompiledStateGraph, drawable: Any, graph: dict[str, Any], depth: int
+) -> None:
+    """Separate snapshot connectivity from affirmative framework entry evidence."""
+    extension = graph.setdefault(
+        "x-topology-interpretation",
+        {"version": "1", "traversalDepth": depth, "nodes": []},
+    )
+    records = {record["nodeId"]: record for record in extension["nodes"]}
+    targets = {edge["target"] for edge in graph["structure"]["edges"]} | {
+        join["target"] for join in graph["structure"]["joins"]
+    }
+    for node in graph["structure"]["nodes"]:
+        node_id = node["id"]
+        identity = _node_identity(compiled_graph, drawable, node_id, depth)
         fact: dict[str, Any] = {
+            "observedRoot": node_id not in targets,
             "status": "unknown",
-            "reason": "scope-not-inspected" if depth > 0 else "identity-unavailable",
+            "reason": "entry-not-established"
+            if identity["status"] == "known" or depth == 0
+            else "scope-not-inspected",
         }
-        if node_id in {START, END}:
-            fact["reason"] = "identity-unavailable"
-            owned = (
-                compiled_graph.input_channels == START
-                and node_id not in builder_nodes
-                and (
-                    (node_id == START and mapped)
-                    or (node_id == END and runtime_node is None and data is None)
-                )
-            )
-            if owned:
-                fact = {
-                    "status": "known",
-                    "value": "start" if node_id == START else "end",
-                    "evidence": {
-                        "kind": "framework-sentinel",
-                        "source": (
-                            "compiled.input_channels+nodes+get_graph.reserved-sentinels"
-                        ),
-                    },
-                }
-        elif node_id in builder_nodes and mapped:
+        if identity.get("value") in {"start", "end"}:
             fact = {
+                "observedRoot": node_id not in targets,
                 "status": "known",
-                "value": "ordinary",
+                "value": "confirmed" if identity["value"] == "start" else "not-entry",
                 "evidence": {
-                    "kind": "ordinary-node",
-                    "source": "compiled.builder.nodes+nodes.bound",
+                    "kind": "framework-entry",
+                    "source": identity["evidence"]["source"],
                 },
             }
-        records.setdefault(node_id, {"nodeId": node_id})["sentinel"] = fact
+        records.setdefault(node_id, {"nodeId": node_id})["entry"] = fact
     extension["nodes"] = [records[node_id] for node_id in sorted(records)]
 
 
@@ -401,6 +445,7 @@ def describe(
     _branch_interpretation(compiled_graph, drawable, graph_document, depth)
     _subgraph_interpretation(compiled_graph, drawable, graph_document, depth)
     _sentinel_interpretation(compiled_graph, drawable, graph_document, depth)
+    _entry_interpretation(compiled_graph, drawable, graph_document, depth)
     if isinstance(graph_name, str) and graph_name:
         graph_document["name"] = graph_name
 

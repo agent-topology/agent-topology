@@ -1,0 +1,462 @@
+[
+  {
+    "name": "genuine-start",
+    "nodes": [
+      "task"
+    ],
+    "edges": [
+      [
+        "__start__",
+        "task"
+      ],
+      [
+        "task",
+        "__end__"
+      ]
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "confirmed",
+        "observedRoot": true,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "not-entry",
+        "observedRoot": false,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "task": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      }
+    }
+  },
+  {
+    "name": "unknown-router",
+    "nodes": [
+      "router",
+      "target"
+    ],
+    "edges": [
+      [
+        "__start__",
+        "router"
+      ],
+      [
+        "target",
+        "__end__"
+      ]
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "confirmed",
+        "observedRoot": true,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "not-entry",
+        "observedRoot": false,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "router": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      },
+      "target": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": true
+      }
+    },
+    "routers": [
+      "router"
+    ]
+  },
+  {
+    "name": "no-router-causality",
+    "nodes": [
+      "router",
+      "other",
+      "target"
+    ],
+    "edges": [
+      [
+        "__start__",
+        "router"
+      ],
+      [
+        "__start__",
+        "other"
+      ],
+      [
+        "target",
+        "__end__"
+      ]
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "confirmed",
+        "observedRoot": true,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "not-entry",
+        "observedRoot": false,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "router": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      },
+      "other": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      },
+      "target": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": true
+      }
+    },
+    "routers": [
+      "router",
+      "other"
+    ]
+  },
+  {
+    "name": "join-target",
+    "nodes": [
+      "left",
+      "right",
+      "joined"
+    ],
+    "edges": [
+      [
+        "__start__",
+        "left"
+      ],
+      [
+        "__start__",
+        "right"
+      ],
+      [
+        "joined",
+        "__end__"
+      ]
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "confirmed",
+        "observedRoot": true,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "not-entry",
+        "observedRoot": false,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "left": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      },
+      "right": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      },
+      "joined": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      }
+    },
+    "joins": [
+      [
+        [
+          "left",
+          "right"
+        ],
+        "joined"
+      ]
+    ]
+  },
+  {
+    "name": "child-0",
+    "nodes": [
+      "child",
+      "retained"
+    ],
+    "edges": [
+      [
+        "__start__",
+        "child"
+      ],
+      [
+        "child",
+        "retained"
+      ],
+      [
+        "retained",
+        "__end__"
+      ]
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "confirmed",
+        "observedRoot": true,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "not-entry",
+        "observedRoot": false,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "child": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      },
+      "retained": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      }
+    },
+    "child": true,
+    "depth": 0
+  },
+  {
+    "name": "child-1",
+    "nodes": [
+      "child",
+      "retained"
+    ],
+    "edges": [
+      [
+        "__start__",
+        "child"
+      ],
+      [
+        "child",
+        "retained"
+      ],
+      [
+        "retained",
+        "__end__"
+      ]
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "confirmed",
+        "observedRoot": true,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "not-entry",
+        "observedRoot": false,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "retained": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      },
+      "child:start": {
+        "status": "unknown",
+        "reason": "scope-not-inspected",
+        "observedRoot": false
+      },
+      "child:__start__-user": {
+        "status": "unknown",
+        "reason": "scope-not-inspected",
+        "observedRoot": false
+      }
+    },
+    "child": true,
+    "depth": 1
+  },
+  {
+    "name": "child-2",
+    "nodes": [
+      "child",
+      "retained"
+    ],
+    "edges": [
+      [
+        "__start__",
+        "child"
+      ],
+      [
+        "child",
+        "retained"
+      ],
+      [
+        "retained",
+        "__end__"
+      ]
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "confirmed",
+        "observedRoot": true,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "not-entry",
+        "observedRoot": false,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "retained": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      },
+      "child:start": {
+        "status": "unknown",
+        "reason": "scope-not-inspected",
+        "observedRoot": false
+      },
+      "child:__start__-user": {
+        "status": "unknown",
+        "reason": "scope-not-inspected",
+        "observedRoot": false
+      }
+    },
+    "child": true,
+    "depth": 2
+  },
+  {
+    "name": "unicode-order",
+    "nodes": [
+      "",
+      "𐀀"
+    ],
+    "edges": [
+      [
+        "__start__",
+        ""
+      ],
+      [
+        "",
+        "𐀀"
+      ],
+      [
+        "𐀀",
+        "__end__"
+      ]
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "confirmed",
+        "observedRoot": true,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "not-entry",
+        "observedRoot": false,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      },
+      "𐀀": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      }
+    }
+  },
+  {
+    "name": "conditional-start-successor",
+    "nodes": [
+      "start"
+    ],
+    "edges": [
+      [
+        "start",
+        "__end__"
+      ]
+    ],
+    "startTargets": [
+      "start"
+    ],
+    "expected": {
+      "__start__": {
+        "status": "known",
+        "value": "confirmed",
+        "observedRoot": true,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "__end__": {
+        "status": "known",
+        "value": "not-entry",
+        "observedRoot": false,
+        "evidence": {
+          "kind": "framework-entry"
+        }
+      },
+      "start": {
+        "status": "unknown",
+        "reason": "entry-not-established",
+        "observedRoot": false
+      }
+    }
+  }
+]

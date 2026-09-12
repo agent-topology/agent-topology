@@ -402,6 +402,59 @@ function subgraphInterpretation(
   );
 }
 
+function nodeIdentity(
+  compiled: RuntimeCompiledGraph,
+  drawable: DrawableGraph,
+  nodeId: string,
+  depth: number,
+) {
+  const data = drawable.nodes[nodeId]?.data;
+  const member = Object.hasOwn(compiled.builder.nodes, nodeId);
+  let fact: {
+    status: string;
+    reason?: string;
+    value?: string;
+    evidence?: { kind: string; source: string };
+  } = {
+    status: "unknown",
+    reason: depth > 0 ? "scope-not-inspected" : "identity-unavailable",
+  };
+  if (nodeId === START || nodeId === END) {
+    fact = { status: "unknown", reason: "identity-unavailable" };
+    // The supported compiled graph creates schema nodes for reserved sentinels.
+    if (
+      compiled.inputChannels === START &&
+      !member &&
+      data !== null &&
+      typeof data === "object" &&
+      Object.hasOwn(data, "schema")
+    ) {
+      fact = {
+        status: "known",
+        value: nodeId === START ? "start" : "end",
+        evidence: {
+          kind: "framework-sentinel",
+          source: "compiled.inputChannels+getGraphAsync.reserved-sentinels",
+        },
+      };
+    }
+  } else if (
+    member &&
+    data !== undefined &&
+    data === compiled.builder.nodes[nodeId]?.runnable
+  ) {
+    fact = {
+      status: "known",
+      value: "ordinary",
+      evidence: {
+        kind: "ordinary-node",
+        source: "compiled.builder.nodes.runnable",
+      },
+    };
+  }
+  return fact;
+}
+
 function sentinelInterpretation(
   compiled: RuntimeCompiledGraph,
   drawable: DrawableGraph,
@@ -418,47 +471,58 @@ function sentinelInterpretation(
   );
   for (const node of graph.structure.nodes) {
     const nodeId = node.id;
-    const data = drawable.nodes[nodeId]?.data;
-    const member = Object.hasOwn(compiled.builder.nodes, nodeId);
+    const fact = nodeIdentity(compiled, drawable, nodeId, depth);
+    const record = records.get(nodeId) ?? { nodeId };
+    record.sentinel = fact;
+    records.set(nodeId, record);
+  }
+  extension.nodes = [...records.values()].sort((a, b) =>
+    compareText(a.nodeId, b.nodeId),
+  );
+}
+
+function entryInterpretation(
+  compiled: RuntimeCompiledGraph,
+  drawable: DrawableGraph,
+  graph: TopologyGraph,
+  depth: number,
+): void {
+  const extension = (graph["x-topology-interpretation"] ??= {
+    version: "1",
+    traversalDepth: depth,
+    nodes: [],
+  }) as { nodes: Array<{ nodeId: string; entry?: unknown }> };
+  const records = new Map(
+    extension.nodes.map((record) => [record.nodeId, record]),
+  );
+  const targets = new Set([
+    ...graph.structure.edges.map((edge) => edge.target),
+    ...graph.structure.joins.map((join) => join.target),
+  ]);
+  for (const node of graph.structure.nodes) {
+    const nodeId = node.id;
+    const identity = nodeIdentity(compiled, drawable, nodeId, depth);
     let fact: unknown = {
+      observedRoot: !targets.has(nodeId),
       status: "unknown",
-      reason: depth > 0 ? "scope-not-inspected" : "identity-unavailable",
+      reason:
+        identity.status === "known" || depth === 0
+          ? "entry-not-established"
+          : "scope-not-inspected",
     };
-    if (nodeId === START || nodeId === END) {
-      fact = { status: "unknown", reason: "identity-unavailable" };
-      // The supported compiled graph creates schema nodes for reserved sentinels.
-      if (
-        compiled.inputChannels === START &&
-        !member &&
-        data !== null &&
-        typeof data === "object" &&
-        Object.hasOwn(data, "schema")
-      ) {
-        fact = {
-          status: "known",
-          value: nodeId === START ? "start" : "end",
-          evidence: {
-            kind: "framework-sentinel",
-            source: "compiled.inputChannels+getGraphAsync.reserved-sentinels",
-          },
-        };
-      }
-    } else if (
-      member &&
-      data !== undefined &&
-      data === compiled.builder.nodes[nodeId]?.runnable
-    ) {
+    if (identity.value === "start" || identity.value === "end") {
       fact = {
+        observedRoot: !targets.has(nodeId),
         status: "known",
-        value: "ordinary",
+        value: identity.value === "start" ? "confirmed" : "not-entry",
         evidence: {
-          kind: "ordinary-node",
-          source: "compiled.builder.nodes.runnable",
+          kind: "framework-entry",
+          source: identity.evidence!.source,
         },
       };
     }
     const record = records.get(nodeId) ?? { nodeId };
-    record.sentinel = fact;
+    record.entry = fact;
     records.set(nodeId, record);
   }
   extension.nodes = [...records.values()].sort((a, b) =>
@@ -513,6 +577,7 @@ export async function describeWithVersion(
   branchInterpretation(runtimeGraph, drawable, graph, depth);
   subgraphInterpretation(runtimeGraph, drawable, graph, depth);
   sentinelInterpretation(runtimeGraph, drawable, graph, depth);
+  entryInterpretation(runtimeGraph, drawable, graph, depth);
   const gaps: TopologyDocument["completeness"]["gaps"] = [...unknownRouters]
     .sort(compareText)
     .map((source) => ({
