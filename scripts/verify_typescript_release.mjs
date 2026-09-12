@@ -25,6 +25,8 @@ const PACKAGES = {
       "package/dist/generated/contract.js",
       "package/dist/index.d.ts",
       "package/dist/index.js",
+      "package/dist/joins.d.ts",
+      "package/dist/joins.js",
       "package/dist/types.d.ts",
       "package/dist/types.js",
       "package/dist/validation.d.ts",

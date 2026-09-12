@@ -77,6 +77,7 @@ def test_canonical_utilities_are_public() -> None:
         "canonical_json",
         "canonicalize_document",
         "compute_structure_hash",
+        "derived_join_edges",
         "finalize_document",
         "load_schema",
         "validate_document",

@@ -8,6 +8,7 @@ from ._canonical import (
     compute_structure_hash,
     finalize_document,
 )
+from ._joins import derived_join_edges
 from ._validation import load_schema, validate_document
 
 __all__ = [
@@ -16,6 +17,7 @@ __all__ = [
     "canonical_json",
     "canonicalize_document",
     "compute_structure_hash",
+    "derived_join_edges",
     "finalize_document",
     "load_schema",
     "validate_document",

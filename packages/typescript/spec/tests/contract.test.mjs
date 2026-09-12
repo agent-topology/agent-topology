@@ -36,6 +36,7 @@ test("the deliberate runtime API is the only public root surface", () => {
     "canonicalStringify",
     "canonicalizeDocument",
     "computeStructureHash",
+    "derivedJoinEdges",
     "finalizeDocument",
     "isTopologyDocument",
     "loadSchema",

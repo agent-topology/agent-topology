@@ -1,0 +1,215 @@
+[
+  {
+    "name": "empty",
+    "structure": {
+      "nodes": [],
+      "edges": [],
+      "joins": [],
+      "entryNodeIds": [],
+      "exitNodeIds": []
+    },
+    "expected": []
+  },
+  {
+    "name": "multi-source",
+    "structure": {
+      "nodes": [
+        {
+          "id": "a"
+        },
+        {
+          "id": "b"
+        },
+        {
+          "id": "c"
+        }
+      ],
+      "edges": [],
+      "joins": [
+        {
+          "id": "wait",
+          "sources": [
+            "b",
+            "a"
+          ],
+          "target": "c"
+        }
+      ],
+      "entryNodeIds": [],
+      "exitNodeIds": []
+    },
+    "expected": [
+      {
+        "joinId": "wait",
+        "source": "a",
+        "target": "c"
+      },
+      {
+        "joinId": "wait",
+        "source": "b",
+        "target": "c"
+      }
+    ]
+  },
+  {
+    "name": "overlapping-endpoints",
+    "structure": {
+      "nodes": [
+        {
+          "id": "a"
+        },
+        {
+          "id": "b"
+        },
+        {
+          "id": "c"
+        }
+      ],
+      "edges": [
+        {
+          "id": "direct",
+          "source": "a",
+          "target": "c",
+          "kind": "direct"
+        }
+      ],
+      "joins": [
+        {
+          "id": "second",
+          "sources": [
+            "b",
+            "a"
+          ],
+          "target": "c"
+        },
+        {
+          "id": "first",
+          "sources": [
+            "a",
+            "b"
+          ],
+          "target": "c"
+        }
+      ],
+      "entryNodeIds": [],
+      "exitNodeIds": []
+    },
+    "expected": [
+      {
+        "joinId": "first",
+        "source": "a",
+        "target": "c"
+      },
+      {
+        "joinId": "first",
+        "source": "b",
+        "target": "c"
+      },
+      {
+        "joinId": "second",
+        "source": "a",
+        "target": "c"
+      },
+      {
+        "joinId": "second",
+        "source": "b",
+        "target": "c"
+      }
+    ]
+  },
+  {
+    "name": "unicode",
+    "structure": {
+      "nodes": [
+        {
+          "id": ""
+        },
+        {
+          "id": "𐀀"
+        },
+        {
+          "id": "target"
+        }
+      ],
+      "edges": [],
+      "joins": [
+        {
+          "id": "𐀀",
+          "sources": [
+            "𐀀",
+            ""
+          ],
+          "target": "target"
+        },
+        {
+          "id": "",
+          "sources": [
+            "𐀀",
+            ""
+          ],
+          "target": "target"
+        },
+        {
+          "id": "aa",
+          "sources": [
+            "𐀀",
+            ""
+          ],
+          "target": "target"
+        },
+        {
+          "id": "a",
+          "sources": [
+            "𐀀",
+            ""
+          ],
+          "target": "target"
+        }
+      ],
+      "entryNodeIds": [],
+      "exitNodeIds": []
+    },
+    "expected": [
+      {
+        "joinId": "a",
+        "source": "",
+        "target": "target"
+      },
+      {
+        "joinId": "a",
+        "source": "𐀀",
+        "target": "target"
+      },
+      {
+        "joinId": "aa",
+        "source": "",
+        "target": "target"
+      },
+      {
+        "joinId": "aa",
+        "source": "𐀀",
+        "target": "target"
+      },
+      {
+        "joinId": "",
+        "source": "",
+        "target": "target"
+      },
+      {
+        "joinId": "",
+        "source": "𐀀",
+        "target": "target"
+      },
+      {
+        "joinId": "𐀀",
+        "source": "",
+        "target": "target"
+      },
+      {
+        "joinId": "𐀀",
+        "source": "𐀀",
+        "target": "target"
+      }
+    ]
+  }
+]

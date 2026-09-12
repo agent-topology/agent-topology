@@ -2,7 +2,7 @@
 
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 
@@ -47,7 +47,18 @@ try {
       install(project, args["spec-tarball"]);
       run(
         project,
-        'const api = await import("@agent-topology/spec"); if (typeof api.validateDocument !== "function") throw new Error("missing spec API");',
+        `
+        import assert from "node:assert/strict";
+        import { derivedJoinEdges, validateDocument } from "@agent-topology/spec";
+        const document = ${readFileSync(new URL("../conformance/fixtures/multi-source-join/expected.json", import.meta.url), "utf8")};
+        assert.equal(validateDocument(document).valid, true);
+        const structure = document.graphs[0].structure;
+        const before = JSON.stringify(structure);
+        const links = derivedJoinEdges(structure);
+        assert.deepEqual(links, structure.joins.flatMap(join => join.sources.map(source => ({joinId: join.id, source, target: join.target}))));
+        assert.equal(links.length, 2);
+        assert.equal(JSON.stringify(structure), before);
+        `,
       );
       const deepImport = spawnSync(
         "node",

@@ -30,6 +30,7 @@ try {
   assert.deepEqual(
     contents,
     [
+      "package/LICENSE",
       "package/README.md",
       "package/dist/canonical.d.ts",
       "package/dist/canonical.js",
@@ -38,6 +39,8 @@ try {
       "package/dist/generated/contract.js",
       "package/dist/index.d.ts",
       "package/dist/index.js",
+      "package/dist/joins.d.ts",
+      "package/dist/joins.js",
       "package/dist/types.d.ts",
       "package/dist/types.js",
       "package/dist/validation.d.ts",
@@ -69,7 +72,7 @@ try {
     await readFile(
       resolve(
         packageRoot,
-        "../../../conformance/fixtures/linear-flow/expected.json",
+        "../../../conformance/fixtures/multi-source-join/expected.json",
       ),
       "utf8",
     ),
@@ -77,11 +80,13 @@ try {
   await writeFile(
     resolve(consumer, "index.ts"),
     [
-      'import { canonicalStringify, computeStructureHash, validateDocument, type TopologyDocument } from "@agent-topology/spec";',
+      'import { canonicalStringify, computeStructureHash, derivedJoinEdges, validateDocument, type DerivedJoinEdge, type TopologyDocument } from "@agent-topology/spec";',
       `const value: unknown = ${JSON.stringify(expected)};`,
       "const result = validateDocument(value);",
       'if (!result.valid) throw new Error("fixture did not validate");',
       "const document: TopologyDocument = result.document;",
+      "const links: DerivedJoinEdge[] = derivedJoinEdges(document.graphs[0]!.structure);",
+      'if (links.length !== 2 || links.some(link => link.joinId !== document.graphs[0]!.structure.joins[0]!.id)) throw new Error("join provenance differs");',
       `if (canonicalStringify(document) !== ${JSON.stringify(JSON.stringify(expected))}) throw new Error("canonical bytes differ");`,
       `if (computeStructureHash(document).value !== ${JSON.stringify(expected.structureHash.value)}) throw new Error("hash differs");`,
     ].join("\n"),
