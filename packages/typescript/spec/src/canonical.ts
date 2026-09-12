@@ -8,6 +8,15 @@ export const STRUCTURE_HASH_ALGORITHM_VERSION = "1" as const;
 type JsonObject = { [key: string]: JsonValue };
 type JsonValue = JsonObject | JsonValue[] | boolean | null | number | string;
 
+// ADR 0009 adds a 2^53 integer-magnitude domain boundary alongside the
+// finite-value check, but only for values decoded from a JSON integer
+// literal (no `.` or exponent) — every such literal in Python decodes to an
+// arbitrary-precision `int`, so `_canonical.py` can reject it exactly.
+// `JSON.parse` erases that literal shape: an out-of-range integer literal
+// and an in-domain exponent literal of the same magnitude (e.g. `1e20`,
+// required in-domain by the byte oracle) decode to the identical `number`,
+// so no check here can reject one without also rejecting the other. The
+// boundary is therefore enforced only on the Python side.
 function ordered(value: JsonValue): JsonValue {
   if (Array.isArray(value)) {
     return value.map(ordered);

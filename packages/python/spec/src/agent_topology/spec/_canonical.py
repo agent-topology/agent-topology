@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from collections.abc import Callable, Mapping
 from copy import deepcopy
+from decimal import Decimal
 from typing import Any
 
 STRUCTURE_HASH_ALGORITHM = "sha256"
@@ -15,13 +17,82 @@ _NODE_HASH_FIELDS = ("id", "type", "subgraphId", "interrupts")
 _EDGE_HASH_FIELDS = ("id", "source", "target", "kind")
 _JOIN_HASH_FIELDS = ("id", "sources", "target")
 
+# ADR 0009: the supported numeric domain is exactly the finite binary64
+# values, plus integer literals (Python `int`, decoded losslessly from JSON
+# text with no `.` or exponent) up to the largest magnitude that round-trips
+# through a double in either language. Beyond that, Python could hold the
+# exact value and TypeScript structurally cannot, so it is rejected here
+# rather than silently reintroducing the byte divergence ADR 0009 closes.
+_MAX_SAFE_INTEGER = 2**53
+_NUMBER_DOMAIN_ERROR = "Out of range values are not JSON compliant"
+
 
 def _ordered(value: Any) -> Any:
     if isinstance(value, dict):
         return {key: _ordered(value[key]) for key in sorted(value)}
     if isinstance(value, list):
         return [_ordered(item) for item in value]
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise ValueError(_NUMBER_DOMAIN_ERROR)
+        return value
+    if isinstance(value, int):
+        if abs(value) > _MAX_SAFE_INTEGER:
+            raise ValueError(_NUMBER_DOMAIN_ERROR)
+        return value
     return value
+
+
+def _format_number(value: int | float) -> str:
+    """Spell a finite, in-domain JSON number per ADR 0009's byte oracle.
+
+    Implements ECMA-262's ``Number::toString`` (the same rule RFC 8785
+    adopts): the shortest round-tripping decimal digit string, formatted as
+    fixed-point or exponential depending on its decimal exponent.
+    """
+    if value == 0:
+        return "0"
+    negative = value < 0
+    magnitude = -value if negative else value
+    decimal_value = (
+        Decimal(magnitude) if isinstance(magnitude, int) else Decimal(repr(magnitude))
+    )
+    _, digit_tuple, exponent = decimal_value.normalize().as_tuple()
+    digits = "".join(str(digit) for digit in digit_tuple)
+    k = len(digits)
+    n = exponent + k
+    if k <= n <= 21:
+        body = digits + "0" * (n - k)
+    elif 0 < n <= 21:
+        body = f"{digits[:n]}.{digits[n:]}"
+    elif -6 < n <= 0:
+        body = f"0.{'0' * -n}{digits}"
+    else:
+        first, rest = digits[0], digits[1:]
+        mantissa = f"{first}.{rest}" if rest else first
+        signed_exponent = n - 1
+        body = (
+            f"{mantissa}e{'+' if signed_exponent >= 0 else '-'}{abs(signed_exponent)}"
+        )
+    return f"-{body}" if negative else body
+
+
+def _encode(value: Any) -> str:
+    if isinstance(value, dict):
+        return (
+            "{"
+            + ",".join(f"{_encode(key)}:{_encode(item)}" for key, item in value.items())
+            + "}"
+        )
+    if isinstance(value, list):
+        return "[" + ",".join(_encode(item) for item in value) + "]"
+    if isinstance(value, bool) or value is None:
+        return json.dumps(value)
+    if isinstance(value, (int, float)):
+        return _format_number(value)
+    return json.dumps(value, ensure_ascii=False)
 
 
 def _sort_key(value: Any) -> str:
@@ -63,13 +134,7 @@ def canonicalize_document(document: Mapping[str, Any]) -> dict[str, Any]:
 
 def canonical_json(document: Mapping[str, Any]) -> str:
     """Serialize a topology document to its byte-stable canonical JSON form."""
-    return json.dumps(
-        canonicalize_document(document),
-        ensure_ascii=False,
-        allow_nan=False,
-        separators=(",", ":"),
-        sort_keys=True,
-    )
+    return _encode(canonicalize_document(document))
 
 
 def _selected_fields(
