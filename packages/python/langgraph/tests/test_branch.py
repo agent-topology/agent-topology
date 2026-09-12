@@ -128,6 +128,7 @@ def test_shared_branch_meaning(case, depth, monkeypatch):
         context.setattr(module, "_branch_interpretation", lambda *args: None)
         context.setattr(module, "_subgraph_interpretation", lambda *args: None)
         context.setattr(module, "_sentinel_interpretation", lambda *args: None)
+        context.setattr(module, "_entry_interpretation", lambda *args: None)
         baseline = describe(compiled, depth=depth)
     stripped = copy.deepcopy(actual)
     del stripped["graphs"][0][KEY]

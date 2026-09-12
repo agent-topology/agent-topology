@@ -7,6 +7,11 @@ future package versions will move together.
 
 ## Unreleased
 
+- Both LangGraph producers distinguish observed roots from confirmed execution
+  entries with experimental revision 1 `entry` facts. START alone is confirmed;
+  candidate uncertainty stays local without changing entry arrays, routing gaps
+  or core hashes. See the [migration guide](docs/guides/consuming-documents.md#experimental-entry-interpretation).
+
 - Both LangGraph producers emit experimental revision 1 sentinel roles from
   framework-owned identity and positive user-node membership. Unmapped expanded
   nodes remain unknown; nodes, connections, joins, gaps and core hashes are

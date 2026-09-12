@@ -2032,5 +2032,97 @@
       }
     },
     "canonicalSha256": "1d3db06fb0f9060327add5712d4f2382053b1a7c57c6b3ebf5e49cc1b2921512"
+  },
+  {
+    "name": "disconnected-candidate-with-complete-core",
+    "extensionStatus": "valid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "start",
+              "target"
+            ],
+            "exitNodeIds": [
+              "start",
+              "target"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "start"
+              },
+              {
+                "id": "target"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "nodes": [
+              {
+                "entry": {
+                  "evidence": {
+                    "kind": "framework-entry",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "observedRoot": true,
+                  "status": "known",
+                  "value": "confirmed"
+                },
+                "nodeId": "start",
+                "sentinel": {
+                  "evidence": {
+                    "kind": "framework-sentinel",
+                    "source": "contract-example.structural-surface"
+                  },
+                  "status": "known",
+                  "value": "start"
+                }
+              },
+              {
+                "entry": {
+                  "observedRoot": true,
+                  "reason": "entry-not-established",
+                  "status": "unknown"
+                },
+                "nodeId": "target"
+              }
+            ],
+            "traversalDepth": 0,
+            "version": "1"
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "eda5117bed783e8329d39b1e126b111b888e00dcb88a5dd1fdd982320789cfc6"
+      },
+      "topologyVersion": "0.1"
+    },
+    "canonicalSha256": "0d8c3e64980f7ad87744e8090a736d54fe5547a200291ef235b55081847279ad"
   }
 ]
