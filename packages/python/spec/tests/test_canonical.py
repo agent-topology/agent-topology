@@ -162,6 +162,8 @@ NUMERIC_BYTE_ORACLE = [
     ("exponent-lower-threshold-exponential", 1e-7, "1e-7"),
     ("exponent-upper-threshold-fixed", 1e20, "100000000000000000000"),
     ("exponent-upper-threshold-exponential", 1e21, "1e+21"),
+    ("safe-integer-neighbor-positive", 9007199254740991, "9007199254740991"),
+    ("safe-integer-neighbor-negative", -9007199254740991, "-9007199254740991"),
     ("in-domain-integer-boundary-positive", 9007199254740992, "9007199254740992"),
     ("in-domain-integer-boundary-negative", -9007199254740992, "-9007199254740992"),
     # ADR 0010: a bare integer literal beyond 2^53 narrows to its nearest
@@ -249,7 +251,7 @@ def test_numeric_extension_survives_serialize_parse_canonicalize_round_trip() ->
     # *original* Python object (as the older idempotence test below does) is
     # insufficient, because it never exercises the type flip that JSON text
     # introduces between an integer-shaped float and a bare integer literal.
-    for value in (1e20, 9007199254740993, -9007199254740993, 1e21, 0.5, -0.0):
+    for name, value, _ in NUMERIC_BYTE_ORACLE:
         document = _document()
         document["x-value"] = value
         document["graphs"][0]["x-nested"] = {"list": [value]}
@@ -258,7 +260,7 @@ def test_numeric_extension_survives_serialize_parse_canonicalize_round_trip() ->
         reparsed = json.loads(first_pass)
         second_pass = canonical_json(reparsed)
 
-        assert second_pass == first_pass, value
+        assert second_pass == first_pass, name
 
 
 def test_non_finite_numeric_extension_is_rejected() -> None:

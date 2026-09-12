@@ -53,7 +53,7 @@ it.
 | Small-integer boundary | `-100`, `100` | `-100`, `100` | E1's declared integer-domain edges. |
 | Exponent lower threshold | `1e-6`, `1e-7` | `0.000001`, `1e-7` | Adjacent pair; proves the fixed/exponential switch lands between them, not just that each value looks right in isolation. |
 | Exponent upper threshold | `1e20`, `1e21` | `100000000000000000000`, `1e+21` | Adjacent pair; same reason at the top end. |
-| In-domain integer boundary | `9007199254740992` (`2^53`), `-9007199254740992` | `9007199254740992`, `-9007199254740992` | Last magnitude that round-trips exactly through a `binary64` double in both languages; both sign neighbors. |
+| In-domain integer boundary and safe neighbors | `9007199254740991` (`2^53 - 1`), `9007199254740992` (`2^53`), `-9007199254740991`, `-9007199254740992` | unchanged | Last adjacent magnitudes that round-trip exactly through a `binary64` double in both languages, on both signs. |
 | Narrowed integer boundary (ADR 0010) | `9007199254740993` (`2^53 + 1`), `-9007199254740993` as bare JSON integer literals | `9007199254740992`, `-9007199254740992` | Not rejected: narrows to the nearest double (round-half-to-even), identically in both languages. Was previously specified as rejected; ADR 0010 corrects this. |
 | Astronomically out of range | `10**400` as a bare JSON integer literal | rejected | No finite `binary64` double can represent this magnitude at all — distinct from the merely-imprecise `2^53`-neighborhood case above, which is in-domain. |
 | Non-finite (unchanged) | `NaN`, `Infinity`, `-Infinity` | rejected | Existing behavior; confirm it is unchanged, not re-implemented. |
