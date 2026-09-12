@@ -6,7 +6,7 @@ from __future__ import annotations
 import sys
 from importlib.metadata import requires
 
-from agent_topology.spec import load_schema, validate_document
+from agent_topology.spec import derived_join_edges, load_schema, validate_document
 
 document = {
     "topologyVersion": "0.1",
@@ -25,9 +25,11 @@ document = {
         {
             "id": "main",
             "structure": {
-                "nodes": [{"id": "node"}],
+                "nodes": [{"id": "left"}, {"id": "right"}, {"id": "node"}],
                 "edges": [],
-                "joins": [],
+                "joins": [
+                    {"id": "wait", "sources": ["right", "left"], "target": "node"}
+                ],
                 "entryNodeIds": ["node"],
                 "exitNodeIds": ["node"],
             },
@@ -38,6 +40,10 @@ document = {
 
 assert load_schema()["title"] == "Agent Topology Document"
 assert validate_document(document) == []
+assert derived_join_edges(document["graphs"][0]["structure"]) == [
+    {"joinId": "wait", "source": "left", "target": "node"},
+    {"joinId": "wait", "source": "right", "target": "node"},
+]
 assert not any(
     "langgraph" in requirement.lower()
     for requirement in (requires("agent-topology-spec") or [])

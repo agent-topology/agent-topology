@@ -99,6 +99,52 @@ would hide a mismatch.
 For an offline consumer with sample trace data, continue to the
 [trace-correlation example](../../examples/trace-correlation/README.md).
 
+## Join connections
+
+Current source adds `derived_join_edges(structure)` in Python and
+`derivedJoinEdges(structure)` in TypeScript for already validated structures.
+These helpers are unreleased; the published beta.2 packages do not export them.
+They return matching records in both languages:
+
+```python
+from agent_topology.spec import derived_join_edges
+
+# After validate_document(document) succeeds:
+links = derived_join_edges(document["graphs"][0]["structure"])
+```
+
+```typescript
+import { derivedJoinEdges, type DerivedJoinEdge } from "@agent-topology/spec";
+
+// After validateDocument(value) succeeds:
+const links: DerivedJoinEdge[] = derivedJoinEdges(document.graphs[0].structure);
+```
+
+For a join `{id: "wait", sources: ["b", "a"], target: "c"}`, both return:
+
+```json
+[
+  {"joinId": "wait", "source": "a", "target": "c"},
+  {"joinId": "wait", "source": "b", "target": "c"}
+]
+```
+
+The helper returns one fresh `{joinId, source, target}` record per join source,
+sorted first by `joinId`, then by `source`, using lexicographic Unicode code point
+order (shorter prefixes first, without normalization or locale collation). Empty
+joins produce an empty list. Input objects and arrays are not mutated.
+
+Consumers must read both `structure.edges` and `structure.joins`. Derived links
+retain their join identity even when endpoints coincide with another join or a
+direct edge. They describe the original join's AND convergence: all its sources
+are required. They do not imply independent edge execution. Keep them separate
+from ordinary edges; no ordinary edge `id` or `kind` is assigned. Validate the
+containing document at the input boundary; the helper does not validate again.
+
+The [shared cases](../../spec/derived-join-edges-cases.json) exercise this API in
+both languages. The helper adds no document fields and changes neither the core
+schema nor structure-hash algorithm 1.
+
 ## Experimental branch interpretation
 
 Current source (unreleased, after published beta.2) emits the `branch`, `subgraph`, `sentinel` and `entry` facts

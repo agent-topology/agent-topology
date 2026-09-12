@@ -28,3 +28,5 @@ export type {
   TopologyProvenance,
 } from "./types.js";
 export type { ValidationIssue, ValidationResult } from "./validation.js";
+export { derivedJoinEdges } from "./joins.js";
+export type { DerivedJoinEdge } from "./joins.js";

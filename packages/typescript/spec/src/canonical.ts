@@ -25,7 +25,7 @@ function ordered(value: JsonValue): JsonValue {
   return value;
 }
 
-function compareText(left: string, right: string): number {
+export function compareText(left: string, right: string): number {
   const leftPoints = [...left].map((character) => character.codePointAt(0)!);
   const rightPoints = [...right].map((character) => character.codePointAt(0)!);
   for (

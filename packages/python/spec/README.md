@@ -39,3 +39,26 @@ hash algorithm versions are independent.
 · [Source and issues](https://github.com/agent-topology/agent-topology)
 
 Licensed under the MIT License; see the included `LICENSE` file.
+
+## Join connections (unreleased)
+
+Current source exports `derived_join_edges(structure)`; published beta.2 does not.
+
+```python
+from agent_topology.spec import derived_join_edges
+
+# After validate_document(document) succeeds:
+links = derived_join_edges(document["graphs"][0]["structure"])
+```
+
+The helper returns one fresh `{joinId, source, target}` record per join source,
+sorted first by `joinId`, then by `source`, using lexicographic Unicode code point
+order (shorter prefixes first, without normalization or locale collation). Empty
+joins produce an empty list. Input objects and arrays are not mutated.
+
+Consumers must read both `structure.edges` and `structure.joins`. Derived links
+retain their join identity even when endpoints coincide with another join or a
+direct edge. They describe the original join's AND convergence: all its sources
+are required. They do not imply independent edge execution. Keep them separate
+from ordinary edges; no ordinary edge `id` or `kind` is assigned. Validate the
+containing document at the input boundary; the helper does not validate again.
