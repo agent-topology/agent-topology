@@ -83,6 +83,18 @@ without false confidence.
 - Multi-source joins remain distinct from several independent incoming edges.
 - Vendor neutrality is provisional while only one framework model is observed.
 
+## Accepted experimental interpretation
+
+[ADR 0008](docs/decisions/0008-experimental-consumer-interpretation.md) defines
+graph-level `x-topology-interpretation` revision 1 for evidence-backed branch,
+opaque-child, sentinel and entry interpretation. Producer implementation is
+tracked separately in #97–#100; published beta.2 does not emit this extension.
+The specification owns its separate opt-in shape and semantic checks; producers
+own version-pinned evidence. Core validation remains extension-agnostic.
+Unknown interpretation does not change completeness or strict-mode behavior.
+Equal structure hashes do not establish equal extension metadata. No core field,
+hash algorithm, renderer, or vendor-neutrality claim is added by this decision.
+
 ## Package and naming model
 
 The repository is a monorepo of independently versioned packages. Package
