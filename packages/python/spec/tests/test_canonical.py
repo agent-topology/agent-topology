@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from copy import deepcopy
+from decimal import ROUND_FLOOR, DivisionByZero, Inexact, Rounded, localcontext
 
 import pytest
 from agent_topology.spec import (
@@ -158,6 +159,7 @@ NUMERIC_BYTE_ORACLE = [
     ("small-integer-boundary-positive", 100, "100"),
     ("small-integer-boundary-negative", -100, "-100"),
     ("ordinary-fraction", 0.5, "0.5"),
+    ("decimal-context-regression", 1.23456789, "1.23456789"),
     ("exponent-lower-threshold-fixed", 1e-6, "0.000001"),
     ("exponent-lower-threshold-exponential", 1e-7, "1e-7"),
     ("exponent-upper-threshold-fixed", 1e20, "100000000000000000000"),
@@ -285,3 +287,69 @@ def test_numeric_extension_canonicalization_is_idempotent_and_non_mutating() -> 
     assert '"x-nested":{"list":[0,1e+21,9007199254740992]}' in first
     assert first == second
     assert document == original
+
+
+def test_numeric_canonicalization_is_independent_of_decimal_context() -> None:
+    document = _document()
+    document["x-value"] = 1.23456789
+    document["graphs"][0]["x-nested"] = {"list": [1.23456789]}
+    original = deepcopy(document)
+    original_hash = compute_structure_hash(document)
+    expected = (
+        '{"completeness":{"gaps":[],"status":"complete"},"graphs":[{"id":"main",'
+        '"name":"Example graph","structure":{"edges":[{"id":"a-target",'
+        '"kind":"direct","source":"a","target":"target"},{"id":"b-target",'
+        '"kind":"direct","source":"b","target":"target"}],'
+        '"entryNodeIds":["a","b"],"exitNodeIds":["target"],"joins":[{"id":"wait",'
+        '"sources":["a","b"],"target":"target"}],"nodes":[{"id":"a"},{"id":"b",'
+        '"interrupts":["after","before"]},{"id":"target","type":"task"}]},'
+        '"x-nested":{"list":[1.23456789]}}],"producerLimitations":[],'
+        '"provenance":{"framework":{"name":"test-framework","version":"2.0"},'
+        '"generatedAt":"2026-09-10T19:00:00Z","producer":{"name":"test-producer",'
+        '"version":"1.0"}},"structureHash":{"algorithm":"sha256",'
+        '"algorithmVersion":"1","value":"'
+        + "0" * 64
+        + '"},"topologyVersion":"0.1","x-value":1.23456789}'
+    )
+
+    default_output = canonical_json(document)
+    with localcontext() as context:
+        context.prec = 6
+        context.rounding = ROUND_FLOOR
+        context.Emin = -10
+        context.Emax = 10
+        context.capitals = 0
+        context.clamp = 1
+        context.traps[Inexact] = True
+        context.traps[Rounded] = True
+        context.flags[DivisionByZero] = True
+        context_state = (
+            context.prec,
+            context.rounding,
+            context.Emin,
+            context.Emax,
+            context.capitals,
+            context.clamp,
+            dict(context.traps),
+            dict(context.flags),
+        )
+
+        altered_output = canonical_json(document)
+
+        assert (
+            context.prec,
+            context.rounding,
+            context.Emin,
+            context.Emax,
+            context.capitals,
+            context.clamp,
+            dict(context.traps),
+            dict(context.flags),
+        ) == context_state
+
+    assert default_output == altered_output == expected
+    reparsed = json.loads(altered_output)
+    assert reparsed["x-value"] == 1.23456789
+    assert reparsed["graphs"][0]["x-nested"]["list"] == [1.23456789]
+    assert document == original
+    assert compute_structure_hash(document) == original_hash
