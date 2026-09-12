@@ -6,8 +6,9 @@ package selections, hash baselines, and expanded-subgraph migration.
 [Documentation home](../README.md) · [Compatibility](../reference/compatibility.md)
 
 Export a compiled LangGraph.js workflow in Node.js 20 or later. These packages
-publish ES modules. The example uses JavaScript so you can run it without a
-TypeScript build step; the same imports have TypeScript declarations.
+are ESM-only; synchronous `require()` is not supported. The example uses JavaScript
+so you can run it without a TypeScript build step; the same imports have TypeScript
+declarations.
 
 ## Install
 
@@ -19,8 +20,15 @@ npm install @agent-topology/spec@0.1.0-beta.2 @agent-topology/langgraph@0.1.0-be
 ```
 
 Install both agent-topology packages: the producer declares the specification as
-a peer dependency. LangGraph.js is listed explicitly because the example imports
-it directly.
+a peer dependency. The producer installs LangGraph.js 1.4.14 as a runtime
+dependency; it is listed explicitly here because the example imports it directly.
+The specification installs Ajv and ajv-formats for validation and uses Node built-ins
+for hashing; it does not require LangGraph.
+
+Use `.mjs` as below, or `.js` in a package with `"type": "module"`. Existing
+CommonJS applications can use [asynchronous import](#use-it-from-commonjs). If
+loading fails with `ERR_PACKAGE_PATH_NOT_EXPORTED`, see
+[ESM installation errors](../guides/troubleshooting.md#esm-installation-errors).
 
 ## Export a graph
 
@@ -54,6 +62,43 @@ producer limitation is expected.
 `describe` is asynchronous, so use `await`. There is no TypeScript `agt` executable
 and no `strict` option. A caller that requires completeness should check
 `document.completeness.gaps.length` and retain the document when reporting failure.
+
+## Use it from CommonJS
+
+Keep your application in CommonJS and save this as `graph.cjs`:
+
+```javascript
+async function main() {
+  const { Annotation, END, START, StateGraph } = await import("@langchain/langgraph");
+  const { describe } = await import("@agent-topology/langgraph");
+  const { canonicalStringify } = await import("@agent-topology/spec");
+
+  const State = Annotation.Root({ message: Annotation() });
+  const graph = new StateGraph(State)
+    .addNode("greet", (state) => ({ message: `Hello, ${state.message}!` }))
+    .addEdge(START, "greet")
+    .addEdge("greet", END)
+    .compile();
+
+  const document = await describe(graph);
+  console.log(canonicalStringify(document));
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+```
+
+```bash
+node graph.cjs > topology.json
+```
+
+`import()` returns a promise for the module namespace, and `describe()` returns
+a promise for the document. Await both inside an async function; CommonJS does
+not allow top-level `await`. The final catch reports import or extraction failures
+and sets a non-zero exit status. This loads the ESM packages without a CommonJS
+bundle or a default export.
 
 ## Use it from TypeScript
 

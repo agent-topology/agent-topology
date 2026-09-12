@@ -22,10 +22,59 @@ function install(cwd, ...artifacts) {
 }
 
 function run(cwd, source) {
-  execFileSync("node", ["--input-type=module", "--eval", source], {
+  execFileSync(process.execPath, ["--input-type=module", "--eval", source], {
     cwd,
     stdio: "pipe",
   });
+}
+
+// Execute the documentation itself in projects outside the checkout so package
+// self-resolution and development dependencies cannot hide installation failures.
+function documentedExamples(project, documentPath, basename) {
+  const markdown = readFileSync(new URL(documentPath, import.meta.url), "utf8");
+  const sources = [...markdown.matchAll(/```javascript\n([\s\S]*?)\n```/g)];
+  assert.equal(
+    sources.length,
+    2,
+    `${documentPath}: expected ESM and CommonJS examples`,
+  );
+  return sources.map((match, index) => {
+    const filename = `${basename}.${index === 0 ? "mjs" : "cjs"}`;
+    writeFileSync(resolve(project, filename), match[1]);
+    const output = execFileSync(process.execPath, [filename], {
+      cwd: project,
+      encoding: "utf8",
+    });
+    return JSON.parse(output);
+  });
+}
+
+function assertEsmBoundary(project, packageName) {
+  const manifest = JSON.parse(
+    readFileSync(
+      resolve(project, "node_modules", packageName, "package.json"),
+      "utf8",
+    ),
+  );
+  assert.equal(manifest.type, "module");
+  assert.deepEqual(manifest.exports, {
+    ".": { types: "./dist/index.d.ts", import: "./dist/index.js" },
+  });
+  for (const source of [
+    `require(${JSON.stringify(packageName)})`,
+    `import(${JSON.stringify(`${packageName}/dist/index.js`)})`,
+  ]) {
+    const result = spawnSync(
+      process.execPath,
+      ["--input-type=commonjs", "--eval", source],
+      {
+        cwd: project,
+        encoding: "utf8",
+      },
+    );
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /ERR_PACKAGE_PATH_NOT_EXPORTED/);
+  }
 }
 
 const args = options(process.argv.slice(2));
@@ -41,7 +90,7 @@ try {
     execFileSync("mkdir", [project]);
     writeFileSync(
       resolve(project, "package.json"),
-      `${JSON.stringify({ private: true, type: "module" })}\n`,
+      `${JSON.stringify({ private: true, type: "commonjs" })}\n`,
     );
     if (scenario === "spec") {
       install(project, args["spec-tarball"]);
@@ -60,17 +109,42 @@ try {
         assert.equal(JSON.stringify(structure), before);
         `,
       );
-      const deepImport = spawnSync(
-        "node",
-        [
-          "--input-type=module",
-          "--eval",
-          'await import("@agent-topology/spec/dist/validation.js")',
-        ],
-        { cwd: project, encoding: "utf8" },
+      writeFileSync(
+        resolve(project, "topology.json"),
+        readFileSync(
+          new URL(
+            "../conformance/fixtures/linear-flow/expected.json",
+            import.meta.url,
+          ),
+        ),
       );
-      assert.notEqual(deepImport.status, 0);
-      assert.match(deepImport.stderr, /ERR_PACKAGE_PATH_NOT_EXPORTED/);
+      const expected = JSON.parse(
+        readFileSync(resolve(project, "topology.json"), "utf8"),
+      );
+      for (const document of documentedExamples(
+        project,
+        "../packages/typescript/spec/README.md",
+        "inspect",
+      )) {
+        assert.deepEqual(document, expected);
+      }
+      writeFileSync(resolve(project, "topology.json"), "{}");
+      for (const extension of ["mjs", "cjs"]) {
+        const invalid = spawnSync(process.execPath, [`inspect.${extension}`], {
+          cwd: project,
+          encoding: "utf8",
+        });
+        assert.equal(invalid.status, 1);
+        assert.ok(invalid.stderr.trim());
+      }
+      // A malformed JSON file rejects the CommonJS async entry point.
+      writeFileSync(resolve(project, "topology.json"), "{");
+      const rejected = spawnSync(process.execPath, ["inspect.cjs"], {
+        cwd: project,
+        encoding: "utf8",
+      });
+      assert.equal(rejected.status, 1);
+      assert.match(rejected.stderr, /SyntaxError/);
     } else if (scenario === "langgraph") {
       install(project, args["spec-tarball"]);
       install(project, args["langgraph-tarball"]);
@@ -85,7 +159,35 @@ try {
         'const spec = await import("@agent-topology/spec"); const producer = await import("@agent-topology/langgraph"); if (typeof spec.computeStructureHash !== "function" || typeof producer.describe !== "function") throw new Error("packages do not coexist");',
       );
     }
+    assertEsmBoundary(project, "@agent-topology/spec");
     if (scenario !== "spec") {
+      assertEsmBoundary(project, "@agent-topology/langgraph");
+      for (const document of documentedExamples(
+        project,
+        "../docs/getting-started/typescript.md",
+        "graph",
+      )) {
+        assert.equal(document.completeness.status, "complete");
+        assert.deepEqual(
+          document.graphs[0].structure.nodes.map((node) => node.id),
+          ["__end__", "__start__", "greet"],
+        );
+        writeFileSync(
+          resolve(project, "topology.json"),
+          JSON.stringify(document),
+        );
+        run(
+          project,
+          `
+          import assert from "node:assert/strict";
+          import { readFileSync } from "node:fs";
+          import { computeStructureHash, validateDocument } from "@agent-topology/spec";
+          const document = JSON.parse(readFileSync("topology.json", "utf8"));
+          assert.equal(validateDocument(document).valid, true);
+          assert.deepEqual(computeStructureHash(document), document.structureHash);
+        `,
+        );
+      }
       run(
         project,
         `
@@ -105,7 +207,7 @@ try {
     }
   }
   console.log(
-    "spec alone, producer with its peer, and both packages together passed clean public-import smoke tests",
+    "spec alone, producer with its peer, and both packages together passed clean ESM/CommonJS documentation and public-import smoke tests",
   );
 } finally {
   rmSync(temporaryRoot, { recursive: true });

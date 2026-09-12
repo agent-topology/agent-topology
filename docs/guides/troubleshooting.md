@@ -11,6 +11,37 @@ Activate the environment where you installed `agent-topology-langgraph` and run
 `python -m pip show agent-topology-langgraph`. Installing only the specification
 or either npm package does not install `agt`.
 
+## ESM installation errors
+
+Both npm packages are ESM-only on Node.js 20+. An installation can succeed while
+`require("@agent-topology/spec")` or `require("@agent-topology/langgraph")` fails
+with `ERR_PACKAGE_PATH_NOT_EXPORTED` (often `No "exports" main defined`).
+Their public root has an `import` condition and no `require` condition: this is a
+module-format mismatch, not evidence of a missing installation. Synchronous
+`require()` is unsupported, including on newer Node versions that can load some
+other ESM packages through `require()`.
+
+Use the [quickstart's `graph.mjs`](../getting-started/typescript.md#export-a-graph)
+with `node graph.mjs`, or use `.js` with `"type": "module"` in your application's
+`package.json`. If your application must remain CommonJS, follow the
+[complete `graph.cjs` example](../getting-started/typescript.md#use-it-from-commonjs):
+await `import()` and then await `describe()` inside an async function, with a
+catch that reports failure and sets `process.exitCode = 1`.
+
+The same exports error can also mean an unsupported deep import such as
+`@agent-topology/spec/dist/validation.js`. Import named APIs from the package root;
+do not bypass exports through `dist`, edit the installed package metadata, or look
+for a default export. `Cannot use import statement outside a module` usually means
+static ESM syntax was placed in a CommonJS file; the `.mjs` or async `import()`
+paths above address that mismatch too.
+
+Check `node --version` and `npm ls @agent-topology/spec @agent-topology/langgraph`
+in the application's directory. Install the specification peer explicitly when
+using the producer. The producer has LangGraph.js 1.4.14 as a runtime dependency;
+the specification has Ajv and ajv-formats runtime dependencies and no framework
+dependency. For document-only use, install just the specification and follow the
+[consumer guide](consuming-documents.md).
+
 ## Unsupported framework version
 
 Check `python -m pip show langgraph` or `npm ls @langchain/langgraph` in the running

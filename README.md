@@ -57,6 +57,12 @@ imported as `@agent-topology/spec` and `@agent-topology/langgraph`. Installing t
 Python producer also installs its compatible specification dependency. The
 TypeScript producer declares the specification as a peer, so install both explicitly.
 
+Both npm packages are **ESM-only** on Node.js 20+. Use `.mjs` (or `.js` with
+`"type": "module"`); CommonJS callers must await `import()` inside an async function.
+See the [runnable examples](docs/getting-started/typescript.md) and
+[exports-error recovery](docs/guides/troubleshooting.md#esm-installation-errors).
+Synchronous `require()` is unsupported.
+
 ### Python API
 
 `agent_topology.langgraph.describe` accepts the `CompiledStateGraph` returned by

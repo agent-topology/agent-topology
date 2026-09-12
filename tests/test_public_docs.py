@@ -51,10 +51,18 @@ def _heading_anchors(document: Path) -> set[str]:
 @pytest.mark.parametrize("document", PUBLIC_DOCS, ids=lambda path: path.name)
 def test_public_document_links_resolve_from_checkout(document: Path) -> None:
     for target in MARKDOWN_LINK.findall(document.read_text(encoding="utf-8")):
+        repository_prefix = (
+            "https://github.com/agent-topology/agent-topology/blob/main/"
+        )
+        if target.startswith(repository_prefix):
+            target = target.removeprefix(repository_prefix)
+            base = ROOT
+        else:
+            base = document.parent
         if target.startswith(("https://", "http://", "mailto:")):
             continue
         path_text, _, fragment = target.partition("#")
-        linked = document if not path_text else document.parent / unquote(path_text)
+        linked = document if not path_text else base / unquote(path_text)
         linked = linked.resolve()
         assert linked.is_relative_to(ROOT), (
             f"{document}: link escapes checkout: {target}"
