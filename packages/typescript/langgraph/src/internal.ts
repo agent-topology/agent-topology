@@ -33,6 +33,7 @@ interface BuilderBranch {
 }
 
 interface BuilderNode {
+  runnable: unknown;
   ends?: string[];
 }
 
@@ -44,6 +45,7 @@ interface RuntimeBuilder {
 }
 
 interface DrawableNode {
+  data: unknown;
   id: string;
   name?: string;
 }
@@ -269,6 +271,88 @@ function checkedDepth(options: DescribeOptions): number {
   return depth;
 }
 
+function branchInterpretation(
+  compiled: RuntimeCompiledGraph,
+  drawable: DrawableGraph,
+  graph: TopologyGraph,
+  depth: number,
+): void {
+  const root = builderStructure(compiled);
+  const dynamic = new Set(
+    Object.entries(compiled.builder.branches)
+      .filter(([, branches]) => Object.keys(branches).length > 0)
+      .map(([source]) => source),
+  );
+  for (const [source, node] of Object.entries(compiled.builder.nodes)) {
+    if (node.ends !== undefined) dynamic.add(source);
+  }
+  const extension = (graph["x-topology-interpretation"] ??= {
+    version: "1",
+    traversalDepth: depth,
+    nodes: [],
+  }) as { nodes: Array<{ nodeId: string; branch?: unknown }> };
+  const records = new Map(
+    extension.nodes.map((record) => [record.nodeId, record]),
+  );
+  const mappedIdentity = (nodeId: string) =>
+    nodeId === START ||
+    nodeId === END ||
+    (Object.hasOwn(compiled.builder.nodes, nodeId) &&
+      Object.hasOwn(drawable.nodes, nodeId) &&
+      drawable.nodes[nodeId]?.data ===
+        compiled.builder.nodes[nodeId]?.runnable);
+  for (const nodeId of Object.keys(drawable.nodes)) {
+    const outgoing = graph.structure.edges.filter(
+      (edge) => edge.source === nodeId,
+    );
+    // Retained runnable identity, not a flattened display name, maps root scope.
+    const mapped = mappedIdentity(nodeId);
+    const declared = root.edges.filter((edge) => edge.source === nodeId);
+    const signature = (edges: TopologyEdge[]) =>
+      JSON.stringify(
+        edges
+          .map((edge) => JSON.stringify([edge.target, edge.kind]))
+          .sort(compareText),
+      );
+    if (!(
+      outgoing.length >= 2 ||
+      outgoing.some((edge) => edge.kind === "conditional") ||
+      (mapped && dynamic.has(nodeId))
+    ))
+      continue;
+    let fact: unknown;
+    if (!mapped) {
+      fact = { status: "unknown", reason: "scope-not-inspected" };
+    } else if (
+      dynamic.has(nodeId) ||
+      outgoing.some((edge) => edge.kind !== "direct")
+    ) {
+      fact = { status: "unknown", reason: "selection-not-observable" };
+    } else if (
+      depth > 0 &&
+      (signature(outgoing) !== signature(declared) ||
+        outgoing.some((edge) => !mappedIdentity(edge.target)))
+    ) {
+      fact = { status: "unknown", reason: "scope-not-inspected" };
+    } else {
+      fact = {
+        status: "known",
+        value: "all-declared",
+        evidence: {
+          kind: "unconditional-edges",
+          source: "compiled.builder.edges+branches+nodes.ends",
+        },
+      };
+    }
+    const record = records.get(nodeId) ?? { nodeId };
+    record.branch = fact;
+    records.set(nodeId, record);
+  }
+  extension.nodes = [...records.values()].sort((a, b) =>
+    compareText(a.nodeId, b.nodeId),
+  );
+}
+
 export async function describeWithVersion(
   compiledGraph: unknown,
   installedVersion: string,
@@ -313,6 +397,7 @@ export async function describeWithVersion(
     },
     "x-langgraph": { traversalDepth: depth },
   };
+  branchInterpretation(runtimeGraph, drawable, graph, depth);
   const gaps: TopologyDocument["completeness"]["gaps"] = [...unknownRouters]
     .sort(compareText)
     .map((source) => ({

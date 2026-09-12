@@ -98,3 +98,36 @@ would hide a mismatch.
 
 For an offline consumer with sample trace data, continue to the
 [trace-correlation example](../../examples/trace-correlation/README.md).
+
+## Experimental branch interpretation
+
+Current source (unreleased, after published beta.2) emits only the `branch` fact
+of graph-level `x-topology-interpretation` revision `"1"`. The requested
+`traversalDepth` describes the snapshot; records refer to visible node IDs and
+are sorted by Unicode code point. Other experimental fact families remain
+separate implementation work. See [ADR 0008](../decisions/0008-experimental-consumer-interpretation.md).
+
+| Branch fact | Consumer meaning |
+| --- | --- |
+| `known`, value `all-declared`, evidence kind `unconditional-edges` | At least two ordinary direct destinations were inspected as unconditional declarations. No simultaneous scheduling or actual execution is established. |
+| `unknown`, reason `selection-not-observable` | Conditional or dynamic routing exists, but selection cannot be established. This includes single/list routers, annotations, Send, loops, and mixed routing. |
+| `unknown`, reason `scope-not-inspected` | Visible branching lacks matching inspected scope or connections, including expanded child branches. |
+| No branch fact | No assertion; a linear or terminal node normally has none. Absence is never evidence of exclusive selection. |
+
+Validate the complete core document first, then the separate
+[extension schema and semantic checks](../../spec/experimental/README.md).
+Core validators intentionally accept opaque extensions and cannot certify their
+meaning. Legacy absence, invalid extensions, and unsupported revisions provide
+no trusted branch interpretation: expose the valid core and retain the local
+extension status. Do not interpret the testbed's `x-topology-branch` trial as this
+extension. Do not infer exclusive selection from conditional edges or labels.
+
+Unknown branch facts add no core gaps and do not change strict-mode behavior.
+Existing routing and expanded-metadata gaps still apply. Join records remain
+separate connections and never prove a branch mode. Equal structure hashes do
+not establish equal interpretation; caches must also compare the extension
+revision and canonical content. This remains experimental LangGraph evidence,
+not proven vendor neutrality or a promoted core contract.
+
+The [producer evidence record](../../conformance/branch-evidence.md) identifies
+the supported framework versions, inspected declarations, and shared tests.

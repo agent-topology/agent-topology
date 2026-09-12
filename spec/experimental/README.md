@@ -16,7 +16,10 @@ exports, or structure hash algorithm.
 - `spec/tests/test_interpretation_examples.py` is the reference semantic oracle.
   It does not inspect a framework and cannot prove producer assertions true.
   `packages/typescript/spec/tests/interpretation.test.mjs` independently checks
-  core validation, extension shape, canonical digests and hash exclusion.
+  core validation, extension shape and semantics, canonical digests and hash
+  exclusion.
+  Its repository-only `interpretation-helper.mjs` is also used by real producer
+  tests; neither language adds a public validation API.
   T3–T6 must additionally prove real producer evidence and semantic parity using
   the [implementation criteria](../../docs/decisions/0008-implementation-criteria.md).
 

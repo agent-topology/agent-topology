@@ -162,6 +162,73 @@ def _drawable_structure(
     return _edge_documents(edge_values), represented_joins, unknown_routers
 
 
+def _branch_interpretation(
+    compiled_graph: CompiledStateGraph, drawable: Any, graph: dict[str, Any], depth: int
+) -> None:
+    """Inspect root declarations; drawable connections alone never prove selection."""
+    builder = compiled_graph.builder
+    root_edges, _, _ = _builder_structure(compiled_graph)
+    dynamic = {source for source, branches in builder.branches.items() if branches}
+    dynamic.update(
+        source
+        for source, node in builder.nodes.items()
+        if node.ends or isinstance(node.ends, dict)
+    )
+    extension = graph.setdefault(
+        "x-topology-interpretation",
+        {"version": "1", "traversalDepth": depth, "nodes": []},
+    )
+    records = {record["nodeId"]: record for record in extension["nodes"]}
+
+    def mapped_identity(node_id: str) -> bool:
+        return node_id in {START, END} or (
+            node_id in compiled_graph.nodes
+            and node_id in drawable.nodes
+            and drawable.nodes[node_id].data is compiled_graph.nodes[node_id].bound
+        )
+
+    for node_id in drawable.nodes:
+        outgoing = {
+            (edge["target"], edge["kind"])
+            for edge in graph["structure"]["edges"]
+            if edge["source"] == node_id
+        }
+        # Compiled runnable identity establishes retained scope, never a flattened name.
+        mapped = mapped_identity(node_id)
+        declared = {
+            (edge["target"], edge["kind"])
+            for edge in root_edges
+            if edge["source"] == node_id
+        }
+        applicable = (
+            len(outgoing) >= 2
+            or any(kind == "conditional" for _, kind in outgoing)
+            or (mapped and node_id in dynamic)
+        )
+        if not applicable:
+            continue
+        if not mapped:
+            fact = {"status": "unknown", "reason": "scope-not-inspected"}
+        elif node_id in dynamic or any(kind != "direct" for _, kind in outgoing):
+            fact = {"status": "unknown", "reason": "selection-not-observable"}
+        elif depth > 0 and (
+            outgoing != declared
+            or any(not mapped_identity(target) for target, _ in outgoing)
+        ):
+            fact = {"status": "unknown", "reason": "scope-not-inspected"}
+        else:
+            fact = {
+                "status": "known",
+                "value": "all-declared",
+                "evidence": {
+                    "kind": "unconditional-edges",
+                    "source": "compiled.builder.edges+branches+nodes.ends",
+                },
+            }
+        records.setdefault(node_id, {"nodeId": node_id})["branch"] = fact
+    extension["nodes"] = [records[node_id] for node_id in sorted(records)]
+
+
 def describe(
     compiled_graph: CompiledStateGraph,
     *,
@@ -242,6 +309,7 @@ def describe(
         },
         "x-langgraph": {"traversalDepth": depth},
     }
+    _branch_interpretation(compiled_graph, drawable, graph_document, depth)
     if isinstance(graph_name, str) and graph_name:
         graph_document["name"] = graph_name
 
