@@ -31,7 +31,10 @@ documents. A supplied identifier must be a non-empty string.
 
 A caller that intends to compose several producer outputs assigns distinct, stable
 identifiers while describing each compiled graph, then combines the resulting graph
-records and associated gaps without rewriting either identity. Composition itself
+records and associated gaps without rewriting either identity. The compositor is the
+producer of the new document: it supplies honest document-level provenance, retains
+the input provenance separately or under its own namespaced extension when needed,
+and conservatively preserves every input `producerLimitation`. Composition itself
 remains a consumer responsibility and is not added to a producer API.
 
 The producer-provided identifier is used by every derived gap reference, including
@@ -42,6 +45,8 @@ it comes from `compiled_graph.get_name()`, which reflects
 ## Consequences
 
 - A composed document can address each graph and its gaps unambiguously.
+- Composition does not discard uncertainty or attribute every graph to the first
+  input document's producer and source.
 - Duplicate graph identifiers remain a validation error in both specification
   packages, and the error names the repeated value.
 - Existing callers that produce one graph keep receiving `main` without changes.

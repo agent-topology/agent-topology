@@ -108,9 +108,14 @@ const payout = await describe(payoutGraph, { graphId: "vendor-payout" });
 ```
 
 The default remains `main` for a single graph. Composition is a consumer operation:
-combine the already identified graph records and carry their associated gaps into the
-new document; do not rewrite graph ids or gap references after extraction. Validate
-and finalize the composed document before publishing it.
+combine the already identified graph records, carry every associated gap, and
+conservatively preserve every input `producerLimitation`; do not rewrite graph ids or
+gap references after extraction. The composing application is the producer of the
+new document, so give it honest document-level provenance instead of retaining the
+first input's producer, source, and generation time for every graph. Keep trusted
+input provenance separately or under a compositor-owned `x-*` extension when it must
+travel with the document. Validate and finalize the composed document before
+publishing it.
 
 `graphs[].name` is separate, optional display metadata. In both LangGraph producers
 it comes from the compiled graph's name, set by the graph author with
