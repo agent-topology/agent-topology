@@ -10,8 +10,10 @@ import * as spec from "../dist/index.js";
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const fixturesRoot = resolve(packageRoot, "../../../conformance/fixtures");
 
-// ADR 0009 byte oracle: docs/decisions/0009-numeric-canonical-form.md and
-// its implementation criteria at 0009-implementation-criteria.md.
+// ADR 0009 byte oracle, amended by ADR 0010:
+// docs/decisions/0009-numeric-canonical-form.md,
+// docs/decisions/0010-numeric-domain-parsed-value-narrowing.md, and their
+// implementation criteria at 0009-implementation-criteria.md.
 /** @type {[string, number, string][]} */
 const NUMERIC_BYTE_ORACLE = [
   ["signed-zero-positive", 0, "0"],
@@ -24,8 +26,103 @@ const NUMERIC_BYTE_ORACLE = [
   ["exponent-lower-threshold-exponential", 1e-7, "1e-7"],
   ["exponent-upper-threshold-fixed", 1e20, "100000000000000000000"],
   ["exponent-upper-threshold-exponential", 1e21, "1e+21"],
-  ["in-domain-integer-boundary", 9007199254740992, "9007199254740992"],
+  ["safe-integer-neighbor-positive", 9007199254740991, "9007199254740991"],
+  ["safe-integer-neighbor-negative", -9007199254740991, "-9007199254740991"],
+  ["in-domain-integer-boundary-positive", 9007199254740992, "9007199254740992"],
+  [
+    "in-domain-integer-boundary-negative",
+    -9007199254740992,
+    "-9007199254740992",
+  ],
+  // ADR 0010: a bare integer literal beyond 2^53 narrows to its nearest
+  // binary64 double (this JS source literal is already narrowed by the
+  // engine at parse time) rather than being rejected.
+  ["narrowed-integer-boundary-positive", 9007199254740993, "9007199254740992"],
+  [
+    "narrowed-integer-boundary-negative",
+    -9007199254740993,
+    "-9007199254740992",
+  ],
 ];
+
+/** @type {[string, string, string][]} */
+const RAW_NUMERIC_BYTE_ORACLE = [
+  ["signed-zero-positive", "0", "0"],
+  ["signed-zero-negative", "-0", "0"],
+  ["integral-float", "1.0", "1"],
+  ["small-integer-boundary-positive", "100", "100"],
+  ["small-integer-boundary-negative", "-100", "-100"],
+  ["ordinary-fraction", "0.5", "0.5"],
+  ["exponent-lower-threshold-fixed", "1e-6", "0.000001"],
+  ["exponent-lower-threshold-exponential", "1e-7", "1e-7"],
+  ["exponent-upper-threshold-fixed", "1e20", "100000000000000000000"],
+  ["exponent-upper-threshold-exponential", "1e21", "1e+21"],
+  ["safe-integer-neighbor-positive", "9007199254740991", "9007199254740991"],
+  ["safe-integer-neighbor-negative", "-9007199254740991", "-9007199254740991"],
+  [
+    "in-domain-integer-boundary-positive",
+    "9007199254740992",
+    "9007199254740992",
+  ],
+  [
+    "in-domain-integer-boundary-negative",
+    "-9007199254740992",
+    "-9007199254740992",
+  ],
+  [
+    "narrowed-integer-boundary-positive",
+    "9007199254740993",
+    "9007199254740992",
+  ],
+  [
+    "narrowed-integer-boundary-negative",
+    "-9007199254740993",
+    "-9007199254740992",
+  ],
+];
+
+const EMPTY_GRAPH_HASH = {
+  algorithm: "sha256",
+  algorithmVersion: "1",
+  value: "8bfd237d53e3cd48927ba6ddc520d66a3fd32c629e969204654a2801ed423319",
+};
+
+/** @returns {import("../dist/index.js").TopologyDocument} */
+function numericBaseDocument() {
+  return {
+    topologyVersion: "0.1",
+    provenance: {
+      generatedAt: "2026-09-10T19:00:00Z",
+      producer: { name: "test", version: "1" },
+      framework: { name: "test", version: "1" },
+    },
+    producerLimitations: [],
+    structureHash: {
+      algorithm: "sha256",
+      algorithmVersion: "1",
+      value: "0".repeat(64),
+    },
+    graphs: [
+      {
+        id: "main",
+        structure: {
+          nodes: [],
+          edges: [],
+          joins: [],
+          entryNodeIds: [],
+          exitNodeIds: [],
+        },
+      },
+    ],
+    completeness: { status: "complete", gaps: [] },
+  };
+}
+
+/** @param {string} rawValue */
+function rawNumericDocument(rawValue) {
+  const base = JSON.stringify(numericBaseDocument());
+  return `${base.slice(0, -1)},"x-nested":{"list":[${rawValue}]},"x-value":${rawValue}}`;
+}
 
 async function expectedDocuments() {
   const cases = await readdir(fixturesRoot, { withFileTypes: true });
@@ -102,30 +199,27 @@ test("canonical bytes and hashes agree with the Python contract implementation",
   unicode.completeness = { status: "complete", gaps: [] };
   cases.push({ name: "unicode structural identifiers", document: unicode });
 
-  // ADR 0009 byte oracle (docs/decisions/0009-numeric-canonical-form.md and
-  // its implementation criteria): every case both as a document-level
-  // extension value and nested inside an extension object/array. This
-  // harness transports documents to Python as JSON text (`JSON.stringify`
-  // below), which re-spells each JS number per ECMAScript's own fixed/
-  // exponential threshold — not the literal shape it started with. That
-  // reshaping turns "exponent-upper-threshold-fixed" (1e20) into a bare
-  // digit-string integer literal (JS writes magnitudes up to 1e21 in fixed
-  // form), which Python then correctly rejects as an out-of-domain integer
-  // literal per ADR 0009 — not a cross-language divergence, but an artifact
-  // of this test's JSON-text transport. Skip it here; the standalone
-  // "numeric extension canonical bytes match the ADR 0009 oracle directly"
-  // test below already covers it without a JSON-text round trip.
-  for (const [name, value] of NUMERIC_BYTE_ORACLE.filter(
-    ([caseName]) => caseName !== "exponent-upper-threshold-fixed",
-  )) {
-    const documentLevel = structuredClone(firstCase.document);
+  // ADR 0009 byte oracle, amended by ADR 0010 (docs/decisions/0009-numeric-
+  // canonical-form.md, docs/decisions/0010-numeric-domain-parsed-value-
+  // narrowing.md, and their implementation criteria): every case both as a
+  // document-level extension value and nested inside an extension
+  // object/array. This harness transports documents to Python as JSON text
+  // (`JSON.stringify` below), which re-spells each JS number per
+  // ECMAScript's own fixed/exponential threshold — not the literal shape it
+  // started with. That reshaping turns "exponent-upper-threshold-fixed"
+  // (1e20) into a bare digit-string integer literal on the wire (JS writes
+  // magnitudes up to 1e21 in fixed form); ADR 0010 requires this to
+  // round-trip identically rather than be rejected, so every case, including
+  // this one, is exercised here without a skip.
+  for (const [name, value] of NUMERIC_BYTE_ORACLE) {
+    const documentLevel = numericBaseDocument();
     documentLevel["x-value"] = value;
     cases.push({
       name: `numeric oracle: ${name} (document-level)`,
       document: documentLevel,
     });
 
-    const nested = structuredClone(firstCase.document);
+    const nested = numericBaseDocument();
     nested.graphs[0]["x-nested"] = { list: [value] };
     cases.push({ name: `numeric oracle: ${name} (nested)`, document: nested });
   }
@@ -191,33 +285,7 @@ test("canonical bytes and hashes agree with the Python contract implementation",
 
 test("numeric extension canonical bytes match the ADR 0009 oracle directly", () => {
   /** @type {import("../dist/index.js").TopologyDocument} */
-  const base = {
-    topologyVersion: "0.1",
-    provenance: {
-      generatedAt: "2026-09-10T19:00:00Z",
-      producer: { name: "test", version: "1" },
-      framework: { name: "test", version: "1" },
-    },
-    producerLimitations: [],
-    structureHash: {
-      algorithm: "sha256",
-      algorithmVersion: "1",
-      value: "0".repeat(64),
-    },
-    graphs: [
-      {
-        id: "main",
-        structure: {
-          nodes: [],
-          edges: [],
-          joins: [],
-          entryNodeIds: [],
-          exitNodeIds: [],
-        },
-      },
-    ],
-    completeness: { status: "complete", gaps: [] },
-  };
+  const base = numericBaseDocument();
 
   for (const [name, value, expectedBytes] of NUMERIC_BYTE_ORACLE) {
     const documentLevel = structuredClone(base);
@@ -240,6 +308,140 @@ test("numeric extension canonical bytes match the ADR 0009 oracle directly", () 
       name,
     );
   }
+});
+
+test("numeric extension survives serialize -> JSON.parse -> canonicalize round trip", () => {
+  // ADR 0010's closure requirement, mirrored from the Python suite's
+  // equivalent test: a value's canonical output, re-parsed and
+  // canonicalized again, must be byte-identical to the first pass.
+  /** @type {import("../dist/index.js").TopologyDocument} */
+  const base = numericBaseDocument();
+
+  for (const [name, value] of NUMERIC_BYTE_ORACLE) {
+    const document = structuredClone(base);
+    document["x-value"] = value;
+    const graph = document.graphs[0];
+    assert.ok(graph);
+    graph["x-nested"] = { list: [value] };
+
+    const firstPass = spec.canonicalStringify(document);
+    const reparsed = JSON.parse(firstPass);
+    const secondPass = spec.canonicalStringify(reparsed);
+
+    assert.equal(secondPass, firstPass, name);
+  }
+});
+
+test("raw numeric evidence is complete and symmetric across both languages", () => {
+  const canonicalBase = spec.canonicalStringify(numericBaseDocument());
+  const nodeEvidence = RAW_NUMERIC_BYTE_ORACLE.map(
+    ([name, rawValue, expectedBytes]) => {
+      const raw = rawNumericDocument(rawValue);
+      const document = JSON.parse(raw);
+      const validation = spec.validateDocument(document);
+      const canonical = spec.canonicalStringify(document);
+      const expectedCanonical = `${canonicalBase.slice(0, -1)},"x-nested":{"list":[${expectedBytes}]},"x-value":${expectedBytes}}`;
+      const hash = spec.computeStructureHash(document);
+
+      assert.equal(validation.valid, true, `${name}: TypeScript validation`);
+      assert.equal(canonical, expectedCanonical, `${name}: TypeScript bytes`);
+      assert.deepEqual(
+        hash,
+        EMPTY_GRAPH_HASH,
+        `${name}: TypeScript hash tuple`,
+      );
+
+      return { name, raw, expectedCanonical, nodeCanonical: canonical };
+    },
+  );
+
+  const unsupportedRaw = rawNumericDocument("1".padEnd(401, "0"));
+  const unsupportedDocument = JSON.parse(unsupportedRaw);
+  assert.equal(
+    spec.validateDocument(unsupportedDocument).valid,
+    true,
+    "out-of-range TypeScript validation acceptance is distinct from canonicalization",
+  );
+  assert.throws(
+    () => spec.canonicalStringify(unsupportedDocument),
+    /canonical JSON does not support non-finite numbers/,
+  );
+
+  const pythonProject = resolve(packageRoot, "../../python/spec");
+  const script = `
+import json
+import sys
+
+from agent_topology.spec import canonical_json, compute_structure_hash, validate_document
+
+evidence = []
+for case in json.load(sys.stdin):
+    document = json.loads(case["raw"])
+    item = {"validationAccepted": validate_document(document) == []}
+    try:
+        item["canonical"] = canonical_json(document)
+        item["hash"] = compute_structure_hash(document)
+        item["nodeRoundTrip"] = canonical_json(json.loads(case["nodeCanonical"]))
+    except (OverflowError, ValueError) as error:
+        item["canonicalError"] = f"{type(error).__name__}: {error}"
+    evidence.append(item)
+json.dump(evidence, sys.stdout, separators=(",", ":"))
+`;
+  const pythonCases = [
+    ...nodeEvidence,
+    { raw: unsupportedRaw, nodeCanonical: canonicalBase },
+  ];
+  const result = spawnSync(
+    "uv",
+    ["run", "--project", pythonProject, "python", "-c", script],
+    { encoding: "utf8", input: JSON.stringify(pythonCases) },
+  );
+  assert.equal(result.status, 0, result.stderr);
+  const pythonEvidence = JSON.parse(result.stdout);
+
+  nodeEvidence.forEach(({ name, expectedCanonical }, index) => {
+    const evidence = pythonEvidence[index];
+    assert.equal(
+      evidence.validationAccepted,
+      true,
+      `${name}: Python validation`,
+    );
+    assert.equal(
+      evidence.canonicalError,
+      undefined,
+      `${name}: Python acceptance`,
+    );
+    assert.equal(
+      evidence.canonical,
+      expectedCanonical,
+      `${name}: Python bytes`,
+    );
+    assert.deepEqual(
+      evidence.hash,
+      EMPTY_GRAPH_HASH,
+      `${name}: Python hash tuple`,
+    );
+    assert.equal(
+      evidence.nodeRoundTrip,
+      expectedCanonical,
+      `${name}: TypeScript bytes canonicalized by Python`,
+    );
+    assert.equal(
+      spec.canonicalStringify(JSON.parse(evidence.canonical)),
+      expectedCanonical,
+      `${name}: Python bytes canonicalized by TypeScript`,
+    );
+  });
+
+  const rejected = pythonEvidence.at(-1);
+  assert.equal(
+    rejected.validationAccepted,
+    true,
+    "out-of-range Python validation",
+  );
+  assert.match(rejected.canonicalError, /^ValueError: Out of range values/);
+  assert.equal(rejected.canonical, undefined);
+  assert.equal(rejected.hash, undefined);
 });
 
 test('the retained F8/E1 minimized candidate canonicalizes to "x-e1":0', () => {

@@ -44,6 +44,16 @@ no longer emits `0.0` for a value that should read `0`. `structureHash` is
 unaffected because no core field is numeric; this is a full-document byte
 change only, for documents that use numeric extensions.
 
+The supported parsed-value domain is the finite `binary64` domain. A bare
+integer literal beyond magnitude `2^53` now narrows to the nearest `binary64`
+double in both packages instead of being rejected by Python while TypeScript
+silently narrowed it during `JSON.parse`. This makes canonical output stable
+across serialize → parse → canonicalize round trips. Exact integers beyond
+`2^53` are not preserved as JSON numbers; encode them as strings inside the
+extension when exact integer semantics matter. Magnitudes that cannot narrow
+to a finite double, along with `NaN` and `±Infinity`, remain rejected. See
+[ADR 0010](../decisions/0010-numeric-domain-parsed-value-narrowing.md).
+
 1. Identify any producer- or framework-owned extension in your documents that
    carries a JSON number (core fields are all string-typed and never affected).
 2. Re-canonicalize affected documents with beta.3 specification utilities and

@@ -17,13 +17,21 @@ _NODE_HASH_FIELDS = ("id", "type", "subgraphId", "interrupts")
 _EDGE_HASH_FIELDS = ("id", "source", "target", "kind")
 _JOIN_HASH_FIELDS = ("id", "sources", "target")
 
-# ADR 0009: the supported numeric domain is exactly the finite binary64
-# values, plus integer literals (Python `int`, decoded losslessly from JSON
-# text with no `.` or exponent) up to the largest magnitude that round-trips
-# through a double in either language. Beyond that, Python could hold the
-# exact value and TypeScript structurally cannot, so it is rejected here
-# rather than silently reintroducing the byte divergence ADR 0009 closes.
-_MAX_SAFE_INTEGER = 2**53
+# ADR 0009 (amended by ADR 0010): the supported numeric domain is exactly the
+# finite binary64 values. TypeScript's public API only ever receives values
+# already narrowed to a double by `JSON.parse`, so it cannot observe whether
+# an out-of-domain magnitude started as an integer literal or an exponent
+# literal; Python's `canonicalize_document` cannot stably keep that
+# distinction either, because its own bare-digit integer spelling (e.g. `1e20`
+# canonicalizes to `100000000000000000000`) decodes back through `json.loads`
+# as a plain `int` indistinguishable from one a caller wrote directly. A
+# domain boundary keyed on Python's `int`/`float` runtime type is therefore
+# not closed under this module's own canonical JSON output. Instead, every
+# JSON integer literal (Python `int`, decoded losslessly from JSON text with
+# no `.` or exponent) is narrowed to its nearest binary64 double here, exactly
+# as `JSON.parse` already narrows it in TypeScript, so canonicalization is
+# idempotent under a JSON round trip and byte-identical across languages for
+# every finite magnitude.
 _NUMBER_DOMAIN_ERROR = "Out of range values are not JSON compliant"
 
 
@@ -39,26 +47,30 @@ def _ordered(value: Any) -> Any:
             raise ValueError(_NUMBER_DOMAIN_ERROR)
         return value
     if isinstance(value, int):
-        if abs(value) > _MAX_SAFE_INTEGER:
+        try:
+            narrowed = float(value)
+        except OverflowError:
+            raise ValueError(_NUMBER_DOMAIN_ERROR) from None
+        if not math.isfinite(narrowed):
             raise ValueError(_NUMBER_DOMAIN_ERROR)
-        return value
+        return narrowed
     return value
 
 
-def _format_number(value: int | float) -> str:
+def _format_number(value: float) -> str:
     """Spell a finite, in-domain JSON number per ADR 0009's byte oracle.
 
     Implements ECMA-262's ``Number::toString`` (the same rule RFC 8785
     adopts): the shortest round-tripping decimal digit string, formatted as
-    fixed-point or exponential depending on its decimal exponent.
+    fixed-point or exponential depending on its decimal exponent. Callers
+    always pass a `float`: `_ordered` narrows every JSON integer literal to
+    its nearest binary64 double before this function ever sees it.
     """
     if value == 0:
         return "0"
     negative = value < 0
     magnitude = -value if negative else value
-    decimal_value = (
-        Decimal(magnitude) if isinstance(magnitude, int) else Decimal(repr(magnitude))
-    )
+    decimal_value = Decimal(repr(magnitude))
     _, digit_tuple, exponent = decimal_value.normalize().as_tuple()
     digits = "".join(str(digit) for digit in digit_tuple)
     k = len(digits)

@@ -99,9 +99,13 @@ hash algorithm, renderer, or vendor-neutrality claim is added by this decision.
 
 [ADR 0009](docs/decisions/0009-numeric-canonical-form.md) defines the
 canonical byte spelling for a JSON number (the ECMAScript `Number::toString`
-/ RFC 8785 rule) and the supported numeric domain (finite `binary64`,
-integer literals bounded by `2^53`). No core field is numeric today, and the
-version-1 hash projection excludes every extension, so this is a
+/ RFC 8785 rule) and the supported numeric domain: finite `binary64` values,
+full stop. [ADR 0010](docs/decisions/0010-numeric-domain-parsed-value-narrowing.md)
+amends the domain boundary: an integer literal beyond `2^53` narrows to its
+nearest `binary64` double in both languages (matching what `JSON.parse`
+already does in TypeScript) rather than being rejected, so canonicalization
+stays closed under its own JSON round trip. No core field is numeric today,
+and the version-1 hash projection excludes every extension, so this is a
 full-document canonicalisation change with no `structureHash.algorithmVersion`
 or `topologyVersion` impact. It changes published beta.2 full-document byte
 output for documents whose extensions carry numbers once the fixed
