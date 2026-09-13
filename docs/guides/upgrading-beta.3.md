@@ -1,15 +1,14 @@
-# Upgrade from beta.2 to the beta.3 candidate
+# Upgrade from beta.2 to beta.3
 
 [Documentation home](../README.md) · [Release notes](../releases/v0.1.0-beta.3.md)
 
-Status: **Candidate; coordinated release not published.** The four beta.3 registry
-packages and immutable tag exist, but this repository's live installation paths still
-select beta.2. Use this guide to review the migration; adopt beta.3 as the coordinated
-preview only after the closeout workflow publishes the GitHub prerelease.
+Status: **Published and verified.** The four beta.3 registry packages, immutable tag,
+GitHub prerelease, and repository installation paths identify the coordinated beta.3
+public preview.
 
 ## Select the packages
 
-| Package | beta.2 → beta.3 candidate | Runtime | Framework |
+| Package | beta.2 → beta.3 | Runtime | Framework |
 | --- | --- | --- | --- |
 | `agent-topology-spec` | `0.1.0b2` → `0.1.0b3` | Python 3.11–3.14 | None |
 | `agent-topology-langgraph` | `0.1.0b2` → `0.1.0b3` | Python 3.11–3.14 | LangGraph 1.2.10–1.2.11 |
@@ -28,7 +27,7 @@ compatibility ranges are unchanged from beta.2.
 Nothing below changes `topologyVersion`, `structureHash.algorithm`, or
 `structureHash.algorithmVersion`. Every change is either additive
 (experimental `x-*` extensions and a new opt-in helper) or a documentation
-correction. This candidate does not claim vendor neutrality, a stable v1
+correction. This release does not claim vendor neutrality, a stable v1
 contract, or backward compatibility across a future format or hash-algorithm
 transition. See the [0.1 contract's known limitations](../0.1-contract.md#known-limitations-and-excluded-consumers).
 

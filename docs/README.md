@@ -36,12 +36,12 @@ standard library. It makes no path-coverage or policy-verdict claim.
 - [Initial public-preview release](releases/v0.1.0-beta.1.md)
 - [Upgrade from beta.1 to beta.2](guides/upgrading-beta.2.md)
 - [Beta.2 verified release](releases/v0.1.0-beta.2.md)
-- [Beta.3 candidate upgrade guide](guides/upgrading-beta.3.md)
-- [Beta.3 release closeout candidate](releases/v0.1.0-beta.3.md)
+- [Upgrade from beta.2 to beta.3](guides/upgrading-beta.3.md)
+- [Beta.3 verified release](releases/v0.1.0-beta.3.md)
 - [Changelog](../CHANGELOG.md)
 
 Documentation in the default branch describes the current source. Fixes under
-**Unreleased** in the changelog are not included in the pinned beta.2 registry
+**Unreleased** in the changelog are not included in the pinned beta.3 registry
 packages. Use the release notes for exact published artifact identities; the
 immutable release tag identifies qualified code. A release becomes coordinated only
 after its separate closeout PR updates the publication record and installation guides.

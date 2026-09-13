@@ -3,7 +3,7 @@
 See the [beta.1 to beta.2 upgrade guide](../guides/upgrading-beta.2.md) for beta.2
 package selections, hash baselines, and expanded-subgraph migration, and the
 [beta.2 to beta.3 upgrade guide](../guides/upgrading-beta.3.md) for the
-current, unpublished candidate.
+current published release.
 
 [Documentation home](../README.md) · [Compatibility](../reference/compatibility.md)
 
@@ -17,7 +17,7 @@ In a new directory, create and activate a virtual environment:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install "agent-topology-langgraph==0.1.0b2"
+python -m pip install "agent-topology-langgraph==0.1.0b3"
 ```
 
 On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1` instead.

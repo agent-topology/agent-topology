@@ -16,8 +16,8 @@ def _state() -> dict:
     return copy.deepcopy(check_release_docs.load_state())
 
 
-def test_current_release_state_is_candidate_and_coherent() -> None:
-    check_release_docs.check_phase("candidate")
+def test_current_release_state_is_published_and_coherent() -> None:
+    check_release_docs.check_phase("published")
 
 
 def test_finalization_stage_uses_closeout_source_and_binds_qualified_commit() -> None:
@@ -34,6 +34,17 @@ def test_finalization_stage_uses_closeout_source_and_binds_qualified_commit() ->
         "- name: Verify public artifacts and bind their workflow runs", maxsplit=1
     )[1].split("- name:", maxsplit=1)[0]
     assert "GH_TOKEN: ${{ github.token }}" in workflow_verification
+
+
+def test_finalization_complete_accepts_an_already_public_prerelease() -> None:
+    workflow = (
+        Path(__file__).resolve().parents[1] / ".github/workflows/release-finalize.yml"
+    ).read_text(encoding="utf-8")
+    complete = workflow.split("\n  complete:\n", maxsplit=1)[1]
+
+    assert "--json isDraft,isPrerelease" in complete
+    assert "test \"$(jq -r '.isPrerelease'" in complete
+    assert "if [ \"$(jq -r '.isDraft'" in complete
 
 
 def test_beta3_evidence_retains_receipts_and_cross_language_f8_replay() -> None:
@@ -69,12 +80,12 @@ def test_beta3_evidence_retains_receipts_and_cross_language_f8_replay() -> None:
     assert results["@agent-topology/spec"]["version"] == "0.1.0-beta.3"
 
 
-def test_published_phase_requires_candidate_closeout() -> None:
+def test_candidate_phase_requires_explicit_candidate() -> None:
     with pytest.raises(
         check_release_docs.ReleaseDocsError,
-        match="published phase requires candidate=null",
+        match="candidate phase requires candidate release state",
     ):
-        check_release_docs.check_phase("published")
+        check_release_docs.check_phase("candidate")
 
 
 def test_release_state_rejects_duplicate_package(tmp_path: Path) -> None:
@@ -104,7 +115,7 @@ def test_release_states_cannot_overlap(tmp_path: Path) -> None:
 
 def test_new_published_release_requires_closeout_evidence() -> None:
     state = _state()
-    published = copy.deepcopy(state["candidate"])
+    published = copy.deepcopy(state["coordinatedPublished"])
     published.pop("sourceCommit")
     state["coordinatedPublished"] = published
     state["candidate"] = None
@@ -163,6 +174,9 @@ def test_candidate_accepts_candidate_docs_and_current_manifests(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     state = _state()
+    candidate = copy.deepcopy(state["coordinatedPublished"])
+    candidate["branch"] = "rc/0.1.0-beta.3"
+    state["candidate"] = candidate
     candidate_doc = tmp_path / "candidate.md"
     candidate_doc.write_text("Prepared in source; not published.", encoding="utf-8")
     python_producer = tmp_path / "packages/python/langgraph"

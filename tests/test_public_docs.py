@@ -128,11 +128,11 @@ def test_readme_installation_and_compatibility_match_package_metadata() -> None:
 
 
 @pytest.mark.parametrize(
-    "path", [RELEASE_NOTES, ROOT / "docs/guides/upgrading-beta.2.md"]
+    "path", [RELEASE_NOTES, ROOT / "docs/guides/upgrading-beta.3.md"]
 )
 def test_public_preview_release_notes_match_package_metadata(path: Path) -> None:
-    # This immutable beta.2 record describes the published beta.2 versions, not
-    # whatever the source manifests currently prepare as a later candidate.
+    # The beta.3 release record and migration guide describe the coordinated
+    # package set selected by the published release state.
     release_notes = path.read_text(encoding="utf-8")
     with (ROOT / "packages/python/spec/pyproject.toml").open("rb") as source:
         python_spec_name = tomllib.load(source)["project"]["name"]
@@ -159,7 +159,7 @@ def test_public_preview_release_notes_match_package_metadata(path: Path) -> None
     assert PUBLISHED_NPM_SPEC_VERSION in release_notes
     assert PUBLISHED_NPM_PRODUCER_VERSION in release_notes
 
-    assert "v0.1.0-beta.2" in release_notes
+    assert "v0.1.0-beta.3" in release_notes
     assert "Python 3.11–3.14" in release_notes
     assert "LangGraph 1.2.10–1.2.11" in release_notes
     assert "Node.js 20+" in release_notes
@@ -169,7 +169,7 @@ def test_public_preview_release_notes_match_package_metadata(path: Path) -> None
         assert "Python `agent-topology-langgraph` distribution" in release_notes
     assert "published and verified" in release_notes.lower()
     assert f"@agent-topology/spec@{PUBLISHED_NPM_SPEC_VERSION}" in release_notes
-    assert "agent-topology-spec>=0.1.0b2,<0.2.0" in release_notes
+    assert "agent-topology-spec>=0.1.0b3,<0.2.0" in release_notes
 
 
 @pytest.mark.parametrize("name", ["python", "typescript"])
@@ -223,30 +223,23 @@ def test_beta3_migration_guide_is_discoverable(name: str) -> None:
         ROOT / "docs/guides/upgrading-beta.3.md",
     ],
 )
-def test_beta3_candidate_notes_match_release_state(path: Path) -> None:
-    candidate_notes = path.read_text(encoding="utf-8")
-    beta3 = RELEASE_STATE["candidate"]
+def test_beta3_published_notes_match_release_state(path: Path) -> None:
+    release_text = path.read_text(encoding="utf-8")
+    beta3 = RELEASE_STATE["coordinatedPublished"]
     for package in beta3["packages"]:
-        assert package["name"] in candidate_notes
-        assert package["version"] in candidate_notes
+        assert package["name"] in release_text
+        assert package["version"] in release_text
 
-    assert "not published" in candidate_notes.lower()
-    assert "published and verified" not in candidate_notes.lower()
+    assert "published and verified" in release_text.lower()
 
 
-def test_beta3_candidate_keeps_live_coordinated_install_selections() -> None:
+def test_beta3_published_release_owns_live_coordinated_install_selections() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     with (ROOT / "packages/python/spec/pyproject.toml").open("rb") as source:
         python_spec = tomllib.load(source)["project"]
     typescript_spec = json.loads(
         (ROOT / "packages/typescript/spec/package.json").read_text(encoding="utf-8")
     )
-
-    install_lines = [
-        line
-        for line in readme.splitlines()
-        if "pip install" in line or "npm install" in line
-    ]
 
     python_spec_install = (
         f'python -m pip install "{python_spec["name"]}'
@@ -256,9 +249,9 @@ def test_beta3_candidate_keeps_live_coordinated_install_selections() -> None:
     assert (
         f"npm install {typescript_spec['name']}@{PUBLISHED_NPM_SPEC_VERSION}" in readme
     )
-    assert not any(python_spec["version"] in line for line in install_lines)
-    assert not any(typescript_spec["version"] in line for line in install_lines)
+    assert python_spec["version"] == PUBLISHED_PYTHON_SPEC_VERSION
+    assert typescript_spec["version"] == PUBLISHED_NPM_SPEC_VERSION
 
 
-def test_release_state_and_public_docs_are_in_candidate_phase() -> None:
-    check_release_docs.check_phase("candidate")
+def test_release_state_and_public_docs_are_in_published_phase() -> None:
+    check_release_docs.check_phase("published")

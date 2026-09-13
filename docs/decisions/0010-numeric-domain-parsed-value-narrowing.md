@@ -161,7 +161,7 @@ carries a pointer to this ADR instead.
   `2^53`" / "canonicalization rejects it explicitly rather than silently
   narrowing it" wording in favor of the narrowing rule above.
 - [`CHANGELOG.md`](../../CHANGELOG.md) and the
-  [beta.3 candidate release notes](../releases/v0.1.0-beta.3.md) are
+  [beta.3 release notes](../releases/v0.1.0-beta.3.md) are
   corrected: they claimed both packages reject a bare integer literal beyond
   `2^53`, which was never true of TypeScript's actual behavior.
 - The maintained Python canonical suite

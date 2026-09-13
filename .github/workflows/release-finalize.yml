@@ -141,7 +141,7 @@ jobs:
           persist-credentials: false
       - name: Require the merged published-document transition
         run: python3 scripts/check_release_docs.py --phase published
-      - name: Reverify checked-in evidence, tag, and draft release
+      - name: Reverify checked-in evidence, tag, and prerelease
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ inputs.coordinated-version }}
@@ -161,6 +161,9 @@ jobs:
             remote_target="$(git ls-remote origin "refs/tags/$tag" | awk '{print $1}')"
           fi
           test "$remote_target" = "$QUALIFIED_COMMIT"
-          test "$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" = true
-          gh release edit "$tag" --repo "$GITHUB_REPOSITORY" \
-            --draft=false --prerelease --notes-file "$notes"
+          release_json="$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json isDraft,isPrerelease)"
+          test "$(jq -r '.isPrerelease' <<<"$release_json")" = true
+          if [ "$(jq -r '.isDraft' <<<"$release_json")" = true ]; then
+            gh release edit "$tag" --repo "$GITHUB_REPOSITORY" \
+              --draft=false --prerelease --notes-file "$notes"
+          fi
