@@ -4,7 +4,7 @@ Idiomatic TypeScript types and runtime utilities for the provisional agent-topol
 v0.1 document contract. This package has no framework runtime dependency.
 
 ```bash
-npm install @agent-topology/spec@0.1.0-beta.2
+npm install @agent-topology/spec@0.1.0-beta.3
 ```
 
 Supports Node.js 20+ and is ESM-only; synchronous `require()` is unsupported.
@@ -64,11 +64,11 @@ schema authority. The build generates TypeScript declarations from it and embeds
 copy for runtime validation. `topologyVersion`, the structure-hash algorithm version,
 and this npm package's version are independent.
 
-## Join connections (beta.3 partial publication)
+## Join connections (beta.3 candidate)
 
-The beta.3 partial publication exports `derivedJoinEdges(structure)`; coordinated
-beta.2 does not. Wait for the corrected beta.4 release before adopting it from the
-current installation path.
+The registry-available beta.3 candidate exports `derivedJoinEdges(structure)`;
+coordinated beta.2 does not. The repository's live installation guides move to beta.3
+only after coordinated closeout.
 
 ```typescript
 import { derivedJoinEdges, type DerivedJoinEdge } from "@agent-topology/spec";

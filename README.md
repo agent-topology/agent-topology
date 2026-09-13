@@ -12,13 +12,11 @@ available from their public registries and remain independently versioned. See t
 the exact released versions. See the [release notes](docs/releases/v0.1.0-beta.2.md)
 and [upgrade guide](docs/guides/upgrading-beta.2.md) before migrating from beta.1.
 
-The four **beta.3** packages and `v0.1.0-beta.3` tag exist, but beta.3 is a
-[partial publication](docs/releases/v0.1.0-beta.3.md), not the current
-coordinated release. Its immutable package READMEs and this repository's public
-installation guides still select beta.2, and no coordinated GitHub prerelease was
-created. The installation commands below therefore remain on verified beta.2 while
-a corrected beta.4 release is prepared. See the
-[beta.3 upgrade record](docs/guides/upgrading-beta.3.md) for the affected changes.
+The four **beta.3** packages and `v0.1.0-beta.3` tag exist, and coordinated release
+closeout is in progress. The installation commands below remain on verified beta.2
+until a staged draft prerelease and the dedicated published-docs PR pass their gates.
+See the [beta.3 closeout candidate](docs/releases/v0.1.0-beta.3.md) and
+[upgrade guide](docs/guides/upgrading-beta.3.md).
 
 Start with the [documentation](docs/README.md):
 [Python quickstart](docs/getting-started/python.md),
@@ -398,7 +396,7 @@ more dangerous than an obviously absent one.
   alternatives or all run. It is not a path-coverage or policy-verdict format.
 - **Framework-shaped sentinel nodes.** LangGraph entry and exit sentinels remain
   visible in the 0.1 producer output and are marked under `x-langgraph`.
-  The beta.3 partial publication also emits
+The beta.3 candidate also emits
   [experimental common sentinel roles](docs/guides/consuming-documents.md#experimental-sentinel-roles);
   coordinated beta.2 does not.
 

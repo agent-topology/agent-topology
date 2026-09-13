@@ -16,16 +16,61 @@ def _state() -> dict:
     return copy.deepcopy(check_release_docs.load_state())
 
 
-def test_current_release_state_is_published_and_coherent() -> None:
-    check_release_docs.check_phase("published")
+def test_current_release_state_is_candidate_and_coherent() -> None:
+    check_release_docs.check_phase("candidate")
 
 
-def test_candidate_phase_requires_an_explicit_candidate() -> None:
+def test_finalization_stage_uses_closeout_source_and_binds_qualified_commit() -> None:
+    workflow = (
+        Path(__file__).resolve().parents[1] / ".github/workflows/release-finalize.yml"
+    ).read_text(encoding="utf-8")
+    stage = workflow.split("\n  complete:\n", maxsplit=1)[0]
+
+    assert "ref: main" in stage
+    assert "ref: ${{ inputs.qualified-commit }}" not in stage
+    assert "QUALIFIED_COMMIT: ${{ inputs.qualified-commit }}" in stage
+    assert '--commit "$QUALIFIED_COMMIT"' in stage
+
+
+def test_beta3_evidence_retains_receipts_and_cross_language_f8_replay() -> None:
+    evidence_path = (
+        Path(__file__).resolve().parents[1]
+        / "docs/releases/evidence/v0.1.0-beta.3.json"
+    )
+    evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+
+    receipt_verification = evidence["qualificationReceiptVerification"]
+    assert receipt_verification["sourceCommit"] == evidence["sourceCommit"]
+    assert "no rebuild difference" in receipt_verification["outcome"]
+    assert {receipt["package"] for receipt in receipt_verification["receipts"]} == {
+        package["name"] for package in evidence["packages"]
+    }
+
+    replay = evidence["f8RegistryReplay"]
+    assert replay["input"]["x-numeric"][0:2] == [0.0, -0.0]
+    results = {result["package"]: result for result in replay["results"]}
+    assert set(results) == {"agent-topology-spec", "@agent-topology/spec"}
+    assert all(result["inputAccepted"] is True for result in results.values())
+    assert len({result["canonicalBytes"] for result in results.values()}) == 1
+    assert (
+        len(
+            {
+                json.dumps(result["structureHash"], sort_keys=True)
+                for result in results.values()
+            }
+        )
+        == 1
+    )
+    assert results["agent-topology-spec"]["version"] == "0.1.0b3"
+    assert results["@agent-topology/spec"]["version"] == "0.1.0-beta.3"
+
+
+def test_published_phase_requires_candidate_closeout() -> None:
     with pytest.raises(
         check_release_docs.ReleaseDocsError,
-        match="candidate phase requires candidate release state",
+        match="published phase requires candidate=null",
     ):
-        check_release_docs.check_phase("candidate")
+        check_release_docs.check_phase("published")
 
 
 def test_release_state_rejects_duplicate_package(tmp_path: Path) -> None:
@@ -55,9 +100,10 @@ def test_release_states_cannot_overlap(tmp_path: Path) -> None:
 
 def test_new_published_release_requires_closeout_evidence() -> None:
     state = _state()
-    published = copy.deepcopy(state["partialPublications"][0])
+    published = copy.deepcopy(state["candidate"])
     published.pop("sourceCommit")
     state["coordinatedPublished"] = published
+    state["candidate"] = None
     state["partialPublications"] = []
 
     with pytest.raises(
@@ -113,11 +159,6 @@ def test_candidate_accepts_candidate_docs_and_current_manifests(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     state = _state()
-    candidate = copy.deepcopy(state["partialPublications"][0])
-    candidate["branch"] = "rc/0.1.0-beta.3"
-    candidate["migrationGuide"] = "docs/guides/upgrading-beta.3.md"
-    state["candidate"] = candidate
-    state["partialPublications"] = []
     candidate_doc = tmp_path / "candidate.md"
     candidate_doc.write_text("Prepared in source; not published.", encoding="utf-8")
     python_producer = tmp_path / "packages/python/langgraph"
@@ -308,6 +349,12 @@ def test_public_evidence_binds_registry_digests_and_workflow_runs() -> None:
         fetch_bytes=lambda _url: content,
         runner=runner,
     )
+    npm_artifact = next(
+        package["artifacts"][0]
+        for package in evidence["packages"]
+        if package["name"] == "@agent-topology/spec"
+    )
+    assert npm_artifact["sha256"] == hashlib.sha256(content).hexdigest()
 
     assert evidence["sourceCommit"] == commit
     assert {package["name"] for package in evidence["packages"]} == {

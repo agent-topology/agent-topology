@@ -1,16 +1,15 @@
-# beta.3 partial-publication upgrade record
+# Upgrade from beta.2 to the beta.3 candidate
 
 [Documentation home](../README.md) · [Release notes](../releases/v0.1.0-beta.3.md)
 
-Status: **Partial publication; not the coordinated public release.** The four
-beta.3 registry packages exist, but their immutable READMEs and this repository's
-public installation paths still select beta.2, and no coordinated GitHub prerelease
-was created. This guide preserves the beta.3 behavioral changes for audit purposes.
-Consumers should wait for the corrected beta.4 release.
+Status: **Candidate; coordinated release not published.** The four beta.3 registry
+packages and immutable tag exist, but this repository's live installation paths still
+select beta.2. Use this guide to review the migration; adopt beta.3 as the coordinated
+preview only after the closeout workflow publishes the GitHub prerelease.
 
 ## Select the packages
 
-| Package | beta.2 → beta.3 partial publication | Runtime | Framework |
+| Package | beta.2 → beta.3 candidate | Runtime | Framework |
 | --- | --- | --- | --- |
 | `agent-topology-spec` | `0.1.0b2` → `0.1.0b3` | Python 3.11–3.14 | None |
 | `agent-topology-langgraph` | `0.1.0b2` → `0.1.0b3` | Python 3.11–3.14 | LangGraph 1.2.10–1.2.11 |
@@ -29,7 +28,7 @@ compatibility ranges are unchanged from beta.2.
 Nothing below changes `topologyVersion`, `structureHash.algorithm`, or
 `structureHash.algorithmVersion`. Every change is either additive
 (experimental `x-*` extensions and a new opt-in helper) or a documentation
-correction. This partial publication does not claim vendor neutrality, a stable v1
+correction. This candidate does not claim vendor neutrality, a stable v1
 contract, or backward compatibility across a future format or hash-algorithm
 transition. See the [0.1 contract's known limitations](../0.1-contract.md#known-limitations-and-excluded-consumers).
 
@@ -91,13 +90,13 @@ policy from ordinary edges alone; a stronger OR representation remains future
 work requiring its own evidence and contract decision. See the
 [consumer guide's OR convergence section](consuming-documents.md#or-convergence-and-first-trigger-firing).
 
-## Join-consumption helper in the partial publication
+## Join-consumption helper in beta.3
 
 Beta.3 adds `derived_join_edges` (Python) and `derivedJoinEdges` (TypeScript) for
-already-validated structures; coordinated beta.2 packages do not export them. They
+already-validated structures; beta.2 packages do not export them. They
 derive one `{joinId, source, target}` record per join source without adding document
 fields or changing structure-hash algorithm 1. Continue reading both
-`structure.edges` and `structure.joins` directly until the corrected beta.4 release.
+`structure.edges` and `structure.joins` directly when preserving join semantics.
 See the
 [join connections section](consuming-documents.md#join-connections) for the
 full example and ordering guarantees.
