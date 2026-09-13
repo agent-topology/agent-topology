@@ -3,9 +3,15 @@
   "coordinatedVersion": "0.1.0-beta.3",
   "sourceCommit": "848b179aee32789a6f8b0ad4552a3a1262a05d55",
   "tag": "v0.1.0-beta.3",
-  "coordinatedComplete": false,
-  "githubRelease": null,
-  "registryVerifiedAt": "2026-09-12T20:48:21Z",
+  "coordinatedComplete": true,
+  "githubRelease": "https://github.com/agent-topology/agent-topology/releases/tag/v0.1.0-beta.3",
+  "registryVerifiedAt": "2026-09-13T00:22:44.042788+00:00",
+  "finalizationStage": {
+    "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/34727801939",
+    "registryEvidence": "passed",
+    "cleanRegistryInstallation": "passed",
+    "draftPrerelease": "created with maintainer authentication after the GitHub Actions integration was denied Release API access"
+  },
   "qualificationReceiptVerification": {
     "verifiedAt": "2026-09-12T20:48:21Z",
     "sourceCommit": "848b179aee32789a6f8b0ad4552a3a1262a05d55",
@@ -168,9 +174,5 @@
       ]
     }
   ],
-  "blockingDiscrepancies": [
-    "The package READMEs embedded in all four beta.3 artifacts still select beta.2 installation commands.",
-    "Repository installation documentation still identifies beta.2 as the latest coordinated public release.",
-    "No GitHub prerelease was created for v0.1.0-beta.3."
-  ]
+  "immutableArtifactDocumentation": "The READMEs embedded in the beta.3 registry artifacts retain their pre-closeout beta.2 installation examples. Registry artifacts were not overwritten; repository package READMEs and all live installation guides select beta.3."
 }

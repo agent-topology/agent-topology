@@ -2,8 +2,8 @@
 
 See the [beta.1 to beta.2 upgrade guide](../guides/upgrading-beta.2.md) for beta.2
 package selections, hash baselines, and expanded-subgraph migration, and the
-[beta.2 to beta.3 upgrade guide](../guides/upgrading-beta.3.md) for the
-current, unpublished candidate.
+[beta.2 to beta.3 upgrade guide](../guides/upgrading-beta.3.md) for the current
+published release.
 
 [Documentation home](../README.md) · [Compatibility](compatibility.md)
 

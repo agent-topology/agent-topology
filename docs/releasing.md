@@ -16,12 +16,9 @@ axes.
 ## Publication sequence
 
 For beta.2 and later, prepare and qualify from `rc/<version>` as described
-below. [0.1.0-beta.2](releases/v0.1.0-beta.2.md) remains the most recent
-coordinated release. The four beta.3 registry packages and tag form a retained
-[release closeout candidate](releases/v0.1.0-beta.3.md), not yet a completed
-coordinated release. Finalization must preserve the immutable beta.3 artifacts and
-tag while it stages the draft, merges published documentation, and publishes the
-GitHub prerelease.
+below. [0.1.0-beta.3](releases/v0.1.0-beta.3.md) is the most recent published and
+verified coordinated release. Its closeout preserved the immutable registry artifacts
+and tag while synchronizing the GitHub prerelease and live documentation.
 
 The machine-readable [release state](releases/release-state.json) distinguishes
 the current coordinated release, an optional candidate, and retained partial

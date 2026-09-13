@@ -4,19 +4,13 @@
 
 Status: **0.1 public preview** — provisional and pre-1.0. The four packages are
 available from their public registries and remain independently versioned. See the
-[v0.1.0-beta.2 release notes](docs/releases/v0.1.0-beta.2.md),
+[v0.1.0-beta.3 release notes](docs/releases/v0.1.0-beta.3.md),
 [0.1 contract](docs/0.1-contract.md), [changelog](CHANGELOG.md), and
 [Roadmap](#roadmap).
 
-**beta.2 is published and verified.** The installation commands below select
-the exact released versions. See the [release notes](docs/releases/v0.1.0-beta.2.md)
-and [upgrade guide](docs/guides/upgrading-beta.2.md) before migrating from beta.1.
-
-The four **beta.3** packages and `v0.1.0-beta.3` tag exist, and coordinated release
-closeout is in progress. The installation commands below remain on verified beta.2
-until a staged draft prerelease and the dedicated published-docs PR pass their gates.
-See the [beta.3 closeout candidate](docs/releases/v0.1.0-beta.3.md) and
-[upgrade guide](docs/guides/upgrading-beta.3.md).
+**beta.3 is published and verified.** The installation commands below select the
+exact released versions. See the [release notes](docs/releases/v0.1.0-beta.3.md) and
+[upgrade guide](docs/guides/upgrading-beta.3.md) before migrating from beta.2.
 
 Start with the [documentation](docs/README.md):
 [Python quickstart](docs/getting-started/python.md),
@@ -48,14 +42,14 @@ validate, serialize, and hash the resulting documents.
 ## Installation
 
 The public preview has four distinct installation paths. Pin the ecosystem-native
-`beta.2` version when evaluating the current release.
+`beta.3` version when evaluating the current release.
 
 | Package                             | Install                                                                                |
 | ----------------------------------- | -------------------------------------------------------------------------------------- |
-| Python document utilities           | `python -m pip install "agent-topology-spec==0.1.0b2"`                                 |
-| Python LangGraph producer and `agt` | `python -m pip install "agent-topology-langgraph==0.1.0b2"`                            |
-| TypeScript document utilities       | `npm install @agent-topology/spec@0.1.0-beta.2`                                        |
-| TypeScript LangGraph.js producer    | `npm install @agent-topology/spec@0.1.0-beta.2 @agent-topology/langgraph@0.1.0-beta.2` |
+| Python document utilities           | `python -m pip install "agent-topology-spec==0.1.0b3"`                                 |
+| Python LangGraph producer and `agt` | `python -m pip install "agent-topology-langgraph==0.1.0b3"`                            |
+| TypeScript document utilities       | `npm install @agent-topology/spec@0.1.0-beta.3`                                        |
+| TypeScript LangGraph.js producer    | `npm install @agent-topology/spec@0.1.0-beta.3 @agent-topology/langgraph@0.1.0-beta.3` |
 
 The Python distributions install into the native namespace and are imported as
 `agent_topology.spec` and `agent_topology.langgraph`. The TypeScript packages are
@@ -162,7 +156,7 @@ accepted by this API. Producer-specific metadata is emitted only beneath the
 
 The Python distributions build as `agent-topology-spec` and
 `agent-topology-langgraph`, imported as `agent_topology.spec` and
-`agent_topology.langgraph`. Both `0.1.0b2` distributions are available from PyPI.
+`agent_topology.langgraph`. Both `0.1.0b3` distributions are available from PyPI.
 TypeScript applications can use `@agent-topology/spec` to
 validate, canonicalize, serialize, and hash documents without a framework runtime.
 They can use the async `describe` API from `@agent-topology/langgraph` to inspect a
@@ -185,7 +179,7 @@ CLI; `agt` remains owned by the Python Foundation producer.
 All four packages are built, qualified, and published as independent operations.
 Repository CI inspects their exact public contents and metadata, installs the
 artifacts in clean projects, and binds qualification to the source commit and artifact
-digests. The [v0.1.0-beta.2 release notes](docs/releases/v0.1.0-beta.2.md)
+digests. The [v0.1.0-beta.3 release notes](docs/releases/v0.1.0-beta.3.md)
 record the public artifacts, qualification receipts, and source commits. Maintainers
 use the [release and partial-publication recovery guide](docs/releasing.md).
 
@@ -193,10 +187,10 @@ use the [release and partial-publication recovery guide](docs/releasing.md).
 
 | Package                                  | Runtime          | Framework compatibility |
 | ---------------------------------------- | ---------------- | ----------------------- |
-| `agent-topology-spec` 0.1.0b2            | Python 3.11–3.14 | No framework dependency |
-| `agent-topology-langgraph` 0.1.0b2       | Python 3.11–3.14 | LangGraph 1.2.10–1.2.11 |
-| `@agent-topology/spec` 0.1.0-beta.2      | Node.js 20+      | No framework dependency |
-| `@agent-topology/langgraph` 0.1.0-beta.2 | Node.js 20+      | LangGraph.js 1.4.14     |
+| `agent-topology-spec` 0.1.0b3            | Python 3.11–3.14 | No framework dependency |
+| `agent-topology-langgraph` 0.1.0b3       | Python 3.11–3.14 | LangGraph 1.2.10–1.2.11 |
+| `@agent-topology/spec` 0.1.0-beta.3      | Node.js 20+      | No framework dependency |
+| `@agent-topology/langgraph` 0.1.0-beta.3 | Node.js 20+      | LangGraph.js 1.4.14     |
 
 Only the versions listed above have conformance evidence. Producers refuse untested
 framework releases before inspecting a graph.
@@ -383,9 +377,9 @@ more dangerous than an obviously absent one.
 - **Deep nesting.** Subgraphs are opaque by default. Expanding them is opt-in and,
   in at least one framework, currently unreliable past two levels.
   Expanded drawable shape does not fully preserve child join, routing, and
-  interrupt declarations. Published beta.2 records this as an
+  interrupt declarations. Published beta.3 records this as an
   `expanded-subgraph-metadata` gap; see the
-  [beta.2 release notes](docs/releases/v0.1.0-beta.2.md).
+  [beta.3 release notes](docs/releases/v0.1.0-beta.3.md).
 - **Runtime-constructed graphs.** A graph assembled from configuration at startup is
   described as it exists at that moment, not as all the graphs it might have been.
 - **Provisional core boundary.** Python and TypeScript exercise the same LangGraph
@@ -396,9 +390,9 @@ more dangerous than an obviously absent one.
   alternatives or all run. It is not a path-coverage or policy-verdict format.
 - **Framework-shaped sentinel nodes.** LangGraph entry and exit sentinels remain
   visible in the 0.1 producer output and are marked under `x-langgraph`.
-The beta.3 candidate also emits
+  Beta.3 also emits
   [experimental common sentinel roles](docs/guides/consuming-documents.md#experimental-sentinel-roles);
-  coordinated beta.2 does not.
+  beta.2 does not.
 
 Every document carries a `completeness` field listing what the producer could not
 determine. **Consumers must surface it.**

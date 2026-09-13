@@ -3,7 +3,7 @@
 See the [beta.1 to beta.2 upgrade guide](../guides/upgrading-beta.2.md) for beta.2
 package selections, hash baselines, and expanded-subgraph migration, and the
 [beta.2 to beta.3 upgrade guide](../guides/upgrading-beta.3.md) for the
-current, unpublished candidate.
+current published release.
 
 [Documentation home](../README.md) · [Compatibility](../reference/compatibility.md)
 
@@ -18,7 +18,7 @@ In a new directory:
 
 ```bash
 npm init -y
-npm install @agent-topology/spec@0.1.0-beta.2 @agent-topology/langgraph@0.1.0-beta.2 @langchain/langgraph@1.4.14
+npm install @agent-topology/spec@0.1.0-beta.3 @agent-topology/langgraph@0.1.0-beta.3 @langchain/langgraph@1.4.14
 ```
 
 Install both agent-topology packages: the producer declares the specification as

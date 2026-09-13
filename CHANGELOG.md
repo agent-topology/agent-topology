@@ -14,14 +14,13 @@ future package versions will move together.
   becomes public, and automatically reopen release issues closed as completed with
   missing acceptance criteria.
 
-## v0.1.0-beta.3 release closeout — 2026-09-12
+## v0.1.0-beta.3 public preview — 2026-09-12
 
 Prepared on `rc/0.1.0-beta.3`: Python distributions use `0.1.0b3`, npm
 packages use `0.1.0-beta.3`, and the npm producer's spec peer uses beta.3.
-All four registry packages and the immutable tag were published. Coordinated closeout
-is resumed through a staged draft prerelease followed by a dedicated published-docs
-PR; live installation documentation remains on beta.2 until that gate passes. See the
-[release closeout candidate](docs/releases/v0.1.0-beta.3.md) and the
+All four registry packages, the immutable tag, the GitHub prerelease, and live
+installation documentation identify the published and verified beta.3 release. See the
+[release notes](docs/releases/v0.1.0-beta.3.md) and the
 [beta.2 to beta.3 upgrade guide](docs/guides/upgrading-beta.3.md).
 
 - Both specification packages explicitly test rejection of duplicate graph ids, and
