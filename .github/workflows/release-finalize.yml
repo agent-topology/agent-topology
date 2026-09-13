@@ -47,7 +47,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ inputs.qualified-commit }}
+          # Candidate state and finalization tooling live on main after package
+          # publication. Artifact identity is bound independently to the immutable
+          # qualified commit by verify_public_release and the tag check below.
+          ref: main
           fetch-depth: 0
           persist-credentials: false
       - uses: astral-sh/setup-uv@v10.0.1

@@ -4,7 +4,7 @@ Validate, canonicalize, and hash agent-topology JSON documents in Python 3.11–
 This package has no framework dependency and does not install a CLI.
 
 ```bash
-python -m pip install "agent-topology-spec==0.1.0b2"
+python -m pip install "agent-topology-spec==0.1.0b3"
 ```
 
 ```python
@@ -40,11 +40,11 @@ hash algorithm versions are independent.
 
 Licensed under the MIT License; see the included `LICENSE` file.
 
-## Join connections (beta.3 partial publication)
+## Join connections (beta.3 candidate)
 
-The beta.3 partial publication exports `derived_join_edges(structure)`; coordinated
-beta.2 does not. Wait for the corrected beta.4 release before adopting it from the
-current installation path.
+The registry-available beta.3 candidate exports `derived_join_edges(structure)`;
+coordinated beta.2 does not. The repository's live installation guides move to beta.3
+only after coordinated closeout.
 
 ```python
 from agent_topology.spec import derived_join_edges

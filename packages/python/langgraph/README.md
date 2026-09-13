@@ -5,7 +5,7 @@ Supports Python 3.11–3.14 and LangGraph 1.2.10–1.2.11. Untested framework ve
 are refused before inspection.
 
 ```bash
-python -m pip install "agent-topology-langgraph==0.1.0b2"
+python -m pip install "agent-topology-langgraph==0.1.0b3"
 agt describe path/to/graph.py:graph --out topology.json
 ```
 

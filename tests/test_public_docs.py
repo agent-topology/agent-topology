@@ -223,22 +223,18 @@ def test_beta3_migration_guide_is_discoverable(name: str) -> None:
         ROOT / "docs/guides/upgrading-beta.3.md",
     ],
 )
-def test_beta3_partial_notes_match_retained_release_state(path: Path) -> None:
-    partial_notes = path.read_text(encoding="utf-8")
-    beta3 = next(
-        release
-        for release in RELEASE_STATE["partialPublications"]
-        if release["coordinatedVersion"] == "0.1.0-beta.3"
-    )
+def test_beta3_candidate_notes_match_release_state(path: Path) -> None:
+    candidate_notes = path.read_text(encoding="utf-8")
+    beta3 = RELEASE_STATE["candidate"]
     for package in beta3["packages"]:
-        assert package["name"] in partial_notes
-        assert package["version"] in partial_notes
+        assert package["name"] in candidate_notes
+        assert package["version"] in candidate_notes
 
-    assert "partial publication" in partial_notes.lower()
-    assert "published and verified" not in partial_notes.lower()
+    assert "not published" in candidate_notes.lower()
+    assert "published and verified" not in candidate_notes.lower()
 
 
-def test_beta3_partial_publication_keeps_coordinated_install_selections() -> None:
+def test_beta3_candidate_keeps_live_coordinated_install_selections() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     with (ROOT / "packages/python/spec/pyproject.toml").open("rb") as source:
         python_spec = tomllib.load(source)["project"]
@@ -264,5 +260,5 @@ def test_beta3_partial_publication_keeps_coordinated_install_selections() -> Non
     assert not any(typescript_spec["version"] in line for line in install_lines)
 
 
-def test_release_state_and_public_docs_are_in_published_phase() -> None:
-    check_release_docs.check_phase("published")
+def test_release_state_and_public_docs_are_in_candidate_phase() -> None:
+    check_release_docs.check_phase("candidate")

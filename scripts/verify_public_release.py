@@ -159,6 +159,7 @@ def _npm_evidence(
             {
                 "filename": Path(urllib.parse.urlparse(url).path).name,
                 "url": url,
+                "sha256": hashlib.sha256(content).hexdigest(),
                 "sha1": sha1,
                 "integrity": integrity,
                 "provenanceUrl": provenance_url,

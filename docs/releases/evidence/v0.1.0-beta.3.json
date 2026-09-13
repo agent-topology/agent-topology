@@ -6,6 +6,87 @@
   "coordinatedComplete": false,
   "githubRelease": null,
   "registryVerifiedAt": "2026-09-12T20:48:21Z",
+  "qualificationReceiptVerification": {
+    "verifiedAt": "2026-09-12T20:48:21Z",
+    "sourceCommit": "848b179aee32789a6f8b0ad4552a3a1262a05d55",
+    "outcome": "Every public registry artifact is byte-identical to the artifact retained with its successful qualification/publication receipt; no rebuild difference was found.",
+    "receipts": [
+      {
+        "package": "agent-topology-spec",
+        "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/34713578793",
+        "artifactId": 10303956861
+      },
+      {
+        "package": "agent-topology-langgraph",
+        "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/34713739005",
+        "artifactId": 10303917116
+      },
+      {
+        "package": "@agent-topology/spec",
+        "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/34713842862",
+        "artifactId": 10303982068
+      },
+      {
+        "package": "@agent-topology/langgraph",
+        "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/34713955341",
+        "artifactId": 10303717993
+      }
+    ]
+  },
+  "f8RegistryReplay": {
+    "input": {
+      "topologyVersion": "0.1",
+      "provenance": {
+        "generatedAt": "2026-09-10T19:00:00Z",
+        "producer": {"name": "smoke-test", "version": "1.0"},
+        "framework": {"name": "smoke-test", "version": "1.0"}
+      },
+      "producerLimitations": [],
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "nodes": [],
+            "edges": [],
+            "joins": [],
+            "entryNodeIds": [],
+            "exitNodeIds": []
+          }
+        }
+      ],
+      "completeness": {"status": "complete", "gaps": []},
+      "x-numeric": [0.0, -0.0, 1.0, 0.5, 0.000001, 0.0000001, 100000000000000000000, 1e21, 9007199254740993, {"decimal": 1.23456789}]
+    },
+    "results": [
+      {
+        "package": "agent-topology-spec",
+        "version": "0.1.0b3",
+        "inputAccepted": true,
+        "canonicalBytes": "{\"completeness\":{\"gaps\":[],\"status\":\"complete\"},\"graphs\":[{\"id\":\"main\",\"structure\":{\"edges\":[],\"entryNodeIds\":[],\"exitNodeIds\":[],\"joins\":[],\"nodes\":[]}}],\"producerLimitations\":[],\"provenance\":{\"framework\":{\"name\":\"smoke-test\",\"version\":\"1.0\"},\"generatedAt\":\"2026-09-10T19:00:00Z\",\"producer\":{\"name\":\"smoke-test\",\"version\":\"1.0\"}},\"structureHash\":{\"algorithm\":\"sha256\",\"algorithmVersion\":\"1\",\"value\":\"0000000000000000000000000000000000000000000000000000000000000000\"},\"topologyVersion\":\"0.1\",\"x-numeric\":[0,0,1,0.5,0.000001,1e-7,100000000000000000000,1e+21,9007199254740992,{\"decimal\":1.23456789}]}",
+        "structureHash": {
+          "algorithm": "sha256",
+          "algorithmVersion": "1",
+          "value": "8bfd237d53e3cd48927ba6ddc520d66a3fd32c629e969204654a2801ed423319"
+        }
+      },
+      {
+        "package": "@agent-topology/spec",
+        "version": "0.1.0-beta.3",
+        "inputAccepted": true,
+        "canonicalBytes": "{\"completeness\":{\"gaps\":[],\"status\":\"complete\"},\"graphs\":[{\"id\":\"main\",\"structure\":{\"edges\":[],\"entryNodeIds\":[],\"exitNodeIds\":[],\"joins\":[],\"nodes\":[]}}],\"producerLimitations\":[],\"provenance\":{\"framework\":{\"name\":\"smoke-test\",\"version\":\"1.0\"},\"generatedAt\":\"2026-09-10T19:00:00Z\",\"producer\":{\"name\":\"smoke-test\",\"version\":\"1.0\"}},\"structureHash\":{\"algorithm\":\"sha256\",\"algorithmVersion\":\"1\",\"value\":\"0000000000000000000000000000000000000000000000000000000000000000\"},\"topologyVersion\":\"0.1\",\"x-numeric\":[0,0,1,0.5,0.000001,1e-7,100000000000000000000,1e+21,9007199254740992,{\"decimal\":1.23456789}]}",
+        "structureHash": {
+          "algorithm": "sha256",
+          "algorithmVersion": "1",
+          "value": "8bfd237d53e3cd48927ba6ddc520d66a3fd32c629e969204654a2801ed423319"
+        }
+      }
+    ]
+  },
   "verification": [
     "Clean-installed both exact Python packages together from PyPI without local support artifacts.",
     "Ran the installed specification numeric-byte, structure-hash, and derived-join helper smoke.",
@@ -63,6 +144,7 @@
         {
           "filename": "spec-0.1.0-beta.3.tgz",
           "url": "https://registry.npmjs.org/@agent-topology/spec/-/spec-0.1.0-beta.3.tgz",
+          "sha256": "4c5fab1be1a6fa3498a500a57bd438a7a70c53c7d7e5b5730d0665b0e1d06560",
           "sha1": "05af1e343c7772fb96b5fcdc1229cd31b603f482",
           "integrity": "sha512-URGMhakCLdA4wEbOWNjuZ0khJC8hiLLXZVtenSa0MmKKmY8W/LJYsrBx8tRykz6dzRSw/NjmbO9spjYB0JiZRQ==",
           "provenanceUrl": "https://registry.npmjs.org/-/npm/v1/attestations/@agent-topology%2fspec@0.1.0-beta.3"
@@ -78,6 +160,7 @@
         {
           "filename": "langgraph-0.1.0-beta.3.tgz",
           "url": "https://registry.npmjs.org/@agent-topology/langgraph/-/langgraph-0.1.0-beta.3.tgz",
+          "sha256": "acd426402fa3a02f868f87ecc50a1b03468dac745a4ad504d3da30cf9d857452",
           "sha1": "bbc99a3b996de10108aaa6fd273a614621e4e1cb",
           "integrity": "sha512-f2XYPBkSnnH8wsJd2Sf6pB61Kf2zH4FfccCC0VuTm19VuSMQqgosgt+fgmn/SliGriGG9RZhGd4O1dFNxgbfiQ==",
           "provenanceUrl": "https://registry.npmjs.org/-/npm/v1/attestations/@agent-topology%2flanggraph@0.1.0-beta.3"
