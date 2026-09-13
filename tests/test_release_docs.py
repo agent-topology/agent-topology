@@ -30,6 +30,10 @@ def test_finalization_stage_uses_closeout_source_and_binds_qualified_commit() ->
     assert "ref: ${{ inputs.qualified-commit }}" not in stage
     assert "QUALIFIED_COMMIT: ${{ inputs.qualified-commit }}" in stage
     assert '--commit "$QUALIFIED_COMMIT"' in stage
+    workflow_verification = stage.split(
+        "- name: Verify public artifacts and bind their workflow runs", maxsplit=1
+    )[1].split("- name:", maxsplit=1)[0]
+    assert "GH_TOKEN: ${{ github.token }}" in workflow_verification
 
 
 def test_beta3_evidence_retains_receipts_and_cross_language_f8_replay() -> None:

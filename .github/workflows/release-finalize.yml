@@ -64,6 +64,7 @@ jobs:
         run: python3 scripts/check_release_docs.py --phase candidate
       - name: Verify public artifacts and bind their workflow runs
         env:
+          GH_TOKEN: ${{ github.token }}
           VERSION: ${{ inputs.coordinated-version }}
           QUALIFIED_COMMIT: ${{ inputs.qualified-commit }}
           PYTHON_SPEC_RUN: ${{ inputs.python-spec-run }}
