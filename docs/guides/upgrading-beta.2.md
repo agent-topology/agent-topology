@@ -136,9 +136,10 @@ if (document.completeness.gaps.length > 0) {
 
 Expect canonical JSON on stdout and exit status `0`: the document is complete,
 `graphs` contains `main` and `main:child`, and node `child` carries
-`subgraphId: "main:child"`. Use `depth=0` / `{ depth: 0 }` when an opaque child
-is sufficient; a materialized child's own recursive branch/sentinel/entry
-metadata remains separate follow-up work tracked against the nesting ADR.
+`subgraphId: "main:child"`. The `main:child` graph carries its own `branch`,
+`sentinel`, and `entry` interpretation facts, populated from that child's own
+declarations. Use `depth=0` / `{ depth: 0 }` when an opaque child is
+sufficient.
 
 Producer-wide limitations, including `dynamic-interrupts`, are unchanged. Display
 them separately: they do not make a document incomplete or cause Python strict

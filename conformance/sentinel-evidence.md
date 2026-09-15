@@ -33,7 +33,13 @@ subgraph, retaining its own record; at positive depth it additionally gains a
 core `subgraphId`, but its own sentinel record is unaffected, since
 [ADR 0012](../docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md)
 retired framework drawable/`xray` traversal and the parent is never removed or
-replaced by a flattened descendant.
+replaced by a flattened descendant. `test_materialized_child_sentinels`
+(Python) and `materialized child sentinels` (TypeScript) separately confirm
+that once materialized, the child's own nested nodes — including ones
+deliberately named `start` and `__start__-user` — get their own sentinel
+records under the same evidence rules as a root graph: the child's real
+framework `START`/`END` are `known/start`/`known/end`, and the deceptively
+named ordinary nodes are `known/ordinary`, never derived from their names.
 
 Every node body raises if executed. Controlled replacements of drawable data
 and the compiled input channel test failed identity/ownership separately from

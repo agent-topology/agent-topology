@@ -16,10 +16,17 @@ const root = new URL("../../../../spec/experimental/", import.meta.url);
 const cases = JSON.parse(
   readFileSync(new URL("interpretation-cases.json", root), "utf8"),
 );
-const schema = JSON.parse(
+const schemaV1 = JSON.parse(
   readFileSync(new URL("interpretation-v1.schema.json", root), "utf8"),
 );
-const validateExtension = new Ajv2020({ strict: false }).compile(schema);
+const schemaV2 = JSON.parse(
+  readFileSync(new URL("interpretation-v2.schema.json", root), "utf8"),
+);
+const ajv = new Ajv2020({ strict: false });
+const validators = {
+  1: ajv.compile(schemaV1),
+  2: ajv.compile(schemaV2),
+};
 const key = "x-topology-interpretation";
 
 for (const example of cases) {
@@ -34,6 +41,9 @@ for (const example of cases) {
     );
     for (const graph of document.graphs) {
       if (key in graph) {
+        const version = graph[key]?.version;
+        const validateExtension =
+          validators[/** @type {1 | 2} */ (version ?? 1)] ?? validators[1];
         assert.equal(validateExtension(graph[key]), example.shapeValid);
       }
     }

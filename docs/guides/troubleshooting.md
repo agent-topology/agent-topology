@@ -95,9 +95,11 @@ current source retains each parent node's own id and materializes its confirmed
 compiled children as separate `graphs[]` entries addressed by `subgraphId`,
 instead of flattening them into the root graph — see
 [ADR 0012](../decisions/0012-nested-graph-identity-traversal-and-compatibility.md).
-A materialized child's own `branch`, `sentinel`, and `entry` interpretation facts
-are not yet populated; only its core structure (nodes, edges, joins) is
-extracted. Deep traversal can also fail in the framework.
+A materialized child's own `branch`, `sentinel`, and `entry` interpretation
+facts are populated from that child's own declarations, under the same rules
+as any root graph — see [ADR 0012](../decisions/0012-nested-graph-identity-traversal-and-compatibility.md)'s
+revision `"2"` `materialized-child` fact. Deep traversal can also fail in the
+framework.
 
 This correction is unreleased; the original beta.1–beta.3 releases instead
 flattened expanded scope into the root graph and recorded an

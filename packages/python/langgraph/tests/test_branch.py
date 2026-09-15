@@ -170,8 +170,7 @@ def test_expanded_child_scope(depth, nesting):
     check(document, depth)
     facts = meaning(document)
     assert facts.pop("retained")["value"] == "all-declared"
-    # Branch/sentinel/entry facts for a materialized child's own nodes are
-    # populated by #140, not here: root's own extension never leaks them.
+    # The root's own extension never leaks a materialized child's facts.
     assert facts == {}
     assert not any(
         gap["code"] == "expanded-subgraph-metadata"
@@ -184,6 +183,16 @@ def test_expanded_child_scope(depth, nesting):
         assert child_node["subgraphId"] == "main:child"
         expected_graphs = 2 if nesting == 1 or depth < 2 else 3
         assert len(document["graphs"]) == expected_graphs
+        # A materialized child's own nodes carry the same branch evidence rules
+        # as a root graph, at whatever depth actually materializes them.
+        router_graph_id = "main:child" if nesting == 1 else "main:child:inner"
+        router_depth_needed = 1 if nesting == 1 else 2
+        if depth >= router_depth_needed:
+            router_graph = next(
+                g for g in document["graphs"] if g["id"] == router_graph_id
+            )
+            router_records = {r["nodeId"]: r for r in router_graph[KEY]["nodes"]}
+            assert router_records["router"]["branch"]["value"] == "all-declared"
     else:
         assert "subgraphId" not in child_node
         assert len(document["graphs"]) == 1

@@ -102,6 +102,25 @@ for (const recipe of cases) {
     assert.equal(document.structureHash.algorithmVersion, "1");
   });
 }
+test("materialized child entries", async () => {
+  const child = chain([
+    ["start", forbidden],
+    ["__start__-user", forbidden],
+  ]);
+  const document = await describe(chain([["child", child]]), { depth: 1 });
+  const childGraph = document.graphs.find((g) => g.id === "main:child");
+  assert.ok(childGraph);
+  const records = Object.fromEntries(
+    /** @type {any} */ (childGraph[key]).nodes.map(
+      /** @param {any} r */ (r) => [r.nodeId, r],
+    ),
+  );
+  assert.equal(records[START].entry.value, "confirmed");
+  assert.equal(records[END].entry.value, "not-entry");
+  assert.equal(records["start"].entry.status, "unknown");
+  assert.equal(records["start"].entry.observedRoot, false);
+  assert.equal(interpretationStatus(document), "valid");
+});
 for (const nodeId of [START, END, "task"])
   for (const depth of [0, 1, 2]) {
     test(`failed visible identity ${nodeId} depth ${depth}`, async () => {

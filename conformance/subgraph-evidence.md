@@ -1,19 +1,25 @@
 # Experimental child identity evidence
 
-Current source implements ADR 0008 revision 1 child facts; published beta.2 does
-not emit them. No package, core schema, hash algorithm, or release history changes
-are part of this work.
+Current source implements ADR 0008 revision 1 child facts and, on any graph that
+materializes a child, ADR 0012 revision 2's `materialized-child` fact; published
+beta.2 does not emit either. No package, core schema, hash algorithm, or release
+history changes are part of this work.
 
 | Producer / supported framework | Inspected positive surface | Mapping to visible identity |
 | --- | --- | --- |
 | Python / LangGraph 1.2.10 and 1.2.11 | `compiled.nodes.bound`, an actual `CompiledStateGraph` instance | Drawable node data is the identical compiled bound object. |
 | TypeScript / LangGraph.js 1.4.14 | `compiled.builder.nodes.runnable`, an actual `CompiledStateGraph` instance | Drawable node data is the identical builder runnable object. |
 
-Those sources establish `known/opaque-child` only for a visible root child with
-no materialized `subgraphId`. A class/display name is never evidence. Ordinary
+Those sources establish `known/opaque-child` only for a visible child with no
+materialized `subgraphId`. A class/display name is never evidence. Ordinary
 functions and wrappers are counterexamples: both can hide child invocation, so
 neither producer currently claims `not-child`. They report identity-unavailable.
-Root framework sentinels have no applicable child fact.
+Framework sentinels have no applicable child fact. A node carrying core
+`subgraphId` instead reports `known/materialized-child` with
+`materialized-subgraph-reference` evidence naming the containing `graphs[].id`
+and the node's own `subgraphId`; emitting it advances that graph's own
+`x-topology-interpretation` to revision `"2"`, which is additive over revision
+1 and unrecognized/opaque to a revision-1-only reader.
 
 [ADR 0012](../docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md)
 retired framework drawable/`xray` traversal from both producers' positive-depth
@@ -40,19 +46,31 @@ specification authored cases independently assert the same canonical byte digest
 and hash in both specification packages; they are not producer output.
 
 Additional tests use a two-node child for expanded scope (asserting materialized
-`graphs[]` entries and the retirement of `expanded-subgraph-metadata`), a reused
-compiled child bound at two sibling node ids (independent, equal-structure
-materialized graphs with no shared-definition assertion), and retained root
-branching for coexistence with branch facts. A derived id collision is exercised
-directly against the internal extraction primitive in both languages, seeding an
-already-assigned id, because LangGraph's own node-name validation makes a
-delimiter-caused collision impossible to construct through the public API in
-either language; that impossibility is itself asserted. Full core validation
-precedes separate schema and semantic validation; a materialized child reference
-plus an opaque assertion is rejected. Python compares the entire core extraction
-with child interpretation disabled, including gaps, entry/exit arrays,
-`x-langgraph`, hash and strict-mode behavior. Both languages check hash
-exclusion, visible records, reference validity and extension ordering.
+`graphs[]` entries, the `materialized-child` fact on the parent node, and the
+retirement of `expanded-subgraph-metadata`), a reused compiled child bound at
+two sibling node ids (independent, equal-structure materialized graphs with no
+shared-definition assertion), and retained root branching for coexistence with
+branch facts. A derived id collision is exercised directly against the internal
+extraction primitive in both languages, seeding an already-assigned id, because
+LangGraph's own node-name validation makes a delimiter-caused collision
+impossible to construct through the public API in either language; that
+impossibility is itself asserted. Full core validation precedes separate schema
+and semantic validation; a materialized child reference plus an opaque
+assertion is rejected, and so is a `materialized-child` assertion without core
+`subgraphId`. Python compares the entire core extraction with child
+interpretation disabled, including gaps, entry/exit arrays, `x-langgraph`, hash
+and strict-mode behavior. Both languages check hash exclusion, visible records,
+reference validity and extension ordering.
+
+Dedicated tests (`test_materialized_child_sentinels`/`entries` in Python,
+`materialized child sentinels`/`entries` in TypeScript, and
+`test_expanded_child_scope`'s router assertion in Python) confirm that a
+materialized child's own `branch`, `sentinel`, and `entry` facts are populated
+from that child's own declarations using the same evidence rules as any root
+graph, including a case where node names inside the child deliberately
+resemble reserved sentinel tokens without being framework sentinels. See the
+[branch](branch-evidence.md), [sentinel](sentinel-evidence.md), and
+[entry](entry-evidence.md) evidence records.
 
 Run the producer suites from [Conventions](../CONVENTIONS.md), including both
 supported Python framework boundaries. The shared authored extension validation

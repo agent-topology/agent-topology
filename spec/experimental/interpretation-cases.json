@@ -914,7 +914,7 @@
               }
             ],
             "traversalDepth": 0,
-            "version": "2"
+            "version": "3"
           }
         }
       ],
@@ -940,7 +940,7 @@
       },
       "topologyVersion": "0.1"
     },
-    "canonicalSha256": "157da2559136e8d77f9cdbdcb1bbb62164d4a9711b90d87999c45a8d46f34fc3"
+    "canonicalSha256": "78e35ba9117a9885ebc248164cee8a50320d595b157b451128eba048fdace8ae"
   },
   {
     "name": "known-without-evidence",
@@ -2124,5 +2124,253 @@
       "topologyVersion": "0.1"
     },
     "canonicalSha256": "0d8c3e64980f7ad87744e8090a736d54fe5547a200291ef235b55081847279ad"
+  },
+  {
+    "name": "materialized-child-reference",
+    "extensionStatus": "valid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "parent"
+            ],
+            "exitNodeIds": [
+              "parent"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "parent",
+                "subgraphId": "child"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "version": "2",
+            "traversalDepth": 1,
+            "nodes": [
+              {
+                "nodeId": "parent",
+                "subgraph": {
+                  "status": "known",
+                  "value": "materialized-child",
+                  "evidence": {
+                    "kind": "materialized-subgraph-reference",
+                    "source": "contract-example.structural-surface"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "child",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "topologyVersion": "0.1",
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "e31bcbb8ac81b8c2cdf141d1330916235252c51d20e9317663884c08d8f8120b"
+      }
+    },
+    "canonicalSha256": "ceb72f05bfb6000fbb64534f87103e328e6d0d0aa2dafe770910b6e95e0cfdbd"
+  },
+  {
+    "name": "opaque-child-with-subgraph-id",
+    "extensionStatus": "invalid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "parent"
+            ],
+            "exitNodeIds": [
+              "parent"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "parent",
+                "subgraphId": "child"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "version": "2",
+            "traversalDepth": 1,
+            "nodes": [
+              {
+                "nodeId": "parent",
+                "subgraph": {
+                  "status": "known",
+                  "value": "opaque-child",
+                  "evidence": {
+                    "kind": "compiled-child",
+                    "source": "contract-example.structural-surface"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "child",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "node"
+            ],
+            "exitNodeIds": [
+              "node"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "node"
+              }
+            ]
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "topologyVersion": "0.1",
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "e31bcbb8ac81b8c2cdf141d1330916235252c51d20e9317663884c08d8f8120b"
+      }
+    },
+    "canonicalSha256": "7ee41ea1d9417c12b9d75d71675d62f891cc59ee4cb9890064881294f36aa029"
+  },
+  {
+    "name": "materialized-child-without-subgraph-id",
+    "extensionStatus": "invalid",
+    "shapeValid": true,
+    "document": {
+      "completeness": {
+        "gaps": [],
+        "status": "complete"
+      },
+      "graphs": [
+        {
+          "id": "main",
+          "structure": {
+            "edges": [],
+            "entryNodeIds": [
+              "parent"
+            ],
+            "exitNodeIds": [
+              "parent"
+            ],
+            "joins": [],
+            "nodes": [
+              {
+                "id": "parent"
+              }
+            ]
+          },
+          "x-topology-interpretation": {
+            "version": "2",
+            "traversalDepth": 1,
+            "nodes": [
+              {
+                "nodeId": "parent",
+                "subgraph": {
+                  "status": "known",
+                  "value": "materialized-child",
+                  "evidence": {
+                    "kind": "materialized-subgraph-reference",
+                    "source": "contract-example.structural-surface"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "producerLimitations": [],
+      "provenance": {
+        "framework": {
+          "name": "example",
+          "version": "1"
+        },
+        "generatedAt": "2026-09-11T00:00:00Z",
+        "producer": {
+          "name": "contract-example",
+          "version": "1"
+        },
+        "source": {
+          "kind": "compiled-object"
+        }
+      },
+      "topologyVersion": "0.1",
+      "structureHash": {
+        "algorithm": "sha256",
+        "algorithmVersion": "1",
+        "value": "694783341ed6354c7b83e2aef29ab639f81dfda9d229b6609d14b07697ba0964"
+      }
+    },
+    "canonicalSha256": "4e9e6d0cbad3bbef4c632c96691320fa258dae396bacc4d2cb28e32fc1a90973"
   }
 ]

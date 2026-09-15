@@ -15,12 +15,28 @@
   {
     "mode": "child",
     "depth": 1,
-    "expected": {}
+    "expected": {
+      "child": {
+        "status": "known",
+        "value": "materialized-child",
+        "evidence": {
+          "kind": "materialized-subgraph-reference"
+        }
+      }
+    }
   },
   {
     "mode": "child",
     "depth": 2,
-    "expected": {}
+    "expected": {
+      "child": {
+        "status": "known",
+        "value": "materialized-child",
+        "evidence": {
+          "kind": "materialized-subgraph-reference"
+        }
+      }
+    }
   },
   {
     "mode": "ordinary",
@@ -98,12 +114,28 @@
   {
     "mode": "grandchild",
     "depth": 1,
-    "expected": {}
+    "expected": {
+      "child": {
+        "status": "known",
+        "value": "materialized-child",
+        "evidence": {
+          "kind": "materialized-subgraph-reference"
+        }
+      }
+    }
   },
   {
     "mode": "grandchild",
     "depth": 2,
-    "expected": {}
+    "expected": {
+      "child": {
+        "status": "known",
+        "value": "materialized-child",
+        "evidence": {
+          "kind": "materialized-subgraph-reference"
+        }
+      }
+    }
   },
   {
     "mode": "child",
@@ -123,13 +155,29 @@
     "mode": "child",
     "width": 2,
     "depth": 1,
-    "expected": {}
+    "expected": {
+      "child": {
+        "status": "known",
+        "value": "materialized-child",
+        "evidence": {
+          "kind": "materialized-subgraph-reference"
+        }
+      }
+    }
   },
   {
     "mode": "child",
     "width": 2,
     "depth": 2,
-    "expected": {}
+    "expected": {
+      "child": {
+        "status": "known",
+        "value": "materialized-child",
+        "evidence": {
+          "kind": "materialized-subgraph-reference"
+        }
+      }
+    }
   },
   {
     "mode": "grandchild",
@@ -149,12 +197,28 @@
     "mode": "grandchild",
     "width": 2,
     "depth": 1,
-    "expected": {}
+    "expected": {
+      "child": {
+        "status": "known",
+        "value": "materialized-child",
+        "evidence": {
+          "kind": "materialized-subgraph-reference"
+        }
+      }
+    }
   },
   {
     "mode": "grandchild",
     "width": 2,
     "depth": 2,
-    "expected": {}
+    "expected": {
+      "child": {
+        "status": "known",
+        "value": "materialized-child",
+        "evidence": {
+          "kind": "materialized-subgraph-reference"
+        }
+      }
+    }
   }
 ]

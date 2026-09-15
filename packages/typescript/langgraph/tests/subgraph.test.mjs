@@ -61,6 +61,10 @@ function compileCase(mode, reverse = false, width = 1) {
     reverse,
   );
 }
+const SUBGRAPH_EVIDENCE_SOURCE = {
+  "opaque-child": "compiled.builder.nodes.runnable",
+  "materialized-child": "graphs[].id+node.subgraphId",
+};
 /** @param {any} document */
 function meaning(document) {
   const result = /** @type {Record<string, any>} */ ({});
@@ -68,7 +72,12 @@ function meaning(document) {
     if (!record.subgraph) continue;
     const fact = structuredClone(record.subgraph);
     if (fact.evidence) {
-      assert.equal(fact.evidence.source, "compiled.builder.nodes.runnable");
+      assert.equal(
+        fact.evidence.source,
+        SUBGRAPH_EVIDENCE_SOURCE[
+          /** @type {"opaque-child" | "materialized-child"} */ (fact.value)
+        ],
+      );
       delete fact.evidence.source;
     }
     result[record.nodeId] = fact;
@@ -123,7 +132,13 @@ for (const mode of ["child", "grandchild"])
       const document = await describe(compileCase(mode, false, 2), { depth });
       assert.equal(validateDocument(document).valid, true);
       assert.equal(interpretationStatus(document), "valid");
-      assert.deepEqual(meaning(document), {});
+      assert.deepEqual(meaning(document), {
+        child: {
+          status: "known",
+          value: "materialized-child",
+          evidence: { kind: "materialized-subgraph-reference" },
+        },
+      });
       assert.ok(
         !document.completeness.gaps.some(
           (g) => g.code === "expanded-subgraph-metadata",

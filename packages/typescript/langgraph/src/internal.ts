@@ -252,6 +252,13 @@ function checkedGraphId(options: DescribeOptions): string {
   return graphId;
 }
 
+function interpretationVersion(graph: TopologyGraph): "1" | "2" {
+  const hasMaterializedChild = graph.structure.nodes.some(
+    (node) => node.subgraphId !== undefined,
+  );
+  return hasMaterializedChild ? "2" : "1";
+}
+
 function branchInterpretation(
   compiled: RuntimeCompiledGraph,
   drawable: DrawableGraph,
@@ -268,7 +275,7 @@ function branchInterpretation(
     if (node.ends !== undefined) dynamic.add(source);
   }
   const extension = (graph["x-topology-interpretation"] ??= {
-    version: "1",
+    version: interpretationVersion(graph),
     traversalDepth: depth,
     nodes: [],
   }) as { nodes: Array<{ nodeId: string; branch?: unknown }> };
@@ -341,7 +348,7 @@ function subgraphInterpretation(
   depth: number,
 ): void {
   const extension = (graph["x-topology-interpretation"] ??= {
-    version: "1",
+    version: interpretationVersion(graph),
     traversalDepth: depth,
     nodes: [],
   }) as { nodes: Array<{ nodeId: string; subgraph?: unknown }> };
@@ -350,14 +357,27 @@ function subgraphInterpretation(
   );
   for (const node of graph.structure.nodes) {
     const nodeId = node.id;
-    if (nodeId === START || nodeId === END || node.subgraphId !== undefined)
+    if (nodeId === START || nodeId === END) continue;
+    let fact: unknown;
+    if (node.subgraphId !== undefined) {
+      fact = {
+        status: "known",
+        value: "materialized-child",
+        evidence: {
+          kind: "materialized-subgraph-reference",
+          source: "graphs[].id+node.subgraphId",
+        },
+      };
+      const record = records.get(nodeId) ?? { nodeId };
+      record.subgraph = fact;
+      records.set(nodeId, record);
       continue;
+    }
     const runnable = Object.hasOwn(compiled.builder.nodes, nodeId)
       ? compiled.builder.nodes[nodeId]?.runnable
       : undefined;
     const mapped =
       runnable !== undefined && drawable.nodes[nodeId]?.data === runnable;
-    let fact: unknown;
     if (!mapped) {
       fact = { status: "unknown", reason: "scope-not-inspected" };
     } else if (runnable instanceof CompiledStateGraph) {
@@ -442,7 +462,7 @@ function sentinelInterpretation(
   depth: number,
 ): void {
   const extension = (graph["x-topology-interpretation"] ??= {
-    version: "1",
+    version: interpretationVersion(graph),
     traversalDepth: depth,
     nodes: [],
   }) as { nodes: Array<{ nodeId: string; sentinel?: unknown }> };
@@ -468,7 +488,7 @@ function entryInterpretation(
   depth: number,
 ): void {
   const extension = (graph["x-topology-interpretation"] ??= {
-    version: "1",
+    version: interpretationVersion(graph),
     traversalDepth: depth,
     nodes: [],
   }) as { nodes: Array<{ nodeId: string; entry?: unknown }> };
@@ -589,6 +609,11 @@ export async function extractGraph(
     }
   }
 
+  branchInterpretation(compiledGraph, drawable, graph, remainingDepth);
+  subgraphInterpretation(compiledGraph, drawable, graph, remainingDepth);
+  sentinelInterpretation(compiledGraph, drawable, graph, remainingDepth);
+  entryInterpretation(compiledGraph, drawable, graph, remainingDepth);
+
   return { graphs: [graph, ...descendants], gaps };
 }
 
@@ -613,12 +638,6 @@ export async function describeWithVersion(
     depth,
     new Set([graphId]),
   );
-  const rootGraph = graphs[0]!;
-  const rootDrawable = await runtimeGraph.getGraphAsync({ xray: 0 });
-  branchInterpretation(runtimeGraph, rootDrawable, rootGraph, depth);
-  subgraphInterpretation(runtimeGraph, rootDrawable, rootGraph, depth);
-  sentinelInterpretation(runtimeGraph, rootDrawable, rootGraph, depth);
-  entryInterpretation(runtimeGraph, rootDrawable, rootGraph, depth);
 
   return finalizeDocument({
     topologyVersion: "0.1",

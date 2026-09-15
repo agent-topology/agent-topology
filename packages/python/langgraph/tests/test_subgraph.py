@@ -62,6 +62,12 @@ def compile_case(mode, reverse=False, width=1):
     return chain([("child", child)], reverse)
 
 
+_SUBGRAPH_EVIDENCE_SOURCE = {
+    "opaque-child": "compiled.nodes.bound",
+    "materialized-child": "graphs[].id+node.subgraphId",
+}
+
+
 def meaning(document):
     result = {}
     for record in document["graphs"][0][KEY]["nodes"]:
@@ -69,7 +75,10 @@ def meaning(document):
             continue
         fact = copy.deepcopy(record["subgraph"])
         if "evidence" in fact:
-            assert fact["evidence"].pop("source") == "compiled.nodes.bound"
+            assert (
+                fact["evidence"].pop("source")
+                == _SUBGRAPH_EVIDENCE_SOURCE[fact["value"]]
+            )
         result[record["nodeId"]] = fact
     return result
 
@@ -95,7 +104,8 @@ def test_shared_subgraph(case, monkeypatch):
         baseline = describe(compiled, depth=case["depth"])
     stripped = copy.deepcopy(document)
     for value in (baseline, stripped):
-        del value["graphs"][0][KEY]
+        for graph in value["graphs"]:
+            del graph[KEY]
     baseline["provenance"] = stripped["provenance"]
     assert baseline == stripped
     assert compute_structure_hash(stripped) == document["structureHash"]
@@ -133,7 +143,13 @@ def test_expanded_scope(depth, mode):
     document = describe(compile_case(mode, width=2), depth=depth)
     assert not validate_document(document)
     assert ORACLE(document) == "valid"
-    assert meaning(document) == {}
+    assert meaning(document) == {
+        "child": {
+            "status": "known",
+            "value": "materialized-child",
+            "evidence": {"kind": "materialized-subgraph-reference"},
+        }
+    }
     assert not any(
         g["code"] == "expanded-subgraph-metadata"
         for g in document["completeness"]["gaps"]

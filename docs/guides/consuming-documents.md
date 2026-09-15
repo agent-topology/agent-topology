@@ -284,9 +284,23 @@ root identities that are not materialized keep their depth-0 facts unchanged.
 `expanded-subgraph-metadata` no longer appears: see
 [ADR 0012](../decisions/0012-nested-graph-identity-traversal-and-compatibility.md).
 
+A materialized node instead carries `known/materialized-child` with
+`materialized-subgraph-reference` evidence, naming the containing `graphs[].id`
+and the node's own `subgraphId`. Emitting it advances that graph's own
+`x-topology-interpretation` to revision `"2"`; revision `"2"` is additive, so
+every revision-1 `branch`, `sentinel`, and `entry` rule still applies unchanged,
+and a revision-1-only reader still treats it as an unrecognized, opaque
+extension. Depth-0 documents and any graph with no materialized child continue
+to emit revision `"1"`. A materialized child graph's own nodes carry `branch`,
+`sentinel`, and `entry` facts under the same evidence rules as any root graph —
+it is not a degraded view — so a consumer should apply this section's rules
+uniformly across every `graphs[]` entry, not only `graphs[0]`.
+
 After core validation, validate the separate extension schema and semantic
 references before selecting nodes with known `opaque-child`. A materialized
-`subgraphId` and an opaque-child assertion on the same node are invalid. Legacy
+`subgraphId` and an opaque-child assertion on the same node are invalid, and a
+`materialized-child` assertion on a node without core `subgraphId` is likewise
+invalid. Legacy
 absence means no assertion; invalid and unsupported-revision extensions provide
 no trusted child interpretation. Show the valid core and local interpretation
 status without interpreting missing facts as ordinary nodes. Unknown facts do
