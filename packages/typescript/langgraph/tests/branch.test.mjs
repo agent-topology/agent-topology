@@ -154,6 +154,7 @@ for (const nesting of [1, 2]) {
       const childNode = document.graphs[0].structure.nodes.find(
         (n) => n.id === "child",
       );
+      assert.ok(childNode);
       if (depth >= 1) {
         assert.equal(childNode.subgraphId, "main:child");
         const expectedGraphs = nesting === 1 || depth < 2 ? 2 : 3;

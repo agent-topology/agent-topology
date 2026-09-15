@@ -107,6 +107,7 @@ for (const recipe of cases) {
     const childNode = document.graphs[0].structure.nodes.find(
       (n) => n.id === "child",
     );
+    assert.ok(childNode);
     if (materialized) assert.equal(childNode.subgraphId, "main:child");
     else assert.equal(childNode.subgraphId, undefined);
     assert.ok(
@@ -131,6 +132,7 @@ for (const mode of ["child", "grandchild"])
       const childNode = document.graphs[0].structure.nodes.find(
         (n) => n.id === "child",
       );
+      assert.ok(childNode);
       assert.equal(childNode.subgraphId, "main:child");
       const materializedIds = new Set(
         document.graphs.slice(1).map((g) => g.id),
@@ -230,6 +232,8 @@ test("reused child at two call sites", async () => {
   assert.deepEqual(graphIds, new Set(["main", "main:left", "main:right"]));
   const left = document.graphs.find((g) => g.id === "main:left");
   const right = document.graphs.find((g) => g.id === "main:right");
+  assert.ok(left);
+  assert.ok(right);
   assert.deepEqual(left.structure, right.structure);
   assert.equal(document.structureHash.algorithmVersion, "1");
 });
@@ -252,6 +256,7 @@ test("derived id collision falls back to opaque", async () => {
     ["main"],
   );
   const node = graphs[0].structure.nodes.find((n) => n.id === "child");
+  assert.ok(node);
   assert.equal(node.subgraphId, undefined);
   assert.deepEqual(gaps, [
     {
