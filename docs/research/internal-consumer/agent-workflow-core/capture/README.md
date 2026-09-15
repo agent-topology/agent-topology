@@ -124,7 +124,118 @@ confirmed, by a real two-invocation capture through the real bridge and event
 store, to collapse two runtime run IDs into one logical run on `main`, and
 confirmed absent (both the field and the mechanism) at the `v0.1.0.beta.3`
 release. It does not prove campaign-agent or git-agent's own integration code
-sets `event_run_id`, does not cover nesting or dynamic interrupts (a separate,
-still-open follow-up per [the cross-consumer findings](../../README.md#suggested-work-sequence-and-minimum-evidence)
-item 4), and does not claim graph/node topology correlation -- only run
-identity across a re-entry.
+sets `event_run_id`, does not cover nesting, and does not claim graph/node
+topology correlation -- only run identity across a re-entry. The dynamic
+interrupt, resume, and same-node retry follow-up (item 4) is separately
+recorded in [`interrupt-resume/` and `repeated-attempt/`](#dynamic-interrupt-resume-and-repeated-attempt-issue-152)
+below.
+
+## Dynamic interrupt, resume, and repeated-attempt (issue #152)
+
+[capture_dynamic.py](capture_dynamic.py) and [replay_dynamic.py](replay_dynamic.py)
+cover [item 4](../../README.md#suggested-work-sequence-and-minimum-evidence)
+("Prove runtime enrichment (IC-03/06). Use one dynamic interrupt and one
+resume, then a separate same-node retry.") against the same pinned `main`
+commit (`876f6a8a4ba863424e1f85bc92f18dce59147957`) already captured above.
+Interrupt/resume and retry are LangGraph-level mechanisms, not commit-specific
+behavior, so only `main` is pinned here -- unlike the tag/main split above,
+which exists specifically to compare `event_run_id` availability.
+
+Two scenarios, each its own one-node graph and fixture directory:
+
+- [`fixtures/interrupt-resume/`](fixtures/interrupt-resume/): the node calls
+  the real `agent_workflow_core.adapters.langgraph.approval.request_approval`,
+  which calls the real `langgraph.types.interrupt`. `invoke()` #1 pauses the
+  graph (`__interrupt__` present in the result, sanitized away below);
+  `invoke(Command(resume=...))` #2 on the same thread resumes it. **LangGraph
+  re-runs the node body from its start on resume**: the observer call issued
+  before `interrupt()` fires again on invocation 2, so `approve` shows two
+  `step.awaiting_approval` events (one per invocation) but only one
+  `step.passed` (after the actual resume). This is measured, not assumed --
+  ADR 0002 already predicted it ("Interrupts raised inside a node body do not
+  appear in node metadata"); this capture is the runtime evidence for it.
+- [`fixtures/repeated-attempt/`](fixtures/repeated-attempt/): the node has a
+  real LangGraph `RetryPolicy(max_attempts=2)` attached. It raises a
+  retryable `ConnectionError` on attempt 1 and succeeds on attempt 2, both
+  within **one** `invoke()` call -- no checkpoint pause, no
+  `Command(resume=...)`, no second invocation. `observe_attempt` (the same
+  helper `agent_workflow_core.routing.route_model_node` uses in production)
+  records each attempt with an explicit `attempt.number` metadata field,
+  which is what distinguishes the two occurrences -- `RunObserver.attempt`
+  does not auto-populate `node_id` the way `RunObserver.step` does, so
+  `node.id` metadata is supplied explicitly, mirroring the real
+  `routing._attempt_metadata` call site.
+
+Each event additionally carries `invocationRunId`, a fact the capture script
+itself knows (which `invoke()` call was in flight), not something derived
+from the event store -- distinguishing "which logical run" (`runId`,
+`event_run_id`-collapsed) from "which invocation" (`invocationRunId`) from
+"which attempt" (`metadata.attemptNumber`, repeated-attempt scenario only).
+
+Sanitization matches the pattern above: `run_id`/`thread_id`/`event_run_id`
+are host-chosen literals, never real UUIDs; the resume `ApprovalEnvelope` is a
+fabricated fixture value (hash-shaped literals), not a real decision or
+authorization payload; the LangGraph-minted interrupt id and
+`event_id`/`occurred_at` are omitted, sequence position is retained instead;
+no prompts, payloads, paths, or credentials enter observer metadata.
+
+### Regenerating
+
+```bash
+# from the agent-workflow-core checkout, already at main (876f6a8a...)
+.venv/bin/python capture_dynamic.py --scenario interrupt-resume \
+  --core-src /path/to/agent-workflow-core/src
+.venv/bin/python capture_dynamic.py --scenario repeated-attempt \
+  --core-src /path/to/agent-workflow-core/src
+
+python3 -I -S replay_dynamic.py --scenario interrupt-resume --format json \
+  > fixtures/interrupt-resume/expected.json
+python3 -I -S replay_dynamic.py --scenario repeated-attempt --format json \
+  > fixtures/repeated-attempt/expected.json
+```
+
+`capture_dynamic.py` refuses to run if `--core-src`'s checkout is not at the
+exact pinned main commit. It was run with agent-workflow-core's own `.venv`
+(`langgraph 1.2.11`), matching `uv.lock`.
+
+#### Fixture hashes at generation (sha256)
+
+```
+732f9d8cefbbc7bffee83a058e679f067eac8a650dbb42d4d031e225abe77705  fixtures/interrupt-resume/expected.json
+08de54ace84c3f17c137172a36e72f5c89d44dfe95eeed3c697c08a316fd000a  fixtures/interrupt-resume/trace.json
+bad52bea3208381f54afa95c81c2d1c076e6c8d8d7c6eb607e28254cddbc5685  fixtures/repeated-attempt/expected.json
+249bf3cc808f0466fa8887d876ad9e0a04fd7891dd65ad35e37033c9b0ffa934  fixtures/repeated-attempt/trace.json
+```
+
+Generated with `shasum -a 256 fixtures/interrupt-resume/*.json
+fixtures/repeated-attempt/*.json`; `tests/test_internal_consumer_dynamic_capture.py`
+re-checks these values.
+
+### Offline replay (no checkout, no LangGraph, no network)
+
+```bash
+python3 -I -S replay_dynamic.py --scenario interrupt-resume --check
+python3 -I -S replay_dynamic.py --scenario repeated-attempt --check
+```
+
+Both reproduce, from the committed fixtures alone, the same pause and
+attempt facts recorded in each scenario's `expected.json`.
+`tests/test_internal_consumer_dynamic_capture.py` runs both as a subprocess
+with `-I -S` to enforce that this stays true.
+
+### Disposition
+
+This advances IC-03 ("Dynamic `interrupt()` inside node bodies is not a
+static interrupt declaration") and the retry/attempt half of IC-06 from
+`pending` to `verified` for the specific claims made above: a real dynamic
+interrupt pauses a `main`-pinned graph and is resumable via
+`Command(resume=...)`; the pre-interrupt node body re-runs on resume; a real
+LangGraph `RetryPolicy` re-attempts the same node within one invocation,
+distinguishable from resume by invocation count, pause state, and an explicit
+`attempt.number`. It does not prove campaign-agent or git-agent's own
+approval/routing nodes are wired the same way, does not cover nested graphs,
+and -- per [issue #152](https://github.com/agent-topology/agent-topology/issues/152)
+-- makes no claim that this evidence proves authorization, budget compliance,
+or successful effects; `ApprovalDecision`/`AttemptOutcome` values here are
+fabricated fixture literals, not a real approval or a real retry policy
+decision.

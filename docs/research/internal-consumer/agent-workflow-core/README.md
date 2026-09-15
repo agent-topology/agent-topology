@@ -44,5 +44,16 @@ commits, and checks exactly this -- a resumed invocation's logical run ID.
 `event_run_id` is confirmed absent (both the field and the underlying event
 store) at `v0.1.0.beta.3`, and confirmed to collapse two runtime run IDs into
 one logical run on `main`. This narrow finding (IC-04's resume-identity
-question) is `verified`; the broader end-to-end correlation, nesting, and
-dynamic-interrupt questions remain open follow-ups.
+question) is `verified`; the broader end-to-end correlation and nesting
+questions remain open follow-ups.
+
+A second probe covers the dynamic-interrupt question: [capture/README.md](capture/README.md#dynamic-interrupt-resume-and-repeated-attempt-issue-152)
+also maps a one-node graph through the real
+`agent_workflow_core.adapters.langgraph.approval.request_approval` (a real
+`langgraph.types.interrupt`) for one pause-and-resume, and a separate
+one-node graph through a real LangGraph `RetryPolicy` for one same-node
+repeated attempt, both pinned to `main`. IC-03 (dynamic interrupt is not a
+static declaration) is `verified` for pause/resume-replay evidence
+specifically; it does not prove campaign-agent's or git-agent's own approval
+nodes are wired the same way, and it makes no claim about authorization,
+budget compliance, or effect success.

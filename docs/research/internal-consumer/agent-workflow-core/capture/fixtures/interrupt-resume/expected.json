@@ -1,0 +1,30 @@
+{
+  "captureMechanism": "core EventGraphObserver + InMemoryEventStore; real langgraph.types.interrupt via agent_workflow_core.adapters.langgraph.approval.request_approval",
+  "consumerCommit": "876f6a8a4ba863424e1f85bc92f18dce59147957",
+  "distinctInvocationRunIds": [
+    "invocation-1",
+    "invocation-2"
+  ],
+  "distinctRunIds": [
+    "logical-run"
+  ],
+  "eventTypesByInvocation": {
+    "invocation-1": [
+      "run.observed",
+      "step.awaiting_approval"
+    ],
+    "invocation-2": [
+      "run.observed",
+      "step.awaiting_approval",
+      "step.passed"
+    ]
+  },
+  "firstInvocationPaused": true,
+  "nodeReExecutedOnResume": true,
+  "pausedAtNodeId": "approve",
+  "replayVersion": "1",
+  "scenario": "interrupt-resume",
+  "secondInvocationPaused": false,
+  "sequencesContiguousPerRun": true,
+  "totalEvents": 5
+}
