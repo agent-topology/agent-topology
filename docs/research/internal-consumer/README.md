@@ -32,7 +32,7 @@ remain `pending`, using the [research evidence rules](../README.md).
 | IC-01 | Python/TypeScript APIs already accept depth. Python CLI has no `--depth`. | agent-topology CLI usability gap for an already compiled export object; API is the workaround. |
 | IC-02 | Positive depth extracts drawable shape into one graph; child joins, routing and interrupt declarations are not fully inspected. Separate child graph materialization is absent. | agent-topology producer research; relevant to campaign's future composition, not a demonstrated blocker in its current flat graph. |
 | IC-03 | Dynamic `interrupt()` inside node bodies is not a static interrupt declaration. | Current campaign/git approval nodes need runtime evidence; static absence must not mean no human gate. |
-| IC-04 | Caller-selected graph IDs exist, but no integration here proves core observer events map to those IDs and nodes across resume or nesting. | Shared consumer/host adapter work, with core as an event-contract collaborator. |
+| IC-04 | Caller-selected graph IDs exist, but no integration here proves core observer events map to those IDs and nodes across resume or nesting. Resume identity specifically is now probed and pinned per commit: [`agent-workflow-core/capture/`](agent-workflow-core/capture/) shows `event_run_id` absent at `v0.1.0.beta.3` and stable across a re-entry on `main`. | Shared consumer/host adapter work, with core as an event-contract collaborator. Graph/node topology correlation and nesting remain unproved. |
 | IC-05 | Factories require policy and return compiled objects; CLI accepts an existing object, not factory invocation/arguments. | Consumer-owned import-safe export recipe first; new factory CLI behavior is not automatically necessary. |
 | IC-06 | Loops and possible destinations are representable; profile changes, approval validity, effect receipts and retry budgets are not structural facts. | Keep these in domain runtime evidence/extensions; do not widen the core to policy or execution. |
 
@@ -55,6 +55,9 @@ These are research follow-ups, not newly filed issues or implementation commitme
    two-node graph and two sanitized step events. Measure exact graph/node matching,
    no graph invocation during extraction, and distinction between graph display
    name and document ID. A host/core adapter owns runtime event normalization.
+   The resume/`event_run_id` half of IC-04 is now probed separately per pinned
+   commit in [`agent-workflow-core/capture/`](agent-workflow-core/capture/);
+   graph/node topology matching against a live event stream remains open.
 2. **Expose CLI depth parity (IC-01).** Reuse a parent with one compiled child and
    one child node. Measure that CLI depth reaches the producer and matches the API;
    test depth zero, one and invalid values. No full campaign workflow is needed.

@@ -1,0 +1,24 @@
+{
+  "captureMechanism": "host-supplied GraphObserver/RunObserver Protocol implementation (no core event store exists at this commit)",
+  "consumerCommit": "94cd31f58d8e94d55ea2d952c6db5508539ea53f",
+  "distinctRunIds": [
+    "invocation-1",
+    "invocation-2"
+  ],
+  "nodeIdsObservedPerRun": {
+    "invocation-1": [
+      "plan",
+      "act"
+    ],
+    "invocation-2": [
+      "plan",
+      "act"
+    ]
+  },
+  "replayVersion": "1",
+  "resumeIdentityPreserved": false,
+  "scenario": "tag",
+  "sequencesContiguousPerRun": true,
+  "totalEvents": 4,
+  "totalStepEvents": 4
+}
