@@ -1,12 +1,13 @@
 import json
 import re
+import runpy
 import subprocess
 import sys
 import tomllib
 from pathlib import Path
 
 import pytest
-from agent_topology.langgraph import _cli
+from agent_topology.langgraph import _cli, describe
 from agent_topology.spec import (
     canonical_json,
     compute_structure_hash,
@@ -34,6 +35,35 @@ builder.add_edge(START, "router")
 """
         + (conditional if incomplete else linear)
         + """builder.add_edge("step", END)
+graph = builder.compile()
+""",
+        encoding="utf-8",
+    )
+
+
+def _write_nested_graph(path: Path) -> None:
+    path.write_text(
+        """from langgraph.graph import END, START, StateGraph
+
+
+def forbidden(_state):
+    raise AssertionError("node body executed")
+
+
+grandchild = StateGraph(dict)
+grandchild.add_node("leaf", forbidden)
+grandchild.add_edge(START, "leaf")
+grandchild.add_edge("leaf", END)
+
+child = StateGraph(dict)
+child.add_node("grand", grandchild.compile())
+child.add_edge(START, "grand")
+child.add_edge("grand", END)
+
+builder = StateGraph(dict)
+builder.add_node("sub", child.compile())
+builder.add_edge(START, "sub")
+builder.add_edge("sub", END)
 graph = builder.compile()
 """,
         encoding="utf-8",
@@ -127,6 +157,137 @@ def test_strict_incomplete_writes_document_and_returns_documented_status(
     assert "1 graph-specific gap" in capsys.readouterr().err
 
 
+@pytest.mark.parametrize("depth", [0, 1, 2])
+def test_depth_matches_python_api_at_each_level(depth: int, tmp_path: Path) -> None:
+    target = tmp_path / "nested.py"
+    output = tmp_path / "topology.json"
+    _write_nested_graph(target)
+
+    arguments = ["describe", f"{target}:graph", "--out", str(output)]
+    if depth:
+        arguments += ["--depth", str(depth)]
+    result = _cli.main(arguments)
+
+    api_graph = runpy.run_path(str(target))["graph"]
+    api_document = describe(api_graph, depth=depth)
+    cli_document = json.loads(output.read_text(encoding="utf-8"))
+
+    assert result == _cli.ExitCode.SUCCESS
+    cli_document["provenance"]["generatedAt"] = api_document["provenance"][
+        "generatedAt"
+    ]
+    assert cli_document == api_document
+    assert cli_document["graphs"][0]["x-langgraph"] == {"traversalDepth": depth}
+    assert (depth == 0) == (api_document["completeness"]["status"] == "complete")
+
+
+def test_omitted_depth_defaults_to_zero(tmp_path: Path) -> None:
+    target = tmp_path / "nested.py"
+    output_omitted = tmp_path / "omitted.json"
+    output_explicit = tmp_path / "explicit.json"
+    _write_nested_graph(target)
+
+    assert (
+        _cli.main(["describe", f"{target}:graph", "--out", str(output_omitted)])
+        == _cli.ExitCode.SUCCESS
+    )
+    assert (
+        _cli.main(
+            [
+                "describe",
+                f"{target}:graph",
+                "--out",
+                str(output_explicit),
+                "--depth",
+                "0",
+            ]
+        )
+        == _cli.ExitCode.SUCCESS
+    )
+    omitted = json.loads(output_omitted.read_text(encoding="utf-8"))
+    explicit = json.loads(output_explicit.read_text(encoding="utf-8"))
+    explicit["provenance"]["generatedAt"] = omitted["provenance"]["generatedAt"]
+    assert omitted == explicit
+
+
+def test_strict_depth_retains_known_child_gap_and_incomplete_status(
+    tmp_path: Path,
+) -> None:
+    target = tmp_path / "nested.py"
+    output = tmp_path / "topology.json"
+    _write_nested_graph(target)
+
+    result = _cli.main(
+        [
+            "describe",
+            f"{target}:graph",
+            "--out",
+            str(output),
+            "--depth",
+            "1",
+            "--strict",
+        ]
+    )
+
+    document = json.loads(output.read_text(encoding="utf-8"))
+    assert result == _cli.ExitCode.INCOMPLETE
+    assert document["completeness"]["status"] == "incomplete"
+    assert [gap["code"] for gap in document["completeness"]["gaps"]] == [
+        "expanded-subgraph-metadata"
+    ]
+
+
+@pytest.mark.parametrize("value", ["-1", "abc", "1.5", ""])
+def test_invalid_depth_values_produce_usage_status(
+    value: str, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    target = tmp_path / "graph.py"
+    _write_graph(target)
+
+    with pytest.raises(SystemExit) as error:
+        _cli.main(
+            [
+                "describe",
+                f"{target}:graph",
+                "--out",
+                str(tmp_path / "out.json"),
+                "--depth",
+                value,
+            ]
+        )
+
+    assert error.value.code == _cli.ExitCode.USAGE
+    assert "invalid depth" in capsys.readouterr().err
+
+
+def test_missing_depth_value_produces_usage_status(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    target = tmp_path / "graph.py"
+    _write_graph(target)
+
+    with pytest.raises(SystemExit) as error:
+        _cli.main(
+            [
+                "describe",
+                f"{target}:graph",
+                "--out",
+                str(tmp_path / "out.json"),
+                "--depth",
+            ]
+        )
+
+    assert error.value.code == _cli.ExitCode.USAGE
+
+
+def test_describe_help_documents_depth(capsys: pytest.CaptureFixture[str]) -> None:
+    with pytest.raises(SystemExit) as error:
+        _cli.main(["describe", "--help"])
+
+    assert error.value.code == 0
+    assert "--depth" in capsys.readouterr().out
+
+
 @pytest.mark.parametrize("target", ["graph.py", "graph:graph", "graph.py:not.dotted"])
 def test_invalid_target_syntax_is_actionable(
     target: str, tmp_path: Path, capsys: pytest.CaptureFixture[str]
@@ -193,7 +354,7 @@ def test_unsupported_version_has_its_own_status(
     target.write_text("graph = object()\n", encoding="utf-8")
 
     def unsupported(
-        _graph: object, *, graph_id: str, strict: bool
+        _graph: object, *, graph_id: str, depth: int, strict: bool
     ) -> dict[str, object]:
         assert graph_id == "main"
         raise _cli.UnsupportedLangGraphVersionError(

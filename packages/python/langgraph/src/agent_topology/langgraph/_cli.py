@@ -46,6 +46,20 @@ class _TargetResolutionError(RuntimeError):
     """Raised when an imported module does not expose the requested object."""
 
 
+def _nonnegative_int(value: str) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(
+            f"invalid depth {value!r}; expected a non-negative integer"
+        ) from error
+    if parsed < 0:
+        raise argparse.ArgumentTypeError(
+            f"invalid depth {value!r}; expected a non-negative integer"
+        )
+    return parsed
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agt",
@@ -65,6 +79,13 @@ def _parser() -> argparse.ArgumentParser:
         "--graph-id",
         default="main",
         help="document-local graph identifier (default: main)",
+    )
+    describe_parser.add_argument(
+        "--depth",
+        type=_nonnegative_int,
+        default=0,
+        metavar="N",
+        help="nested graph levels to expand as non-negative integer (default: 0)",
     )
     describe_parser.add_argument(
         "--strict",
@@ -127,7 +148,7 @@ def _write_document(document: dict[str, object], output: Path) -> None:
 
 
 def _describe_command(
-    target: str, output: Path, *, graph_id: str, strict: bool
+    target: str, output: Path, *, graph_id: str, depth: int, strict: bool
 ) -> ExitCode:
     try:
         graph, target_path, object_name = _load_target(target)
@@ -148,7 +169,7 @@ def _describe_command(
 
     result = ExitCode.SUCCESS
     try:
-        document = describe(graph, graph_id=graph_id, strict=strict)
+        document = describe(graph, graph_id=graph_id, depth=depth, strict=strict)
     except IncompleteTopologyError as error:
         document = error.document
         result = ExitCode.INCOMPLETE
@@ -198,6 +219,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             arguments.target,
             arguments.out,
             graph_id=arguments.graph_id,
+            depth=arguments.depth,
             strict=arguments.strict,
         )
     raise AssertionError(f"unhandled command: {arguments.command}")
