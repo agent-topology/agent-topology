@@ -37,6 +37,12 @@
     "branch": "rc/0.1.0-beta.4",
     "releaseNotes": "docs/releases/v0.1.0-beta.4.md",
     "migrationGuide": "docs/guides/upgrading-beta.4.md",
+    "qualification": {
+      "sourceCommit": "05486d7ee9cee7650779cb0e9c00a85bd152a3e8",
+      "publish": false,
+      "qualifiedAt": "2026-09-15T22:30:51Z",
+      "evidence": "docs/releases/evidence/beta.4/qualification.json"
+    },
     "packages": [
       {
         "name": "agent-topology-spec",

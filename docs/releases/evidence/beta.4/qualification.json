@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "coordinatedVersion": "0.1.0-beta.4",
+  "sourceCommit": "05486d7ee9cee7650779cb0e9c00a85bd152a3e8",
+  "branch": "rc/0.1.0-beta.4",
+  "publish": false,
+  "qualifiedAt": "2026-09-15T22:30:51Z",
+  "matrixRuns": [
+    {
+      "workflow": "Python packages",
+      "run": "https://github.com/agent-topology/agent-topology/actions/runs/35031211369",
+      "covers": "Python producer/spec test matrices (3.11-3.14), release-tools/release-docs/public-docs guards"
+    },
+    {
+      "workflow": "TypeScript packages",
+      "run": "https://github.com/agent-topology/agent-topology/actions/runs/35031211286",
+      "covers": "TypeScript producer/spec test matrices (Node 20/22), clean ESM/CommonJS examples, typescript-quality"
+    },
+    {
+      "workflow": "LangGraph compatibility",
+      "run": "https://github.com/agent-topology/agent-topology/actions/runs/35031211412",
+      "covers": "Every supported LangGraph (Python) and LangGraph.js (TypeScript) version from each producer's compatibility contract, including shared nested conformance at depths 0/1/2"
+    }
+  ],
+  "packages": [
+    {
+      "name": "agent-topology-spec",
+      "ecosystem": "python",
+      "version": "0.1.0b4",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35031234745",
+      "receipt": "python-spec-qualification.json"
+    },
+    {
+      "name": "agent-topology-langgraph",
+      "ecosystem": "python",
+      "version": "0.1.0b4",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35031236442",
+      "receipt": "python-langgraph-qualification.json"
+    },
+    {
+      "name": "@agent-topology/spec",
+      "ecosystem": "npm",
+      "version": "0.1.0-beta.4",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35031238044",
+      "receipt": "npm-spec-qualification.json"
+    },
+    {
+      "name": "@agent-topology/langgraph",
+      "ecosystem": "npm",
+      "version": "0.1.0-beta.4",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35031239906",
+      "receipt": "npm-langgraph-qualification.json"
+    }
+  ],
+  "localVerification": {
+    "commands": [
+      "uv run --project packages/python/spec --group test python -m pytest tests/test_public_docs.py tests/test_release_docs.py tests/test_release_tools.py",
+      "uv run --project packages/python/spec --group test python -m pytest tests/test_consumer_regression.py tests/test_internal_consumer_capture.py tests/test_internal_consumer_dynamic_capture.py tests/test_trace_correlation_example.py",
+      "uv run --project packages/python/spec --group test pytest packages/python/spec/tests",
+      "uv run --project packages/python/spec --group test pytest spec/tests",
+      "uv run --project packages/python/langgraph --group test pytest packages/python/langgraph/tests",
+      "uvx --from ruff==0.16.7 ruff format --check packages/python scripts tests",
+      "uvx --from ruff==0.16.7 ruff check packages/python scripts tests",
+      "python3 scripts/check_release_docs.py --phase candidate"
+    ],
+    "outcome": "All commands passed on the frozen commit (05486d7ee9cee7650779cb0e9c00a85bd152a3e8) checked out locally; consumer replay and cross-language regression suites not covered by any CI workflow (test_consumer_regression.py, test_internal_consumer_capture.py, test_internal_consumer_dynamic_capture.py, test_trace_correlation_example.py, spec/tests) were run directly."
+  },
+  "artifactDepthVerification": {
+    "purpose": "The shared install smoke scripts invoked by both release workflows (scripts/smoke_langgraph_installation.py, scripts/smoke_typescript_installation.mjs) only exercise the unchanged depth=0 default. They were not modified for this qualification, so the new positive-depth materialization behavior was verified separately, directly against the same downloaded, clean-installed wheel and tarball artifacts referenced above.",
+    "fixture": "A two-level nested graph: a parent StateGraph with one node ('sub') holding a compiled one-node child StateGraph ('inner'), described at graphId 'main'.",
+    "python": {
+      "artifacts": [
+        "agent_topology_spec-0.1.0b4-py3-none-any.whl",
+        "agent_topology_langgraph-0.1.0b4-py3-none-any.whl"
+      ],
+      "depth0": "graphs=['main']; 'sub' node has no subgraphId; x-topology-interpretation version 1",
+      "depth1": "graphs=['main','main:sub']; 'sub' node gains subgraphId 'main:sub'; main's x-topology-interpretation version 2 asserts subgraph=materialized-child on 'sub' (evidence materialized-subgraph-reference); main:sub stays version 1"
+    },
+    "typescript": {
+      "artifacts": [
+        "agent-topology-spec-0.1.0-beta.4.tgz",
+        "agent-topology-langgraph-0.1.0-beta.4.tgz"
+      ],
+      "depth0": "graphs=['main']; 'sub' node subgraphId is null; x-topology-interpretation version 1",
+      "depth1": "graphs=['main','main:sub']; 'sub' node gains subgraphId 'main:sub'; main's x-topology-interpretation version 2 asserts subgraph=materialized-child on 'sub' (evidence materialized-subgraph-reference); main:sub stays version 1"
+    },
+    "outcome": "Both installed artifacts reproduce the depth-0 compatibility guarantee and the positive-depth materialization contract documented in the upgrade guide, matching each other's shape exactly."
+  },
+  "registryBackedProducerPreflight": "Deferred to the publication Task (#145) by design: both release workflows gate their registry-backed producer/spec preflight (verify_spec_registry.py, verify_npm_registry_peer.mjs) behind publish=true, and beta.4's specification packages are not yet available on PyPI or npm for a preflight to check against. This qualification run used publish=false throughout; no artifact was published to any registry.",
+  "cleanState": "Every workflow run above executed `git diff --exit-code && test -z \"$(git status --porcelain --untracked-files=all)\"` after building and installing; none reported a source or working-tree change. No artifact or source was modified after this qualification.",
+  "notes": "Non-publishing qualification only. See docs/releases/v0.1.0-beta.4.md for the candidate release notes and docs/releases/release-state.json candidate.qualification for the state-tracked summary."
+}
