@@ -114,6 +114,32 @@ Unknown interpretation does not change completeness or strict-mode behavior.
 Equal structure hashes do not establish equal extension metadata. No core field,
 hash algorithm, renderer, or vendor-neutrality claim is added by this decision.
 
+## Nested graph identity and traversal
+
+[ADR 0012](docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md)
+defines how positive-depth expansion retains parent identity instead of
+flattening it away. A node holding a confirmed compiled child stays in its
+containing graph under its own id at every depth; within the requested depth
+budget it additionally gains a core `subgraphId` addressing a materialized
+child graph, a first-class `graphs[]` entry under ADR 0011 with its own
+structure and gaps. The materialized graph's id is derived deterministically
+from its call-site path (`parentGraphId:parentNodeId`), never from framework
+object identity, so one compiled child reused at two call sites addresses
+distinctly without asserting a shared-definition fact. A derived id that would
+collide with an existing one is never emitted; the node stays opaque and a
+`child-graph-id-collision` gap records why. `depth = N` now means levels
+`1..N` are materialized; level `N`'s own children keep the unchanged depth-0
+opaque-child contract, and depth-0 output remains byte-identical to today's.
+`x-topology-interpretation` gains revision `"2"`'s `materialized-child`
+subgraph value for this case; revision `"1"` and depth-0 documents are
+unaffected. `expanded-subgraph-metadata` is retired once a producer
+implements this contract. No `topologyVersion` or hash-algorithm change is
+required: `subgraphId` and multi-graph hashing were already covered by
+algorithm version `1`. A document's call-site address is a static correlation
+key, not a LangGraph runtime checkpoint namespace; matching repeated dynamic
+invocations of one static call site to runtime evidence remains downstream
+work.
+
 ## Accepted numeric canonical form
 
 [ADR 0009](docs/decisions/0009-numeric-canonical-form.md) defines the
