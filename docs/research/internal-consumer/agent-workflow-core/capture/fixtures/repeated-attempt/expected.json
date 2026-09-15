@@ -1,0 +1,27 @@
+{
+  "attemptNumbersObserved": [
+    1,
+    2
+  ],
+  "captureMechanism": "core EventGraphObserver + InMemoryEventStore; real LangGraph RetryPolicy re-running the same node within one invoke() call",
+  "consumerCommit": "876f6a8a4ba863424e1f85bc92f18dce59147957",
+  "distinctInvocationRunIds": [
+    "invocation-1"
+  ],
+  "distinctRunIds": [
+    "logical-run-repeat"
+  ],
+  "eventTypesByInvocation": {
+    "invocation-1": [
+      "run.observed",
+      "attempt.failed",
+      "run.observed",
+      "attempt.passed"
+    ]
+  },
+  "repeatedWithinSingleInvocation": true,
+  "replayVersion": "1",
+  "scenario": "repeated-attempt",
+  "sequencesContiguousPerRun": true,
+  "totalEvents": 4
+}

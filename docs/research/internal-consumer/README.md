@@ -31,10 +31,10 @@ remain `pending`, using the [research evidence rules](../README.md).
 | --- | --- | --- |
 | IC-01 | Python/TypeScript APIs already accept depth. Python CLI has no `--depth`. | agent-topology CLI usability gap for an already compiled export object; API is the workaround. |
 | IC-02 | Positive depth extracts drawable shape into one graph; child joins, routing and interrupt declarations are not fully inspected. Separate child graph materialization is absent. | agent-topology producer research; relevant to campaign's future composition, not a demonstrated blocker in its current flat graph. |
-| IC-03 | Dynamic `interrupt()` inside node bodies is not a static interrupt declaration. | Current campaign/git approval nodes need runtime evidence; static absence must not mean no human gate. |
+| IC-03 | Dynamic `interrupt()` inside node bodies is not a static interrupt declaration. A pause-and-resume is now probed against `main`: [`agent-workflow-core/capture/README.md`](agent-workflow-core/capture/README.md#dynamic-interrupt-resume-and-repeated-attempt-issue-152) shows a real `langgraph.types.interrupt` pausing the graph, resuming via `Command(resume=...)`, and re-running the pre-interrupt node body on resume. | Current campaign/git approval nodes need runtime evidence; static absence must not mean no human gate. This narrow pause/resume-replay finding is verified; it does not prove campaign/git's own approval nodes are wired the same way. |
 | IC-04 | Caller-selected graph IDs exist, but no integration here proves core observer events map to those IDs and nodes across resume or nesting. Resume identity specifically is now probed and pinned per commit: [`agent-workflow-core/capture/`](agent-workflow-core/capture/) shows `event_run_id` absent at `v0.1.0.beta.3` and stable across a re-entry on `main`. | Shared consumer/host adapter work, with core as an event-contract collaborator. Graph/node topology correlation and nesting remain unproved. |
 | IC-05 | Factories require policy and return compiled objects; CLI accepts an existing object, not factory invocation/arguments. | Consumer-owned import-safe export recipe first; new factory CLI behavior is not automatically necessary. |
-| IC-06 | Loops and possible destinations are representable; profile changes, approval validity, effect receipts and retry budgets are not structural facts. | Keep these in domain runtime evidence/extensions; do not widen the core to policy or execution. |
+| IC-06 | Loops and possible destinations are representable; profile changes, approval validity, effect receipts and retry budgets are not structural facts. A same-node repeated-attempt is now probed against `main`: a real LangGraph `RetryPolicy` re-attempts one node within a single invocation, recorded with an explicit `attempt.number`, structurally distinct from the IC-03 pause/resume case. | Keep these in domain runtime evidence/extensions; do not widen the core to policy or execution. The capture does not claim retry budgets, authorization, or effect success. |
 
 Evidence: [CLI parser](https://github.com/agent-topology/agent-topology/blob/d9aee90a6259b5a4eaa874fdfa9da0d56c1ab082/packages/python/langgraph/src/agent_topology/langgraph/_cli.py#L49-L74),
 [depth extraction and expanded-metadata gap](https://github.com/agent-topology/agent-topology/blob/d9aee90a6259b5a4eaa874fdfa9da0d56c1ab082/packages/python/langgraph/src/agent_topology/langgraph/_describe.py#L365-L505),
@@ -69,6 +69,13 @@ These are research follow-ups, not newly filed issues or implementation commitme
 4. **Prove runtime enrichment (IC-03/06).** Use one dynamic interrupt and one
    resume, then a separate same-node retry. Measure pause evidence and distinct
    attempts without claiming topology proves authorization or effect success.
+   This has run, pinned to `main`, in
+   [`agent-workflow-core/capture/README.md`](agent-workflow-core/capture/README.md#dynamic-interrupt-resume-and-repeated-attempt-issue-152):
+   a real interrupt pauses and resumes (with the pre-interrupt node body
+   re-running on resume), and a separate real `RetryPolicy` repeated-attempt
+   stays inside one invocation, distinguished by invocation count, pause
+   state, and `attempt.number`. Campaign/git's own approval and routing
+   wiring, and nested-graph behavior, remain open.
 
 Before opening follow-up issues, inspect the destination repository's existing
 issues and link this snapshot. Producer/CLI work belongs in agent-topology;

@@ -1,0 +1,83 @@
+{
+  "events": [
+    {
+      "eventType": "run.observed",
+      "graphId": "capture-demo-repeat",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": null,
+        "profileHash": null
+      },
+      "nodeId": null,
+      "runId": "logical-run-repeat",
+      "sequence": 1
+    },
+    {
+      "eventType": "attempt.failed",
+      "graphId": "capture-demo-repeat",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 1,
+        "profileHash": "profile-hash-1"
+      },
+      "nodeId": "act",
+      "runId": "logical-run-repeat",
+      "sequence": 2
+    },
+    {
+      "eventType": "run.observed",
+      "graphId": "capture-demo-repeat",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": null,
+        "profileHash": null
+      },
+      "nodeId": null,
+      "runId": "logical-run-repeat",
+      "sequence": 3
+    },
+    {
+      "eventType": "attempt.passed",
+      "graphId": "capture-demo-repeat",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 2,
+        "profileHash": "profile-hash-1"
+      },
+      "nodeId": "act",
+      "runId": "logical-run-repeat",
+      "sequence": 4
+    }
+  ],
+  "invocations": [
+    {
+      "label": "invocation-1 (single invoke(); node retries in-process)",
+      "paused": false,
+      "pausedAtNodeId": null,
+      "run_id": "invocation-1"
+    }
+  ],
+  "provenance": {
+    "captureMechanism": "core EventGraphObserver + InMemoryEventStore; real LangGraph RetryPolicy re-running the same node within one invoke() call",
+    "consumer": {
+      "commit": "876f6a8a4ba863424e1f85bc92f18dce59147957",
+      "ref": "main",
+      "repository": "https://github.com/milocosmopolitan/agent-workflow-core"
+    },
+    "framework": {
+      "name": "langgraph",
+      "version": "1.2.11"
+    },
+    "generatedAt": "2026-09-15T00:00:00Z",
+    "generator": "docs/research/internal-consumer/agent-workflow-core/capture/capture_dynamic.py",
+    "kind": "sanitized-source-pinned-capture",
+    "sanitization": [
+      "run_id, thread_id, and event_run_id are host-chosen literals, never real UUIDs",
+      "profile_hash is a fabricated fixture literal, not a real policy/profile hash",
+      "event_id/occurred_at are omitted; sequence position is retained instead",
+      "no prompts, payloads, paths, or credentials enter observer metadata"
+    ],
+    "scenario": "repeated-attempt"
+  },
+  "traceVersion": "1"
+}
