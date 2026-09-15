@@ -152,33 +152,39 @@ def test_describe_exposes_nested_graph_depth() -> None:
         "nested",
         "__end__",
     }
+    assert "subgraphId" not in next(
+        n for n in opaque["graphs"][0]["structure"]["nodes"] if n["id"] == "nested"
+    )
     assert {node["id"] for node in expanded["graphs"][0]["structure"]["nodes"]} == {
         "__start__",
-        "nested:step",
+        "nested",
+        "__end__",
+    }
+    nested_node = next(
+        n for n in expanded["graphs"][0]["structure"]["nodes"] if n["id"] == "nested"
+    )
+    assert nested_node["subgraphId"] == "parent-workflow:nested"
+    assert {graph["id"] for graph in expanded["graphs"]} == {
+        "parent-workflow",
+        "parent-workflow:nested",
+    }
+    materialized = next(
+        g for g in expanded["graphs"] if g["id"] == "parent-workflow:nested"
+    )
+    assert {node["id"] for node in materialized["structure"]["nodes"]} == {
+        "__start__",
+        "step",
         "__end__",
     }
     assert expanded["graphs"][0]["x-langgraph"] == {"traversalDepth": 1}
     assert opaque["completeness"] == {"status": "complete", "gaps": []}
-    assert expanded["completeness"]["status"] == "incomplete"
-    assert expanded["completeness"]["gaps"] == [
-        {
-            "code": "expanded-subgraph-metadata",
-            "message": (
-                "Expanded child graphs expose drawable shape, but their join, "
-                "routing, and interrupt declarations are not fully inspected."
-            ),
-            "element": {
-                "graphId": "parent-workflow",
-                "kind": "graph",
-                "id": "parent-workflow",
-            },
-        }
-    ]
-    with pytest.raises(agent_topology.langgraph.IncompleteTopologyError) as caught:
+    assert expanded["completeness"] == {"status": "complete", "gaps": []}
+    assert (
         agent_topology.langgraph.describe(
             compiled, graph_id="parent-workflow", depth=1, strict=True
-        )
-    assert caught.value.document["completeness"] == expanded["completeness"]
+        )["completeness"]
+        == expanded["completeness"]
+    )
     assert (
         agent_topology.langgraph.describe(inner, depth=1, strict=True)["completeness"][
             "status"

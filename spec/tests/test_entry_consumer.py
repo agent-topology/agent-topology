@@ -31,7 +31,9 @@ def entry_view(document):
     result = {}
     for graph in document["graphs"]:
         records = (
-            {r["nodeId"]: r for r in graph[KEY]["nodes"]} if status == "valid" else {}
+            {r["nodeId"]: r for r in graph[KEY]["nodes"]}
+            if status == "valid" and KEY in graph
+            else {}
         )
         targets = {c["target"] for c in graph["structure"]["edges"]} | {
             c["target"] for c in graph["structure"]["joins"]

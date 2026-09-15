@@ -28,16 +28,19 @@ and a two-node Unicode chain for code-point ordering under reversed node and edg
 declarations. A two-node child plus one retained root is the minimum expansion
 input needed to test child scope and retained identity in both languages at
 requested depths 0, 1 and 2. The child deliberately uses sentinel-like names.
-At depth 0 the child is an ordinary user node as well as an opaque subgraph;
-at positive depths its expanded nodes are unknown scope. Removed parent records
-do not survive. This does not promise that every child expands successfully.
+At every depth the child is an ordinary user node as well as an opaque
+subgraph, retaining its own record; at positive depth it additionally gains a
+core `subgraphId`, but its own sentinel record is unaffected, since
+[ADR 0012](../docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md)
+retired framework drawable/`xray` traversal and the parent is never removed or
+replaced by a flattened descendant.
 
 Every node body raises if executed. Controlled replacements of drawable data
 and the compiled input channel test failed identity/ownership separately from
 native extraction. No missing membership defaults to ordinary. Missing identity
-at depth 0 is `identity-unavailable`; unmapped non-sentinel nodes at positive
-depth are `scope-not-inspected`. Failed reserved ownership remains
-`identity-unavailable` at every depth.
+is `identity-unavailable`; a simulated (not naturally reachable) drawable
+corruption at positive depth instead falls back to `scope-not-inspected`.
+Failed reserved ownership remains `identity-unavailable` at every depth.
 
 Both native suites compare visible identities, states, values, evidence kinds,
 requested depth and ordering against the same cases. Source locators listed above

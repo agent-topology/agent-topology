@@ -178,7 +178,7 @@ def test_depth_matches_python_api_at_each_level(depth: int, tmp_path: Path) -> N
     ]
     assert cli_document == api_document
     assert cli_document["graphs"][0]["x-langgraph"] == {"traversalDepth": depth}
-    assert (depth == 0) == (api_document["completeness"]["status"] == "complete")
+    assert api_document["completeness"]["status"] == "complete"
 
 
 def test_omitted_depth_defaults_to_zero(tmp_path: Path) -> None:
@@ -210,7 +210,7 @@ def test_omitted_depth_defaults_to_zero(tmp_path: Path) -> None:
     assert omitted == explicit
 
 
-def test_strict_depth_retains_known_child_gap_and_incomplete_status(
+def test_strict_depth_retains_materialized_children_and_complete_status(
     tmp_path: Path,
 ) -> None:
     target = tmp_path / "nested.py"
@@ -230,11 +230,61 @@ def test_strict_depth_retains_known_child_gap_and_incomplete_status(
     )
 
     document = json.loads(output.read_text(encoding="utf-8"))
-    assert result == _cli.ExitCode.INCOMPLETE
-    assert document["completeness"]["status"] == "incomplete"
-    assert [gap["code"] for gap in document["completeness"]["gaps"]] == [
-        "expanded-subgraph-metadata"
-    ]
+    assert result == _cli.ExitCode.SUCCESS
+    assert document["completeness"] == {"status": "complete", "gaps": []}
+    assert {graph["id"] for graph in document["graphs"]} == {"main", "main:sub"}
+    sub_node = next(
+        n for n in document["graphs"][0]["structure"]["nodes"] if n["id"] == "sub"
+    )
+    assert sub_node["subgraphId"] == "main:sub"
+    grand_node = next(
+        n
+        for n in next(g for g in document["graphs"] if g["id"] == "main:sub")[
+            "structure"
+        ]["nodes"]
+        if n["id"] == "grand"
+    )
+    assert "subgraphId" not in grand_node
+
+
+def test_grandparent_grandchild_addressable_at_depth_two(tmp_path: Path) -> None:
+    # Direct regression coverage for issue #136's reproduction: parent, child,
+    # and grandchild identities all remain addressable through depth=2.
+    target = tmp_path / "nested.py"
+    output = tmp_path / "topology.json"
+    _write_nested_graph(target)
+
+    result = _cli.main(
+        [
+            "describe",
+            f"{target}:graph",
+            "--out",
+            str(output),
+            "--depth",
+            "2",
+            "--strict",
+        ]
+    )
+
+    document = json.loads(output.read_text(encoding="utf-8"))
+    assert result == _cli.ExitCode.SUCCESS
+    assert document["completeness"] == {"status": "complete", "gaps": []}
+    graphs_by_id = {graph["id"]: graph for graph in document["graphs"]}
+    assert set(graphs_by_id) == {"main", "main:sub", "main:sub:grand"}
+    sub_node = next(
+        n for n in graphs_by_id["main"]["structure"]["nodes"] if n["id"] == "sub"
+    )
+    assert sub_node["subgraphId"] == "main:sub"
+    grand_node = next(
+        n for n in graphs_by_id["main:sub"]["structure"]["nodes"] if n["id"] == "grand"
+    )
+    assert grand_node["subgraphId"] == "main:sub:grand"
+    leaf_node = next(
+        n
+        for n in graphs_by_id["main:sub:grand"]["structure"]["nodes"]
+        if n["id"] == "leaf"
+    )
+    assert "subgraphId" not in leaf_node
 
 
 @pytest.mark.parametrize("value", ["-1", "abc", "1.5", ""])
@@ -398,15 +448,12 @@ def test_documented_beta2_migration_retains_strict_document(capsys) -> None:
     assert document["topologyVersion"] == "0.1"
     assert document["structureHash"]["algorithmVersion"] == "1"
     assert document["structureHash"] == compute_structure_hash(document)
-    assert document["completeness"]["status"] == "incomplete"
-    assert [gap["code"] for gap in document["completeness"]["gaps"]] == [
-        "expanded-subgraph-metadata"
-    ]
-    assert document["completeness"]["gaps"][0]["element"] == {
-        "graphId": "main",
-        "kind": "graph",
-        "id": "main",
-    }
+    assert document["completeness"] == {"status": "complete", "gaps": []}
+    assert {graph["id"] for graph in document["graphs"]} == {"main", "main:child"}
+    child_node = next(
+        n for n in document["graphs"][0]["structure"]["nodes"] if n["id"] == "child"
+    )
+    assert child_node["subgraphId"] == "main:child"
     opaque = namespace["describe"](namespace["graph"], strict=True)
     assert opaque["completeness"] == {"status": "complete", "gaps": []}
     assert opaque["producerLimitations"] == document["producerLimitations"]

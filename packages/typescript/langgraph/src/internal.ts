@@ -187,48 +187,19 @@ function builderStructure(compiledGraph: RuntimeCompiledGraph): {
   return { edges: edgeDocuments(values), joins, unknownRouters };
 }
 
-function drawableStructure(
-  compiledGraph: RuntimeCompiledGraph,
+function mappedCompiledChild(
+  compiled: RuntimeCompiledGraph,
   drawable: DrawableGraph,
-): {
-  edges: TopologyEdge[];
-  joins: MultiSourceJoin[];
-  unknownRouters: Set<string>;
-} {
-  const root = builderStructure(compiledGraph);
-  const nodeIds = new Set(Object.keys(drawable.nodes));
-  const joins = root.joins.filter(
-    (join) =>
-      nodeIds.has(join.target) &&
-      join.sources.every((source) => nodeIds.has(source)),
-  );
-  const joinedPairs = new Set(
-    joins.flatMap((join) =>
-      join.sources.map((source) => `${source}\0${join.target}`),
-    ),
-  );
-  const directDeclarations = new Set(
-    root.edges
-      .filter((edge) => edge.kind === "direct")
-      .map((edge) => `${edge.source}\0${edge.target}`),
-  );
-  const values: EdgeValue[] = drawable.edges
-    .filter((edge) => !joinedPairs.has(`${edge.source}\0${edge.target}`))
-    .filter(
-      (edge) =>
-        !root.unknownRouters.has(edge.source) ||
-        directDeclarations.has(`${edge.source}\0${edge.target}`),
-    )
-    .map((edge) => [
-      String(edge.source),
-      String(edge.target),
-      edge.conditional ? "conditional" : "direct",
-    ]);
-  return {
-    edges: edgeDocuments(values),
-    joins,
-    unknownRouters: root.unknownRouters,
-  };
+  nodeId: string,
+): RuntimeCompiledGraph | null {
+  // Mapped by runtime identity, never by display name or wrapper inspection.
+  const runnable = Object.hasOwn(compiled.builder.nodes, nodeId)
+    ? compiled.builder.nodes[nodeId]?.runnable
+    : undefined;
+  const mapped =
+    runnable !== undefined && drawable.nodes[nodeId]?.data === runnable;
+  if (!mapped || !(runnable instanceof CompiledStateGraph)) return null;
+  return runnable as unknown as RuntimeCompiledGraph;
 }
 
 function includesInterrupt(
@@ -539,6 +510,88 @@ function entryInterpretation(
   );
 }
 
+export async function extractGraph(
+  compiledGraph: RuntimeCompiledGraph,
+  graphId: string,
+  remainingDepth: number,
+  assignedIds: Set<string>,
+): Promise<{
+  graphs: [TopologyGraph, ...TopologyGraph[]];
+  gaps: TopologyDocument["completeness"]["gaps"];
+}> {
+  const drawable = await compiledGraph.getGraphAsync({ xray: 0 });
+  const nodeIds = Object.keys(drawable.nodes).map(String);
+  const nodes = Object.entries(drawable.nodes).map(([nodeId, node]) =>
+    nodeDocument(String(nodeId), node, compiledGraph),
+  );
+  const { edges, joins, unknownRouters } = builderStructure(compiledGraph);
+  const targets = new Set([
+    ...edges.map((edge) => edge.target),
+    ...joins.map((join) => join.target),
+  ]);
+  const sources = new Set([
+    ...edges.map((edge) => edge.source),
+    ...joins.flatMap((join) => join.sources),
+    ...unknownRouters,
+  ]);
+  const name = compiledGraph.getName();
+  const graph: TopologyGraph = {
+    id: graphId,
+    ...(typeof name === "string" && name.length > 0 ? { name } : {}),
+    structure: {
+      nodes,
+      edges,
+      joins,
+      entryNodeIds: nodeIds.filter((nodeId) => !targets.has(nodeId)),
+      exitNodeIds: nodeIds.filter((nodeId) => !sources.has(nodeId)),
+    },
+    "x-langgraph": { traversalDepth: remainingDepth },
+  };
+
+  const gaps: TopologyDocument["completeness"]["gaps"] = [...unknownRouters]
+    .sort(compareText)
+    .map((source) => ({
+      code: "unknown-routing-targets",
+      message: "Not every destination of this router could be determined.",
+      element: { graphId, kind: "node" as const, id: source },
+    }));
+
+  const descendants: TopologyGraph[] = [];
+  if (remainingDepth > 0) {
+    const nodeLookup = new Map(graph.structure.nodes.map((n) => [n.id, n]));
+    const candidateIds = Object.keys(compiledGraph.builder.nodes).sort(
+      compareText,
+    );
+    for (const nodeId of candidateIds) {
+      const child = mappedCompiledChild(compiledGraph, drawable, nodeId);
+      if (child === null) continue;
+      const derivedId = `${graphId}:${nodeId}`;
+      if (assignedIds.has(derivedId)) {
+        gaps.push({
+          code: "child-graph-id-collision",
+          message:
+            "A materialized child graph id would collide with an existing graph id; the child was left opaque.",
+          element: { graphId, kind: "node" as const, id: nodeId },
+        });
+        continue;
+      }
+      assignedIds.add(derivedId);
+      const node = nodeLookup.get(nodeId);
+      if (node !== undefined) node.subgraphId = derivedId;
+      const { graphs: childGraphs, gaps: childGaps } = await extractGraph(
+        child,
+        derivedId,
+        remainingDepth - 1,
+        assignedIds,
+      );
+      descendants.push(...childGraphs);
+      gaps.push(...childGaps);
+    }
+  }
+
+  return { graphs: [graph, ...descendants], gaps };
+}
+
 export async function describeWithVersion(
   compiledGraph: unknown,
   installedVersion: string,
@@ -553,61 +606,20 @@ export async function describeWithVersion(
   const depth = checkedDepth(options);
   const graphId = checkedGraphId(options);
   const runtimeGraph = compiledGraph as unknown as RuntimeCompiledGraph;
-  const drawable = await runtimeGraph.getGraphAsync({ xray: depth });
-  const nodeIds = Object.keys(drawable.nodes).map(String);
-  const nodes = Object.entries(drawable.nodes).map(([nodeId, node]) =>
-    nodeDocument(String(nodeId), node, runtimeGraph),
+
+  const { graphs, gaps } = await extractGraph(
+    runtimeGraph,
+    graphId,
+    depth,
+    new Set([graphId]),
   );
-  const { edges, joins, unknownRouters } =
-    depth === 0
-      ? builderStructure(runtimeGraph)
-      : drawableStructure(runtimeGraph, drawable);
-  const targets = new Set([
-    ...edges.map((edge) => edge.target),
-    ...joins.map((join) => join.target),
-  ]);
-  const sources = new Set([
-    ...edges.map((edge) => edge.source),
-    ...joins.flatMap((join) => join.sources),
-    ...unknownRouters,
-  ]);
-  const name = runtimeGraph.getName();
-  const graph: TopologyGraph = {
-    id: graphId,
-    ...(typeof name === "string" && name.length > 0 ? { name } : {}),
-    structure: {
-      nodes,
-      edges,
-      joins,
-      entryNodeIds: nodeIds.filter((nodeId) => !targets.has(nodeId)),
-      exitNodeIds: nodeIds.filter((nodeId) => !sources.has(nodeId)),
-    },
-    "x-langgraph": { traversalDepth: depth },
-  };
-  branchInterpretation(runtimeGraph, drawable, graph, depth);
-  subgraphInterpretation(runtimeGraph, drawable, graph, depth);
-  sentinelInterpretation(runtimeGraph, drawable, graph, depth);
-  entryInterpretation(runtimeGraph, drawable, graph, depth);
-  const gaps: TopologyDocument["completeness"]["gaps"] = [...unknownRouters]
-    .sort(compareText)
-    .map((source) => ({
-      code: "unknown-routing-targets",
-      message: "Not every destination of this router could be determined.",
-      element: { graphId, kind: "node" as const, id: source },
-    }));
-  const rootNodeIds = new Set([
-    START,
-    END,
-    ...Object.keys(runtimeGraph.builder.nodes),
-  ]);
-  if (depth > 0 && nodeIds.some((nodeId) => !rootNodeIds.has(nodeId))) {
-    gaps.push({
-      code: "expanded-subgraph-metadata",
-      message:
-        "Expanded child graphs expose drawable shape, but their join, routing, and interrupt declarations are not fully inspected.",
-      element: { graphId, kind: "graph", id: graphId },
-    });
-  }
+  const rootGraph = graphs[0]!;
+  const rootDrawable = await runtimeGraph.getGraphAsync({ xray: 0 });
+  branchInterpretation(runtimeGraph, rootDrawable, rootGraph, depth);
+  subgraphInterpretation(runtimeGraph, rootDrawable, rootGraph, depth);
+  sentinelInterpretation(runtimeGraph, rootDrawable, rootGraph, depth);
+  entryInterpretation(runtimeGraph, rootDrawable, rootGraph, depth);
+
   return finalizeDocument({
     topologyVersion: "0.1",
     provenance: {
@@ -625,7 +637,7 @@ export async function describeWithVersion(
       algorithmVersion: "1",
       value: "0".repeat(64),
     },
-    graphs: [graph],
+    graphs,
     completeness: {
       status: gaps.length > 0 ? "incomplete" : "complete",
       gaps,

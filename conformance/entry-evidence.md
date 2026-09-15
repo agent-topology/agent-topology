@@ -16,9 +16,12 @@ its structural proof independently, without depending on sentinel metadata being
 emitted. The framework-owned START is `known/confirmed` and END is
 `known/not-entry`, both with `framework-entry` evidence. Positive root membership
 maps retained ordinary nodes to inspected scope but never proves not-entry.
-Every other inspected root node is `unknown/entry-not-established`. Unmapped
-nodes at positive depth are `unknown/scope-not-inspected`, including flattened
-child names. Failed reserved ownership never produces a known entry fact.
+Every other inspected root node is `unknown/entry-not-established`. Since
+[ADR 0012](../docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md)
+retired framework drawable/`xray` traversal, the root graph's own nodes are never
+flattened descendants at any depth; a materialized child's own nodes are a
+separate `graphs[]` entry with no `entry` interpretation of their own yet.
+Failed reserved ownership never produces a known entry fact.
 See the [sentinel evidence](sentinel-evidence.md) for the framework surfaces and
 reserved-name counterexamples establishing this ownership boundary.
 

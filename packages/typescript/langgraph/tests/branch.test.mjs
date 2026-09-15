@@ -143,23 +143,26 @@ for (const nesting of [1, 2]) {
       const facts = meaning(document);
       assert.equal(facts.retained.value, "all-declared");
       delete facts.retained;
-      assert.deepEqual(
-        facts,
-        depth < nesting
-          ? {}
-          : {
-              ["child:" + "inner:".repeat(nesting - 1) + "router"]: {
-                status: "unknown",
-                reason: "scope-not-inspected",
-              },
-            },
+      // Branch/sentinel/entry facts for a materialized child's own nodes are
+      // populated by #140, not here: root's own extension never leaks them.
+      assert.deepEqual(facts, {});
+      assert.ok(
+        !document.completeness.gaps.some(
+          (gap) => gap.code === "expanded-subgraph-metadata",
+        ),
       );
-      if (depth >= nesting)
-        assert.ok(
-          document.completeness.gaps.some(
-            (gap) => gap.code === "expanded-subgraph-metadata",
-          ),
-        );
+      const childNode = document.graphs[0].structure.nodes.find(
+        (n) => n.id === "child",
+      );
+      assert.ok(childNode);
+      if (depth >= 1) {
+        assert.equal(childNode.subgraphId, "main:child");
+        const expectedGraphs = nesting === 1 || depth < 2 ? 2 : 3;
+        assert.equal(document.graphs.length, expectedGraphs);
+      } else {
+        assert.equal(childNode.subgraphId, undefined);
+        assert.equal(document.graphs.length, 1);
+      }
     });
   }
 }
@@ -182,12 +185,9 @@ for (const depth of [0, 1, 2]) {
       .compile();
     const document = await describe(outer, { depth });
     check(document, depth);
-    assert.deepEqual(
-      meaning(document)[START],
-      depth === 0
-        ? cases[0].expected.router
-        : { status: "unknown", reason: "scope-not-inspected" },
-    );
+    // Root's own branch facts are unaffected by materialization at any depth:
+    // the framework's flattening view is never consulted anymore.
+    assert.deepEqual(meaning(document)[START], cases[0].expected.router);
   });
 }
 

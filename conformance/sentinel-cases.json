@@ -221,13 +221,12 @@
           "kind": "ordinary-node"
         }
       },
-      "child:start": {
-        "status": "unknown",
-        "reason": "scope-not-inspected"
-      },
-      "child:__start__-user": {
-        "status": "unknown",
-        "reason": "scope-not-inspected"
+      "child": {
+        "status": "known",
+        "value": "ordinary",
+        "evidence": {
+          "kind": "ordinary-node"
+        }
       }
     }
   },
@@ -261,13 +260,12 @@
           "kind": "ordinary-node"
         }
       },
-      "child:start": {
-        "status": "unknown",
-        "reason": "scope-not-inspected"
-      },
-      "child:__start__-user": {
-        "status": "unknown",
-        "reason": "scope-not-inspected"
+      "child": {
+        "status": "known",
+        "value": "ordinary",
+        "evidence": {
+          "kind": "ordinary-node"
+        }
       }
     }
   }

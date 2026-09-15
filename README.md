@@ -374,12 +374,17 @@ more dangerous than an obviously absent one.
   targets if the author declares them. LangGraph, for instance, needs a `Command[Literal[...]]`
   return annotation for destinations to appear. Undeclared targets are absent from the
   output, and the document says so.
-- **Deep nesting.** Subgraphs are opaque by default. Expanding them is opt-in and,
-  in at least one framework, currently unreliable past two levels.
-  Expanded drawable shape does not fully preserve child join, routing, and
-  interrupt declarations. Published beta.3 records this as an
+- **Deep nesting.** Subgraphs are opaque by default. Expanding them is opt-in and
+  bounded by the requested depth; there is no automatic or unbounded recursive
+  expansion. Published beta.3's expanded drawable shape did not fully preserve
+  child join, routing, and interrupt declarations, and recorded this as an
   `expanded-subgraph-metadata` gap; see the
-  [beta.3 release notes](docs/releases/v0.1.0-beta.3.md).
+  [beta.3 release notes](docs/releases/v0.1.0-beta.3.md). Current source instead
+  retains a parent node's own id and materializes its confirmed compiled children
+  as separate, fully addressable `graphs[]` entries — see
+  [ADR 0012](docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md) —
+  though a materialized child's own recursive branch/sentinel/entry metadata is
+  not yet populated.
 - **Runtime-constructed graphs.** A graph assembled from configuration at startup is
   described as it exists at that moment, not as all the graphs it might have been.
 - **Provisional core boundary.** Python and TypeScript exercise the same LangGraph

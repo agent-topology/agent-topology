@@ -100,9 +100,24 @@ def test_shared_subgraph(case, monkeypatch):
     assert baseline == stripped
     assert compute_structure_hash(stripped) == document["structureHash"]
     assert document["structureHash"]["algorithmVersion"] == "1"
-    assert len(document["graphs"]) == 1
+    if case["mode"] == "child" and case["depth"] >= 1:
+        materialized = 1
+    elif case["mode"] == "grandchild" and case["depth"] >= 1:
+        materialized = 2 if case["depth"] >= 2 else 1
+    else:
+        materialized = 0
+    assert len(document["graphs"]) == 1 + materialized
+    child_node = next(
+        n for n in document["graphs"][0]["structure"]["nodes"] if n["id"] == "child"
+    )
+    if materialized:
+        assert child_node["subgraphId"] == "main:child"
+    else:
+        assert "subgraphId" not in child_node
     assert all(
-        "subgraphId" not in n for n in document["graphs"][0]["structure"]["nodes"]
+        "subgraphId" not in n
+        for n in document["graphs"][0]["structure"]["nodes"]
+        if n["id"] != "child"
     )
     if document["completeness"]["gaps"]:
         with pytest.raises(IncompleteTopologyError) as error:
@@ -118,17 +133,19 @@ def test_expanded_scope(depth, mode):
     document = describe(compile_case(mode, width=2), depth=depth)
     assert not validate_document(document)
     assert ORACLE(document) == "valid"
-    facts = meaning(document)
-    assert "child" not in facts
-    assert facts
-    assert all(
-        f == {"status": "unknown", "reason": "scope-not-inspected"}
-        for f in facts.values()
-    )
-    assert any(
+    assert meaning(document) == {}
+    assert not any(
         g["code"] == "expanded-subgraph-metadata"
         for g in document["completeness"]["gaps"]
     )
+    child_node = next(
+        n for n in document["graphs"][0]["structure"]["nodes"] if n["id"] == "child"
+    )
+    assert child_node["subgraphId"] == "main:child"
+    materialized_ids = {g["id"] for g in document["graphs"][1:]}
+    assert "main:child" in materialized_ids
+    if mode == "grandchild" and depth >= 2:
+        assert "main:child:inner" in materialized_ids
 
 
 def test_retained_identity_and_preserved_branch():
@@ -162,17 +179,6 @@ def test_retained_identity_and_preserved_branch():
         assert ORACLE(document) == "valid"
 
 
-@pytest.mark.parametrize("depth", [1, 2])
-def test_positive_depth_can_remain_opaque(depth, monkeypatch):
-    compiled = compile_case("child")
-    drawable = compiled.get_graph(xray=0)
-    # Controlled framework traversal fallback over a real compiled child.
-    monkeypatch.setattr(compiled, "get_graph", lambda **kwargs: drawable)
-    document = describe(compiled, depth=depth)
-    assert meaning(document)["child"]["value"] == "opaque-child"
-    assert ORACLE(document) == "valid"
-
-
 def test_materialized_reference_rejects_opaque_assertion():
     document = describe(compile_case("child"))
     child = copy.deepcopy(document["graphs"][0])
@@ -197,3 +203,61 @@ def test_display_name_is_not_child_evidence():
         "status": "unknown",
         "reason": "identity-unavailable",
     }
+
+
+def test_reused_child_at_two_call_sites():
+    shared = chain([("step", forbidden)])
+    builder = StateGraph(State)
+    builder.add_node("left", shared)
+    builder.add_node("right", shared)
+    builder.add_edge(START, "left")
+    builder.add_edge("left", "right")
+    builder.add_edge("right", END)
+    document = describe(builder.compile(), depth=1)
+    assert not validate_document(document)
+    assert ORACLE(document) == "valid"
+    assert document["completeness"]["gaps"] == []
+    graph_ids = {g["id"] for g in document["graphs"]}
+    assert graph_ids == {"main", "main:left", "main:right"}
+    left = next(g for g in document["graphs"] if g["id"] == "main:left")
+    right = next(g for g in document["graphs"] if g["id"] == "main:right")
+    left_structure = copy.deepcopy(left["structure"])
+    right_structure = copy.deepcopy(right["structure"])
+    assert left_structure == right_structure
+    assert document["structureHash"]["algorithmVersion"] == "1"
+
+
+def test_node_ids_cannot_contain_the_derived_id_delimiter():
+    # LangGraph itself reserves ':' in node names, so a producer-caused
+    # collision (two derivation paths concatenating to the same string) can
+    # never arise from any real compiled graph: the derivation scheme is
+    # injective once every segment is guaranteed colon-free. Confirm the
+    # premise, then exercise the fallback directly below.
+    with pytest.raises(ValueError, match="reserved character"):
+        StateGraph(State).add_node("sub:grand", forbidden)
+
+
+def test_derived_id_collision_falls_back_to_opaque():
+    module = importlib.import_module("agent_topology.langgraph._describe")
+    builder = StateGraph(State)
+    builder.add_node("child", chain([("step", forbidden)]))
+    builder.add_edge(START, "child")
+    builder.add_edge("child", END)
+    # Seed assigned_ids as if "main:child" were already taken elsewhere in the
+    # traversal, since no real graph can make two derivations collide.
+    graphs, gaps = module._extract_graph(
+        builder.compile(), "main", 1, {"main", "main:child"}
+    )
+    assert [g["id"] for g in graphs] == ["main"]
+    node = next(n for n in graphs[0]["structure"]["nodes"] if n["id"] == "child")
+    assert "subgraphId" not in node
+    assert gaps == [
+        {
+            "code": "child-graph-id-collision",
+            "message": (
+                "A materialized child graph id would collide with an existing "
+                "graph id; the child was left opaque."
+            ),
+            "element": {"graphId": "main", "kind": "node", "id": "child"},
+        }
+    ]

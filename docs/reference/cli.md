@@ -25,14 +25,17 @@ exist. Use a distinct output path, not a source filename.
 `--graph-id` selects the non-empty document-local graph address and defaults to
 `main`. Supply distinct stable ids when outputs will later be composed.
 
-`--depth` selects how many nested graph levels to expand and defaults to `0`,
-which keeps child graphs opaque. It accepts only non-negative integers; a
-missing, negative, or non-integer value is a usage error (status `2`). This is
-the same traversal depth accepted by the Python `describe` API's `depth`
-keyword, and `agt describe` output is equivalent to calling that API directly
-at the same depth. Expanding a graph whose children are not fully inspected
-still reports the existing `expanded-subgraph-metadata` gap; see `--strict`
-below.
+`--depth` selects how many nested graph levels to materialize as their own
+addressable `graphs[]` entries and defaults to `0`, which keeps child graphs
+opaque. It accepts only non-negative integers; a missing, negative, or
+non-integer value is a usage error (status `2`). This is the same traversal
+depth accepted by the Python `describe` API's `depth` keyword, and
+`agt describe` output is equivalent to calling that API directly at the same
+depth. A node holding a confirmed compiled child keeps its own id at every
+depth; within the requested budget it also gains a core `subgraphId`
+addressing the materialized child — see
+[ADR 0012](../decisions/0012-nested-graph-identity-traversal-and-compatibility.md).
+See `--strict` below for how any remaining graph-specific gaps are reported.
 
 `--strict` returns status `6` when graph-specific gaps are present. The incomplete
 document is still written, so automation can retain it as an artifact and present

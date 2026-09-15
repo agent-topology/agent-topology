@@ -278,10 +278,11 @@ Functions and wrappers can hide a child. The current producers therefore emit
 `unknown/identity-unavailable` for those root nodes, including ordinary functions
 with the same ID and display name as a child. They do not emit `not-child` from
 callable type or naming. The contract reserves known `not-child` for positive
-structural evidence excluding a child. Unmapped expanded child and grandchild
-nodes use `unknown/scope-not-inspected`; removed parents have no record.
-Retained root identities can keep their facts. Existing
-`expanded-subgraph-metadata` gaps remain visible.
+structural evidence excluding a child. A node materialized at positive depth
+(carrying core `subgraphId`) is never assigned an `opaque-child` fact; retained
+root identities that are not materialized keep their depth-0 facts unchanged.
+`expanded-subgraph-metadata` no longer appears: see
+[ADR 0012](../decisions/0012-nested-graph-identity-traversal-and-compatibility.md).
 
 After core validation, validate the separate extension schema and semantic
 references before selecting nodes with known `opaque-child`. A materialized

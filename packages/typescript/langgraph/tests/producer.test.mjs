@@ -265,40 +265,40 @@ test("expands nested graphs only to the requested depth", async () => {
     .compile({ name: "parent" });
 
   const opaque = await describe(parent);
-  assert.ok(
-    opaque.graphs[0]?.structure.nodes.some((node) => node.id === "child"),
+  const opaqueChildNode = opaque.graphs[0]?.structure.nodes.find(
+    (node) => node.id === "child",
   );
+  assert.ok(opaqueChildNode);
+  assert.equal(opaqueChildNode.subgraphId, undefined);
+
   const expanded = await describe(parent, {
     depth: 1,
     graphId: "parent-workflow",
   });
-  assert.ok(
-    expanded.graphs[0]?.structure.nodes.some(
-      (node) => node.id === "child:innerFirst",
-    ),
+  assert.deepEqual(
+    new Set(expanded.graphs[0]?.structure.nodes.map((node) => node.id)),
+    new Set(["__start__", "before", "child", "after", "__end__"]),
   );
-  assert.ok(
-    !expanded.graphs[0]?.structure.nodes.some((node) => node.id === "child"),
+  const expandedChildNode = expanded.graphs[0]?.structure.nodes.find(
+    (node) => node.id === "child",
+  );
+  assert.equal(expandedChildNode?.subgraphId, "parent-workflow:child");
+  assert.deepEqual(
+    new Set(expanded.graphs.map((graph) => graph.id)),
+    new Set(["parent-workflow", "parent-workflow:child"]),
+  );
+  const materialized = expanded.graphs.find(
+    (graph) => graph.id === "parent-workflow:child",
+  );
+  assert.deepEqual(
+    new Set(materialized?.structure.nodes.map((node) => node.id)),
+    new Set(["__start__", "innerFirst", "innerLast", "__end__"]),
   );
   assert.deepEqual(expanded.graphs[0]?.["x-langgraph"], {
     traversalDepth: 1,
   });
   assert.deepEqual(opaque.completeness, { status: "complete", gaps: [] });
-  assert.deepEqual(expanded.completeness, {
-    status: "incomplete",
-    gaps: [
-      {
-        code: "expanded-subgraph-metadata",
-        message:
-          "Expanded child graphs expose drawable shape, but their join, routing, and interrupt declarations are not fully inspected.",
-        element: {
-          graphId: "parent-workflow",
-          kind: "graph",
-          id: "parent-workflow",
-        },
-      },
-    ],
-  });
+  assert.deepEqual(expanded.completeness, { status: "complete", gaps: [] });
   assert.equal(validateDocument(expanded).valid, true);
   assert.equal(
     (await describe(child, { depth: 1 })).completeness.status,
@@ -358,7 +358,7 @@ test("validates options and rejects uncompiled graph builders", async () => {
   );
 });
 
-test("documented beta.2 migration retains gaps before consumer failure", () => {
+test("documented beta.2 migration example now materializes a complete document", () => {
   const packageRoot = fileURLToPath(new URL("../", import.meta.url));
   const directory = mkdtempSync(join(packageRoot, ".docs-migration-"));
   try {
@@ -375,24 +375,22 @@ test("documented beta.2 migration retains gaps before consumer failure", () => {
       cwd: directory,
       encoding: "utf8",
     });
-    assert.equal(result.status, 1, result.stderr);
-    assert.match(result.stderr, /Incomplete topology:/);
+    assert.equal(result.status, 0, result.stderr);
     const validation = validateDocument(JSON.parse(result.stdout));
     assert.ok(validation.valid);
     const document = validation.document;
     assert.equal(document.topologyVersion, "0.1");
     assert.equal(document.structureHash.algorithmVersion, "1");
     assert.deepEqual(document.structureHash, computeStructureHash(document));
-    assert.equal(document.completeness.status, "incomplete");
+    assert.deepEqual(document.completeness, { status: "complete", gaps: [] });
     assert.deepEqual(
-      document.completeness.gaps.map((gap) => gap.code),
-      ["expanded-subgraph-metadata"],
+      new Set(document.graphs.map((graph) => graph.id)),
+      new Set(["main", "main:child"]),
     );
-    assert.deepEqual(document.completeness.gaps[0]?.element, {
-      graphId: "main",
-      kind: "graph",
-      id: "main",
-    });
+    const childNode = document.graphs[0].structure.nodes.find(
+      (node) => node.id === "child",
+    );
+    assert.equal(childNode?.subgraphId, "main:child");
     assert.ok(document.producerLimitations.length > 0);
   } finally {
     rmSync(directory, { recursive: true, force: true });

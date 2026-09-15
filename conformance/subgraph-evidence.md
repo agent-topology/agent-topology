@@ -13,8 +13,18 @@ Those sources establish `known/opaque-child` only for a visible root child with
 no materialized `subgraphId`. A class/display name is never evidence. Ordinary
 functions and wrappers are counterexamples: both can hide child invocation, so
 neither producer currently claims `not-child`. They report identity-unavailable.
-Root framework sentinels have no applicable child fact. Flattened names never
-establish mapping, including child/grandchild nodes at requested depths 1 and 2.
+Root framework sentinels have no applicable child fact.
+
+[ADR 0012](../docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md)
+retired framework drawable/`xray` traversal from both producers' positive-depth
+extraction: neither producer flattens a child's descendants into the containing
+graph any more. A confirmed compiled child instead keeps its own id in its
+containing graph at every depth and, within the requested `depth` budget, gains a
+core `subgraphId` addressing the child as its own materialized `graphs[]` entry,
+extracted the same way a root graph is. `subgraph-cases.json`'s `expected` field
+is therefore identical across both producers at every depth: no
+`typescriptExpected` divergence remains, and both languages compare their real
+producer output against each other for byte-identical canonical JSON and hashes.
 
 [subgraph-cases.json](subgraph-cases.json) supplies shared expected meanings for
 minimum real graphs built independently in the Python and TypeScript tests.
@@ -29,27 +39,21 @@ package/framework provenance intentionally differ across languages. Shared
 specification authored cases independently assert the same canonical byte digest
 and hash in both specification packages; they are not producer output.
 
-Additional tests use a two-node child for expanded scope, retained root branching
-for coexistence with branch facts, and a controlled drawable fallback over a real
-compiled child for positive-depth opacity. The fallback is explicitly simulated;
-it is not evidence that native expansion always fails or always succeeds. Full
-core validation precedes separate schema and semantic validation; a materialized
-child reference plus an opaque assertion is rejected. Python compares the entire
-core extraction with child interpretation disabled, including gaps, entry/exit
-arrays, `x-langgraph`, hash and strict-mode behavior. Both languages check hash
+Additional tests use a two-node child for expanded scope (asserting materialized
+`graphs[]` entries and the retirement of `expanded-subgraph-metadata`), a reused
+compiled child bound at two sibling node ids (independent, equal-structure
+materialized graphs with no shared-definition assertion), and retained root
+branching for coexistence with branch facts. A derived id collision is exercised
+directly against the internal extraction primitive in both languages, seeding an
+already-assigned id, because LangGraph's own node-name validation makes a
+delimiter-caused collision impossible to construct through the public API in
+either language; that impossibility is itself asserted. Full core validation
+precedes separate schema and semantic validation; a materialized child reference
+plus an opaque assertion is rejected. Python compares the entire core extraction
+with child interpretation disabled, including gaps, entry/exit arrays,
+`x-langgraph`, hash and strict-mode behavior. Both languages check hash
 exclusion, visible records, reference validity and extension ordering.
 
 Run the producer suites from [Conventions](../CONVENTIONS.md), including both
 supported Python framework boundaries. The shared authored extension validation
 oracle remains under `spec/experimental`; no public validator API is introduced.
-
-## Measured traversal differences
-
-Python expands a one-node child at positive depth. LangGraph.js 1.4.14 retains
-that child opaque at both depths 1 and 2; it also retains a one-node outer child
-at depth 1 when its grandchild has two nodes. The shared cases record those exact
-TypeScript expectations rather than changing core extraction to force identity
-parity. Two-node children expand in both producers, and a two-node grandchild
-expands in both at depth 2. Their identities and unknown scope facts agree.
-Thus requested depth is not evidence of expansion success. These native cases
-also prove positive-depth opaque-child emission without the simulated fallback.
