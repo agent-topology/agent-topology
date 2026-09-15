@@ -1,7 +1,7 @@
-// Repository-only independent ADR 0008 validator, never a public package API.
+// Repository-only independent ADR 0008/0012 validator, never a public package API.
 import { readFileSync } from "node:fs";
 import { Ajv2020 } from "ajv/dist/2020.js";
-const schema = JSON.parse(
+const schemaV1 = JSON.parse(
   readFileSync(
     new URL(
       "../../../../spec/experimental/interpretation-v1.schema.json",
@@ -10,8 +10,21 @@ const schema = JSON.parse(
     "utf8",
   ),
 );
+const schemaV2 = JSON.parse(
+  readFileSync(
+    new URL(
+      "../../../../spec/experimental/interpretation-v2.schema.json",
+      import.meta.url,
+    ),
+    "utf8",
+  ),
+);
+const ajv = new Ajv2020({ strict: false });
 /** @type {(value: unknown) => boolean} */
-const validate = new Ajv2020({ strict: false }).compile(schema);
+const validateV1 = ajv.compile(schemaV1);
+/** @type {(value: unknown) => boolean} */
+const validateV2 = ajv.compile(schemaV2);
+const validators = { 1: validateV1, 2: validateV2 };
 const key = "x-topology-interpretation";
 /** @param {string} a @param {string} b */
 const compare = (a, b) => {
@@ -42,8 +55,10 @@ export function interpretationStatus(document) {
     if (!(key in graph)) continue;
     found = true;
     const extension = graph[key];
-    if (typeof extension?.version === "string" && extension.version !== "1")
-      return "unsupported";
+    const version =
+      typeof extension?.version === "string" ? extension.version : undefined;
+    if (version !== undefined && !(version in validators)) return "unsupported";
+    const validate = validators[/** @type {"1" | "2"} */ (version ?? "1")];
     if (!validate(extension)) return "invalid";
     const nodes = new Map(
       graph.structure.nodes.map(
@@ -93,6 +108,11 @@ export function interpretationStatus(document) {
         child === "opaque-child" &&
         (nodes.get(id).subgraphId !== undefined ||
           ["start", "end"].includes(sentinel))
+      )
+        return "invalid";
+      if (
+        child === "materialized-child" &&
+        nodes.get(id).subgraphId === undefined
       )
         return "invalid";
       if (

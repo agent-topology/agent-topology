@@ -15,7 +15,9 @@ from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[1] / "experimental"
 CASES = json.loads((ROOT / "interpretation-cases.json").read_text())
-SCHEMA = json.loads((ROOT / "interpretation-v1.schema.json").read_text())
+SCHEMA_V1 = json.loads((ROOT / "interpretation-v1.schema.json").read_text())
+SCHEMA_V2 = json.loads((ROOT / "interpretation-v2.schema.json").read_text())
+SCHEMAS = {"1": SCHEMA_V1, "2": SCHEMA_V2}
 KEY = "x-topology-interpretation"
 
 
@@ -38,10 +40,11 @@ def interpretation_status(document):
             continue
         found = True
         extension = graph[KEY]
-        if isinstance(extension, dict) and isinstance(extension.get("version"), str):
-            if extension["version"] != "1":
-                return "unsupported"
-        if not Draft202012Validator(SCHEMA).is_valid(extension):
+        version = extension.get("version") if isinstance(extension, dict) else None
+        if isinstance(version, str) and version not in SCHEMAS:
+            return "unsupported"
+        schema = SCHEMAS.get(version, SCHEMA_V1)
+        if not Draft202012Validator(schema).is_valid(extension):
             return "invalid"
         structure = graph["structure"]
         nodes = {node["id"]: node for node in structure["nodes"]}
@@ -78,6 +81,8 @@ def interpretation_status(document):
                 "subgraphId" in nodes[node_id] or sentinel in {"start", "end"}
             ):
                 return "invalid"
+            if child == "materialized-child" and "subgraphId" not in nodes[node_id]:
+                return "invalid"
             if (sentinel, entry.get("value")) in {
                 ("start", "not-entry"),
                 ("end", "confirmed"),
@@ -98,9 +103,10 @@ def test_contract_example(case):
     assert interpretation_status(document) == case["extensionStatus"]
     for graph in document["graphs"]:
         if KEY in graph:
-            assert (
-                Draft202012Validator(SCHEMA).is_valid(graph[KEY]) == case["shapeValid"]
-            )
+            extension = graph[KEY]
+            version = extension.get("version") if isinstance(extension, dict) else None
+            schema = SCHEMAS.get(version, SCHEMA_V1)
+            assert Draft202012Validator(schema).is_valid(extension) == case["shapeValid"]
     stripped = copy.deepcopy(document)
     stripped.pop(KEY, None)
     for graph in stripped["graphs"]:
@@ -109,4 +115,5 @@ def test_contract_example(case):
 
 
 def test_extension_schema_is_valid():
-    Draft202012Validator.check_schema(SCHEMA)
+    Draft202012Validator.check_schema(SCHEMA_V1)
+    Draft202012Validator.check_schema(SCHEMA_V2)

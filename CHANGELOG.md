@@ -32,10 +32,20 @@ future package versions will move together.
   `child-graph-id-collision` gap instead. `depth = N` now materializes levels
   `1..N`; level `N`'s own children keep the unchanged depth-0 opaque-child
   contract, and depth-0 output remains byte-identical to today's.
-  `expanded-subgraph-metadata` is retired: it can no longer be emitted. A
-  materialized child's own recursive `branch`/`sentinel`/`entry` interpretation
-  facts remain future work. See
+  `expanded-subgraph-metadata` is retired: it can no longer be emitted. See
   [ADR 0012](docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md).
+- Both LangGraph producers now populate `branch`, `sentinel`, and `entry`
+  experimental interpretation facts for a materialized child's own nodes, using
+  the same [ADR 0008](docs/decisions/0008-experimental-consumer-interpretation.md)
+  evidence rules already used for a root graph — a materialized child is not a
+  degraded view. `x-topology-interpretation` advances to revision `"2"` on any
+  graph that materializes at least one child, adding a `subgraph` value of
+  `materialized-child` (evidence kind `materialized-subgraph-reference`,
+  referencing the containing `graphs[].id` and the node's `subgraphId`).
+  `opaque-child` is invalid on any node carrying core `subgraphId`, and
+  `materialized-child` is invalid without one. Depth-0 documents and any
+  document with no materialized node continue to use revision `"1"` unchanged.
+  See [ADR 0012](docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md).
 
 ## v0.1.0-beta.3 public preview — 2026-09-12
 

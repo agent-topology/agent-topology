@@ -89,10 +89,11 @@ def test_shared_sentinels(case, monkeypatch):
         context.setattr(module, "_sentinel_interpretation", lambda *args: None)
         baseline = describe(compiled, depth=depth)
     stripped = copy.deepcopy(document)
-    records = stripped["graphs"][0][KEY]["nodes"]
-    for record in records:
-        del record["sentinel"]
-    stripped["graphs"][0][KEY]["nodes"] = [r for r in records if len(r) > 1]
+    for graph in stripped["graphs"]:
+        records = graph[KEY]["nodes"]
+        for record in records:
+            del record["sentinel"]
+        graph[KEY]["nodes"] = [r for r in records if len(r) > 1]
     baseline["provenance"] = stripped["provenance"]
     assert baseline == stripped  # All pre-existing facts, core, gaps, and x-langgraph.
     del stripped["graphs"][0][KEY]
@@ -104,6 +105,20 @@ def test_shared_sentinels(case, monkeypatch):
         assert error.value.document["completeness"] == document["completeness"]
     else:
         describe(compiled, depth=depth, strict=True)
+
+
+def test_materialized_child_sentinels():
+    """A materialized child's own nodes use the same sentinel evidence rules as
+    a root graph; names resembling reserved sentinels are not evidence."""
+    child = chain([("start", forbidden), ("__start__-user", forbidden)])
+    document = describe(chain([("child", child)]), depth=1)
+    child_graph = next(g for g in document["graphs"] if g["id"] == "main:child")
+    records = {r["nodeId"]: r for r in child_graph[KEY]["nodes"]}
+    assert records[START]["sentinel"]["value"] == "start"
+    assert records[END]["sentinel"]["value"] == "end"
+    assert records["start"]["sentinel"]["value"] == "ordinary"
+    assert records["__start__-user"]["sentinel"]["value"] == "ordinary"
+    assert ORACLE(document) == "valid"
 
 
 @pytest.mark.parametrize("node_id", [START, END, "task"])

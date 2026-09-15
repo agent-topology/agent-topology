@@ -31,8 +31,13 @@ Known requires two outgoing ordinary direct declarations, no conditional or
 dynamic declarations, and matching visible connections. Joins are inspected by
 the existing core path and do not count toward direct fan-out. Since neither
 producer flattens descendants into the root any more, the root's own branch
-facts are unaffected by requested depth; a materialized child's own branch
-facts are separate follow-up work, not populated by this contract. No callback,
+facts are unaffected by requested depth.
+[ADR 0012](../docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md)'s
+implementation criteria additionally require a materialized child's own branch
+facts to be populated from that child's own declarations, under the same
+evidence rules as any root graph; `test_expanded_child_scope` and its
+TypeScript counterpart cover a retained root branch fact coexisting with a
+materialized child's own branch fact at depths 1 and 2. No callback,
 router, or node body is invoked; all fixture bodies raise if called. Return
 shapes/annotations describe the paired test inputs and never prove a mode.
 

@@ -18,9 +18,14 @@ emitted. The framework-owned START is `known/confirmed` and END is
 maps retained ordinary nodes to inspected scope but never proves not-entry.
 Every other inspected root node is `unknown/entry-not-established`. Since
 [ADR 0012](../docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md)
-retired framework drawable/`xray` traversal, the root graph's own nodes are never
-flattened descendants at any depth; a materialized child's own nodes are a
-separate `graphs[]` entry with no `entry` interpretation of their own yet.
+retired framework drawable/`xray` traversal, a graph's own nodes are never
+flattened descendants at any depth; a materialized child is a separate
+`graphs[]` entry with its own `entry` interpretation, populated from that
+child's own declarations under the same rules as any root graph.
+`test_materialized_child_entries` (Python) and `materialized child entries`
+(TypeScript) confirm the child's real framework `START`/`END` are
+`known/confirmed`/`known/not-entry` and a deceptively named ordinary node
+inside it stays `unknown`, never inheriting entry meaning from its name.
 Failed reserved ownership never produces a known entry fact.
 See the [sentinel evidence](sentinel-evidence.md) for the framework surfaces and
 reserved-name counterexamples establishing this ownership boundary.

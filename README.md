@@ -381,10 +381,10 @@ more dangerous than an obviously absent one.
   `expanded-subgraph-metadata` gap; see the
   [beta.3 release notes](docs/releases/v0.1.0-beta.3.md). Current source instead
   retains a parent node's own id and materializes its confirmed compiled children
-  as separate, fully addressable `graphs[]` entries — see
-  [ADR 0012](docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md) —
-  though a materialized child's own recursive branch/sentinel/entry metadata is
-  not yet populated.
+  as separate, fully addressable `graphs[]` entries, with their own
+  branch/sentinel/entry interpretation facts populated the same way a root
+  graph's are — see
+  [ADR 0012](docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md).
 - **Runtime-constructed graphs.** A graph assembled from configuration at startup is
   described as it exists at that moment, not as all the graphs it might have been.
 - **Provisional core boundary.** Python and TypeScript exercise the same LangGraph

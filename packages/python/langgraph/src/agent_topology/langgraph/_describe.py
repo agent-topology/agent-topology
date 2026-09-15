@@ -137,6 +137,14 @@ def _mapped_compiled_child(
     return bound if isinstance(bound, CompiledStateGraph) else None
 
 
+def _interpretation_version(graph: dict[str, Any]) -> str:
+    """A graph advances to revision 2 only where it materializes a child."""
+    has_materialized_child = any(
+        "subgraphId" in node for node in graph["structure"]["nodes"]
+    )
+    return "2" if has_materialized_child else "1"
+
+
 def _branch_interpretation(
     compiled_graph: CompiledStateGraph, drawable: Any, graph: dict[str, Any], depth: int
 ) -> None:
@@ -151,7 +159,11 @@ def _branch_interpretation(
     )
     extension = graph.setdefault(
         "x-topology-interpretation",
-        {"version": "1", "traversalDepth": depth, "nodes": []},
+        {
+            "version": _interpretation_version(graph),
+            "traversalDepth": depth,
+            "nodes": [],
+        },
     )
     records = {record["nodeId"]: record for record in extension["nodes"]}
 
@@ -210,12 +222,27 @@ def _subgraph_interpretation(
     """Confirm exposed compiled children without looking inside user callables."""
     extension = graph.setdefault(
         "x-topology-interpretation",
-        {"version": "1", "traversalDepth": depth, "nodes": []},
+        {
+            "version": _interpretation_version(graph),
+            "traversalDepth": depth,
+            "nodes": [],
+        },
     )
     records = {record["nodeId"]: record for record in extension["nodes"]}
     for node in graph["structure"]["nodes"]:
         node_id = node["id"]
-        if node_id in {START, END} or "subgraphId" in node:
+        if node_id in {START, END}:
+            continue
+        if "subgraphId" in node:
+            fact = {
+                "status": "known",
+                "value": "materialized-child",
+                "evidence": {
+                    "kind": "materialized-subgraph-reference",
+                    "source": "graphs[].id+node.subgraphId",
+                },
+            }
+            records.setdefault(node_id, {"nodeId": node_id})["subgraph"] = fact
             continue
         runtime_node = compiled_graph.nodes.get(node_id)
         mapped = (
@@ -291,7 +318,11 @@ def _sentinel_interpretation(
     """Use reserved framework identity and positive root-node membership."""
     extension = graph.setdefault(
         "x-topology-interpretation",
-        {"version": "1", "traversalDepth": depth, "nodes": []},
+        {
+            "version": _interpretation_version(graph),
+            "traversalDepth": depth,
+            "nodes": [],
+        },
     )
     records = {record["nodeId"]: record for record in extension["nodes"]}
     for node in graph["structure"]["nodes"]:
@@ -307,7 +338,11 @@ def _entry_interpretation(
     """Separate snapshot connectivity from affirmative framework entry evidence."""
     extension = graph.setdefault(
         "x-topology-interpretation",
-        {"version": "1", "traversalDepth": depth, "nodes": []},
+        {
+            "version": _interpretation_version(graph),
+            "traversalDepth": depth,
+            "nodes": [],
+        },
     )
     records = {record["nodeId"]: record for record in extension["nodes"]}
     targets = {edge["target"] for edge in graph["structure"]["edges"]} | {
@@ -423,6 +458,11 @@ def _extract_graph(
             descendants.extend(child_graphs)
             gaps.extend(child_gaps)
 
+    _branch_interpretation(compiled_graph, drawable, graph_document, remaining_depth)
+    _subgraph_interpretation(compiled_graph, drawable, graph_document, remaining_depth)
+    _sentinel_interpretation(compiled_graph, drawable, graph_document, remaining_depth)
+    _entry_interpretation(compiled_graph, drawable, graph_document, remaining_depth)
+
     return [graph_document, *descendants], gaps
 
 
@@ -482,12 +522,6 @@ def describe(
         raise TypeError("strict must be a boolean")
 
     graphs, gaps = _extract_graph(compiled_graph, graph_id, depth, {graph_id})
-    root_document = graphs[0]
-    root_drawable = compiled_graph.get_graph(xray=0)
-    _branch_interpretation(compiled_graph, root_drawable, root_document, depth)
-    _subgraph_interpretation(compiled_graph, root_drawable, root_document, depth)
-    _sentinel_interpretation(compiled_graph, root_drawable, root_document, depth)
-    _entry_interpretation(compiled_graph, root_drawable, root_document, depth)
 
     document = {
         "topologyVersion": "0.1",
