@@ -1,0 +1,92 @@
+{
+  "events": [
+    {
+      "eventType": "run.observed",
+      "graphId": "capture-demo",
+      "nodeId": null,
+      "runId": "logical-run",
+      "sequence": 1
+    },
+    {
+      "eventType": "step.passed",
+      "graphId": "capture-demo",
+      "nodeId": "plan",
+      "runId": "logical-run",
+      "sequence": 2
+    },
+    {
+      "eventType": "run.observed",
+      "graphId": "capture-demo",
+      "nodeId": null,
+      "runId": "logical-run",
+      "sequence": 3
+    },
+    {
+      "eventType": "step.passed",
+      "graphId": "capture-demo",
+      "nodeId": "act",
+      "runId": "logical-run",
+      "sequence": 4
+    },
+    {
+      "eventType": "run.observed",
+      "graphId": "capture-demo",
+      "nodeId": null,
+      "runId": "logical-run",
+      "sequence": 5
+    },
+    {
+      "eventType": "step.passed",
+      "graphId": "capture-demo",
+      "nodeId": "plan",
+      "runId": "logical-run",
+      "sequence": 6
+    },
+    {
+      "eventType": "run.observed",
+      "graphId": "capture-demo",
+      "nodeId": null,
+      "runId": "logical-run",
+      "sequence": 7
+    },
+    {
+      "eventType": "step.passed",
+      "graphId": "capture-demo",
+      "nodeId": "act",
+      "runId": "logical-run",
+      "sequence": 8
+    }
+  ],
+  "invocations": [
+    {
+      "label": "invocation-1",
+      "run_id": "invocation-1"
+    },
+    {
+      "label": "invocation-2 (resumed, same thread)",
+      "run_id": "invocation-2"
+    }
+  ],
+  "provenance": {
+    "captureMechanism": "core EventGraphObserver + InMemoryEventStore",
+    "consumer": {
+      "commit": "876f6a8a4ba863424e1f85bc92f18dce59147957",
+      "ref": "main",
+      "repository": "https://github.com/milocosmopolitan/agent-workflow-core"
+    },
+    "framework": {
+      "name": "langgraph",
+      "version": "1.2.11"
+    },
+    "generatedAt": "2026-09-15T00:00:00Z",
+    "generator": "docs/research/internal-consumer/agent-workflow-core/capture/capture.py",
+    "kind": "sanitized-source-pinned-capture",
+    "sanitization": [
+      "run_id and thread_id are host-chosen literals, never real UUIDs",
+      "no prompts, payloads, paths, or credentials enter observer metadata",
+      "event_id/occurred_at (main only) are omitted; sequence position is retained instead"
+    ],
+    "scenario": "main"
+  },
+  "traceVersion": "1"
+}

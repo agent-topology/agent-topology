@@ -25,5 +25,13 @@
     "local git HEAD/main and clean status",
     "uv.lock and source inspection"
   ],
-  "runtimeProbeExecuted": false
+  "runtimeProbeExecuted": true,
+  "runtimeProbe": {
+    "path": "capture/",
+    "scope": "IC-04 event_run_id / resume-identity behavior only, pinned to both commits separately; not full campaign/git integration, nesting, or dynamic interrupts",
+    "commitsCoveredSeparately": [
+      "94cd31f58d8e94d55ea2d952c6db5508539ea53f",
+      "876f6a8a4ba863424e1f85bc92f18dce59147957"
+    ]
+  }
 }

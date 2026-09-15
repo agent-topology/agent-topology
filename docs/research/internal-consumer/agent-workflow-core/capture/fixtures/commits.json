@@ -1,0 +1,20 @@
+{
+  "repository": "https://github.com/milocosmopolitan/agent-workflow-core",
+  "scenarios": {
+    "tag": {
+      "ref": "v0.1.0.beta.3",
+      "commit": "94cd31f58d8e94d55ea2d952c6db5508539ea53f",
+      "peeledFrom": "3c1eed353757bc9eb461b8e66f9a4f43e0019467",
+      "verifiedBy": "git rev-list -n1 v0.1.0.beta.3",
+      "fixtureDir": "fixtures/tag-v0.1.0.beta.3"
+    },
+    "main": {
+      "ref": "main",
+      "commit": "876f6a8a4ba863424e1f85bc92f18dce59147957",
+      "verifiedBy": "git rev-parse HEAD",
+      "fixtureDir": "fixtures/main-876f6a8a"
+    }
+  },
+  "packageVersionBothCommitsReport": "0.1.0b3",
+  "note": "Shared package version does not identify the code; observers.py at the tag commit has no EventGraphObserver/EventStore, and observer.py's event_run_id preference was added only on main. See ../README.md."
+}

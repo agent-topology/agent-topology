@@ -1,0 +1,21 @@
+{
+  "captureMechanism": "core EventGraphObserver + InMemoryEventStore",
+  "consumerCommit": "876f6a8a4ba863424e1f85bc92f18dce59147957",
+  "distinctRunIds": [
+    "logical-run"
+  ],
+  "nodeIdsObservedPerRun": {
+    "logical-run": [
+      "plan",
+      "act",
+      "plan",
+      "act"
+    ]
+  },
+  "replayVersion": "1",
+  "resumeIdentityPreserved": true,
+  "scenario": "main",
+  "sequencesContiguousPerRun": true,
+  "totalEvents": 8,
+  "totalStepEvents": 4
+}

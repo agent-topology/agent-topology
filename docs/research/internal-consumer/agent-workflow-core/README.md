@@ -36,4 +36,13 @@ A consumer adapter fixture should map one graph and two nodes to sanitized core
 step events, then check one resumed invocation with a stable logical event run ID.
 Record both core commits separately. This tests identity and resume semantics;
 real model gateways, notifications, credentials and a full domain workflow are
-unnecessary inputs. Evidence remains `source-verified`; this probe has not run.
+unnecessary inputs.
+
+This probe has run: [capture/](capture/) maps a real two-node LangGraph graph
+through the real `observer_from_runtime` bridge, separately at both pinned
+commits, and checks exactly this -- a resumed invocation's logical run ID.
+`event_run_id` is confirmed absent (both the field and the underlying event
+store) at `v0.1.0.beta.3`, and confirmed to collapse two runtime run IDs into
+one logical run on `main`. This narrow finding (IC-04's resume-identity
+question) is `verified`; the broader end-to-end correlation, nesting, and
+dynamic-interrupt questions remain open follow-ups.

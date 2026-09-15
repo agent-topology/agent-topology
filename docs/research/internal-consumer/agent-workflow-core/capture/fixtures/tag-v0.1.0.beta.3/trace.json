@@ -1,0 +1,64 @@
+{
+  "events": [
+    {
+      "eventType": "step.passed",
+      "graphId": "capture-demo",
+      "nodeId": "plan",
+      "runId": "invocation-1",
+      "sequence": 1
+    },
+    {
+      "eventType": "step.passed",
+      "graphId": "capture-demo",
+      "nodeId": "act",
+      "runId": "invocation-1",
+      "sequence": 2
+    },
+    {
+      "eventType": "step.passed",
+      "graphId": "capture-demo",
+      "nodeId": "plan",
+      "runId": "invocation-2",
+      "sequence": 1
+    },
+    {
+      "eventType": "step.passed",
+      "graphId": "capture-demo",
+      "nodeId": "act",
+      "runId": "invocation-2",
+      "sequence": 2
+    }
+  ],
+  "invocations": [
+    {
+      "label": "invocation-1",
+      "run_id": "invocation-1"
+    },
+    {
+      "label": "invocation-2 (resumed, same thread)",
+      "run_id": "invocation-2"
+    }
+  ],
+  "provenance": {
+    "captureMechanism": "host-supplied GraphObserver/RunObserver Protocol implementation (no core event store exists at this commit)",
+    "consumer": {
+      "commit": "94cd31f58d8e94d55ea2d952c6db5508539ea53f",
+      "ref": "v0.1.0.beta.3",
+      "repository": "https://github.com/milocosmopolitan/agent-workflow-core"
+    },
+    "framework": {
+      "name": "langgraph",
+      "version": "1.2.11"
+    },
+    "generatedAt": "2026-09-15T00:00:00Z",
+    "generator": "docs/research/internal-consumer/agent-workflow-core/capture/capture.py",
+    "kind": "sanitized-source-pinned-capture",
+    "sanitization": [
+      "run_id and thread_id are host-chosen literals, never real UUIDs",
+      "no prompts, payloads, paths, or credentials enter observer metadata",
+      "event_id/occurred_at (main only) are omitted; sequence position is retained instead"
+    ],
+    "scenario": "tag"
+  },
+  "traceVersion": "1"
+}
