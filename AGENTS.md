@@ -6,6 +6,29 @@
 
 Project-wide ADRs live under `docs/decisions` with `scope: workspace`; do not
 
+## Internal consumer reference repositories
+
+These repositories are under active development and are reference inputs for
+agent-topology consumer research:
+
+- [agent-workflow-core](https://github.com/milocosmopolitan/agent-workflow-core)
+- [campaign-agent](https://github.com/milocosmopolitan/campaign-agent)
+- [git-agent](https://github.com/milocosmopolitan/git-agent)
+
+Use these GitHub repository URLs as their canonical identities in documentation
+and issues, not machine-specific local paths. Available local checkouts may be
+read for evidence. Read access and filing relevant GitHub issues are authorized;
+do not directly write or modify code in these repositories. Keep implementation
+changes in agent-topology; request external changes through the owning
+repository's issues when needed.
+
+Record findings in `docs/research/internal-consumer/<repo>/`, with immutable
+commit permalinks and a snapshot of the latest release tag and peeled commit, or
+remote main when no release exists. Also record the inspected HEAD/main when it
+differs from the release. Separate implemented behavior, approved designs, draft
+plans, and unverified requirements; development status is not evidence of support.
+See the [internal consumer research index](docs/research/internal-consumer/README.md).
+
 ## 일 좀 똑바로 하자
 
 - 5분 이상 걸리는 명령을 제안하기 전에, 그 입력을 먼저 읽어서 검증한다. 검증 비용이 실행 비용보다 두 자릿수 작으면 무조건 먼저 검증한다.

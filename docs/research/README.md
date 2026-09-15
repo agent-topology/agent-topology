@@ -12,6 +12,10 @@ authoritative until it is superseded.
 
 ## Contents
 
+- [Internal consumer research](internal-consumer/README.md) records pinned
+  repository snapshots and consumer support gaps for the three developing
+  internal workflow libraries.
+
 - [F1–F6 reproduction and disposition](f1-f6-reproduction/README.md) preserves
   pinned consumer findings, minimum inputs, beta.2/main results, and corrections
   to unsupported Airflow and package-consumption claims for Task #95.
