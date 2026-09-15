@@ -82,6 +82,80 @@ issues and link this snapshot. Producer/CLI work belongs in agent-topology;
 external event contracts and export fixtures belong to their owning repositories.
 Read access and issue filing are authorized; external code edits are not.
 
+## Final dispositions (issue #154)
+
+Recorded 2026-09-15, closing [issue #154](https://github.com/agent-topology/agent-topology/issues/154)
+against [#142](https://github.com/agent-topology/agent-topology/issues/142)
+acceptance criterion 7 (and criterion 1's snapshot linkage). The four
+coordinated Tasks consolidated here are closed:
+[#150](https://github.com/agent-topology/agent-topology/issues/150) (fixture
+verification), [#151](https://github.com/agent-topology/agent-topology/issues/151)
+(source-pinned adapter/replay), [#152](https://github.com/agent-topology/agent-topology/issues/152)
+(real dynamic-interrupt/resume/repeated-attempt capture), and
+[#153](https://github.com/agent-topology/agent-topology/issues/153) (import-safe
+export recipe). Each row below closes with exactly one of the three
+dispositions #154 defines: **implementation delivered** (agent-topology itself
+now does the thing the finding said was missing), **consumer evidence
+delivered** (a committed, replayable fixture proves a specific claim, without
+claiming a consuming repository's own integration code is wired the same
+way), or **explicit limitation retained** (the gap is real and intentional
+and stays recorded, not silently dropped).
+
+| ID | Final disposition | Evidence |
+| --- | --- | --- |
+| IC-01 | Implementation delivered | [#141](https://github.com/agent-topology/agent-topology/issues/141) added `--depth` to the Python CLI, verified API-equivalent to `describe(depth=...)` by `test_depth_matches_python_api_at_each_level` in [`test_cli.py`](../../../packages/python/langgraph/tests/test_cli.py). The original "Python CLI has no `--depth`" gap no longer exists. |
+| IC-02 | Implementation delivered | [#136](https://github.com/agent-topology/agent-topology/issues/136) retains parent identity and materializes children at positive depth ([ADR 0012](../../decisions/0012-nested-graph-identity-traversal-and-compatibility.md)); [#140](https://github.com/agent-topology/agent-topology/issues/140) preserves child joins, routing, and static-interrupt declarations inspected in their own scope (`conformance/subgraph-cases.json`, `test_branch.py`, `test_entry.py`, `test_sentinel.py`, `test_subgraph.py`). Separate child graph materialization, called out as absent in the original finding, now exists. |
+| IC-03 | Consumer evidence delivered, with an explicit limitation retained | A real dynamic `interrupt()`/resume pair against `agent-workflow-core` main is captured and offline-replayable: [`capture/README.md`](agent-workflow-core/capture/README.md#dynamic-interrupt-resume-and-repeated-attempt-issue-152). The limitation is retained by design ([ADR 0002](../../decisions/0002-record-what-could-not-be-observed.md)): a dynamic interrupt raised inside a node body is still not a static interrupt declaration in the topology document, so a consumer cannot build an approval-node inventory from the document alone. |
+| IC-04 | Consumer evidence delivered | Two independent halves of this finding now have committed evidence: resume identity (`event_run_id` collapsing two invocations into one logical run on `main`, confirmed absent at the pinned tag) in [`capture/README.md`](agent-workflow-core/capture/README.md#disposition); and graph/node topology addressing across depth 0/1/2, repeated child call sites, missing graph ids, unknown nodes, and ambiguous evidence in [`test_addressing_conformance.py`](../../../packages/python/langgraph/tests/test_addressing_conformance.py) (#150). Neither proves campaign-agent's or git-agent's own integration code sets `event_run_id` or emits qualified node addresses -- that stays an explicit, unverified gap in those repositories, not a claim this repository makes. |
+| IC-05 | Consumer evidence delivered; CLI factory invocation is an explicit limitation retained by choice | [`import-safe-export/README.md`](import-safe-export/README.md) runs a standalone, import-safe recipe mapped, with source permalinks, to both campaign-agent's and git-agent's inspected factory surfaces. Per the original finding's own resolution direction ("consumer-owned import-safe export recipe first"), factory-argument CLI invocation was deliberately not built; the recipe pattern replaces the need for it rather than leaving it as an open gap. |
+| IC-06 | Split: consumer evidence delivered for attempt/occurrence distinction; explicit limitation retained for policy/effect facts | A real LangGraph `RetryPolicy` repeated-attempt, distinguished from resume by invocation count, pause state, and an explicit `attempt.number`, is captured and offline-replayable in [`capture/README.md`](agent-workflow-core/capture/README.md#dynamic-interrupt-resume-and-repeated-attempt-issue-152). Profile changes, approval validity, effect receipts, and retry budgets remain, by design, outside the topology document -- domain runtime evidence and extensions own them, per [ADR 0001](../../decisions/0001-scope-topology-extraction-and-trace-correlation.md) and [ADR 0002](../../decisions/0002-record-what-could-not-be-observed.md). |
+
+### New producer behavior exercised in this set
+
+[#150](https://github.com/agent-topology/agent-topology/issues/150)'s
+[`test_addressing_conformance.py`](../../../packages/python/langgraph/tests/test_addressing_conformance.py)
+runs the shared `correlate` module against the current, real `describe()` --
+i.e. against the parent-identity and materialized-child behavior #136 and
+#140 delivered, not a pre-#136 flattened document.
+`test_parent_child_grandchild_addresses_resolve_independently` exercises
+`depth=2` and asserts `{"main", "main:child", "main:child:inner"}` stay
+independently addressable; `test_repeated_child_call_sites_stay_distinct_addresses`
+exercises `depth=1` with one compiled child reused at two call sites and
+asserts `{"main", "main:left", "main:right"}`. This satisfies "new producer
+behavior is exercised before #142 closes" for parent identity from within
+this consolidated set. Child-metadata (joins/routing/static-interrupt) and
+CLI-depth behavior are separately exercised by the dedicated conformance
+suites #140 and #141 each shipped with their own delivery (`test_subgraph.py`,
+`test_branch.py`, `test_entry.py`, `test_sentinel.py`,
+`conformance/subgraph-cases.json`; `test_cli.py`'s
+`test_depth_matches_python_api_at_each_level`), which run as part of the
+standard `uv run --project packages/python/langgraph --group test pytest packages/python/langgraph/tests`
+command -- confirmed passing, not newly added by this Task.
+
+### Commands, hashes, and limitations consolidated
+
+- **Source-pinned adapter/replay (#151):** exact generation and replay
+  commands, and sha256 fixture hashes, are recorded in
+  [`capture/README.md`](agent-workflow-core/capture/README.md#regenerating-requires-local-read-access-to-agent-workflow-core).
+- **Real capture -- dynamic interrupt, resume, repeated attempt (#152):**
+  exact generation and replay commands, and sha256 fixture hashes, are
+  recorded in [`capture/README.md`](agent-workflow-core/capture/README.md#dynamic-interrupt-resume-and-repeated-attempt-issue-152).
+- **Import-safe export recipe (#153):** the run command is recorded in
+  [`import-safe-export/README.md`](import-safe-export/README.md#running-it).
+  The recipe has no stored fixture hash: it produces a live canonical
+  document from a compiled object on each run, checked with `--check`
+  against the schema and `provenance.source.kind` rather than a
+  byte-for-byte fixture.
+- **Fixture verification (#150):** no external commands or hashes; the
+  fixtures are ordinary pytest cases in
+  [`test_addressing_conformance.py`](../../../packages/python/langgraph/tests/test_addressing_conformance.py),
+  run by `uv run --project packages/python/langgraph --group test pytest packages/python/langgraph/tests`.
+- **Limitations retained across all four Tasks:** no authorization, budget
+  compliance, or successful-effect claim is made from topology or capture
+  evidence alone; no campaign-agent or git-agent source is executed or
+  vendored; offline replay requires no private checkout, external service,
+  or network access.
+
 ## Interpretation boundaries
 
 Follow [ADR 0001](../../decisions/0001-scope-topology-extraction-and-trace-correlation.md),
