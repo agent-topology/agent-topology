@@ -7,6 +7,14 @@ future package versions will move together.
 
 ## Unreleased
 
+### 0.1.0-beta.4 candidate
+
+Prepared on `rc/0.1.0-beta.4`: Python distributions use `0.1.0b4`, npm
+packages use `0.1.0-beta.4`, and the npm producer's spec peer uses beta.4.
+This candidate has not been published. See the
+[candidate release notes](docs/releases/v0.1.0-beta.4.md) and the
+[beta.3 to beta.4 upgrade guide](docs/guides/upgrading-beta.4.md).
+
 - Add a machine-readable release-state record and phase-specific documentation
   checks so artifact qualification cannot be mistaken for a completed public
   release.

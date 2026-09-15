@@ -133,10 +133,10 @@ For an offline consumer with sample trace data, continue to the
 
 ## Join connections
 
-Current source adds `derived_join_edges(structure)` in Python and
+Published beta.3 adds `derived_join_edges(structure)` in Python and
 `derivedJoinEdges(structure)` in TypeScript for already validated structures.
-These helpers are unreleased; the published beta.2 packages do not export them.
-They return matching records in both languages:
+Coordinated beta.2 does not export them. They return matching records in both
+languages:
 
 ```python
 from agent_topology.spec import derived_join_edges
@@ -235,8 +235,9 @@ wording for beta.3 is tracked in
 
 ## Experimental branch interpretation
 
-Current source (unreleased, after published beta.2) emits the `branch`, `subgraph`, `sentinel` and `entry` facts
-of graph-level `x-topology-interpretation` revision `"1"`. The requested
+Published beta.3 (and current source) emits the `branch`, `subgraph`,
+`sentinel` and `entry` facts of graph-level `x-topology-interpretation`
+revision `"1"`; coordinated beta.2 has none of them. The requested
 `traversalDepth` describes the snapshot; records refer to visible node IDs and
 are sorted by Unicode code point. See [ADR 0008](../decisions/0008-experimental-consumer-interpretation.md).
 
@@ -267,7 +268,7 @@ the supported framework versions, inspected declarations, and shared tests.
 
 ## Experimental opaque children
 
-Current unreleased source also emits `subgraph` under revision `"1"`; published
+Published beta.3 also emits `subgraph` under revision `"1"`; coordinated
 beta.2 does not. A supported-valid `known/opaque-child` fact with
 `compiled-child` evidence confirms a compiled child behind that visible node.
 A consumer may offer an expansion attempt using a higher requested depth, but
@@ -283,6 +284,13 @@ structural evidence excluding a child. A node materialized at positive depth
 root identities that are not materialized keep their depth-0 facts unchanged.
 `expanded-subgraph-metadata` no longer appears: see
 [ADR 0012](../decisions/0012-nested-graph-identity-traversal-and-compatibility.md).
+
+Materialization (`subgraphId`, `known/materialized-child`, and revision `"2"`
+below) is part of the unpublished
+[0.1.0-beta.4 candidate](../releases/v0.1.0-beta.4.md); published beta.3 never
+materializes a child. See the
+[upgrade guide](upgrading-beta.4.md#positive-depth-document-and-address-changes)
+for the depth-0 compatibility guarantee this preserves.
 
 A materialized node instead carries `known/materialized-child` with
 `materialized-subgraph-reference` evidence, naming the containing `graphs[].id`
@@ -312,8 +320,8 @@ for structural surfaces, framework versions, and counterexamples.
 
 ## Experimental sentinel roles
 
-Current unreleased source emits `sentinel` in revision `"1"`; published beta.2
-has no common role assertion. After validating the core, extension schema and
+Published beta.3 emits `sentinel` in revision `"1"`; coordinated beta.2 has no
+common role assertion. After validating the core, extension schema and
 semantic references, a consumer can select known `start` / `end` facts with
 `framework-sentinel` evidence without matching literal IDs or reading
 `x-langgraph`. Known `ordinary` requires positive user-node membership; names
@@ -344,9 +352,9 @@ contract, not a renderer, core promotion or proof of vendor neutrality.
 
 ## Experimental entry interpretation
 
-Current unreleased Python and TypeScript producers emit `entry` for every visible
-node in graph-level `x-topology-interpretation` revision `"1"`. Published beta.2
-does not. Validate the core, then the separate extension schema and semantic
+Published beta.3's Python and TypeScript producers emit `entry` for every
+visible node in graph-level `x-topology-interpretation` revision `"1"`.
+Coordinated beta.2 does not. Validate the core, then the separate extension schema and semantic
 checks before trusting a fact; core validation alone cannot certify metadata.
 
 `observedRoot` is true exactly when no emitted edge or join targets that node.
@@ -381,8 +389,8 @@ Do not match literal sentinel IDs to manufacture missing entry metadata.
 Hash equality is not metadata equality. Algorithm 1 excludes this extension;
 adding, removing or correcting entry facts leaves the structure hash unchanged.
 Caches must compare extension revision and canonical content as well as core
-identity. Do not rewrite stored beta.2 documents or treat current source as a
-published beta.3 release. This is experimental interpretation, with no core
+identity. Do not rewrite stored beta.2 or beta.3 documents, or treat current
+source as a published beta.4 release. This is experimental interpretation, with no core
 promotion, new renderer API or proven vendor-neutrality claim.
 
 See the [version-pinned evidence and native recipes](../../conformance/entry-evidence.md)
