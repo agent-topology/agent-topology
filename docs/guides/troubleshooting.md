@@ -90,16 +90,18 @@ Python implementation. Existing affected hashes may change with the fix; see
 
 ## Expanded subgraphs are surprising
 
-Use `depth=0` / `{ depth: 0 }` to keep subgraphs opaque. Expanded traversal relies
-on the framework's drawable graph, flattens child identifiers, and is not a complete
-recursive extraction of child builder metadata. Child join, interrupt, and unknown
-router details should not be inferred from the expanded picture alone. Describe
-a compiled child separately when those details matter. Deep traversal can also
-fail in the framework.
+Use `depth=0` / `{ depth: 0 }` to keep subgraphs opaque. At positive depth,
+current source retains each parent node's own id and materializes its confirmed
+compiled children as separate `graphs[]` entries addressed by `subgraphId`,
+instead of flattening them into the root graph — see
+[ADR 0012](../decisions/0012-nested-graph-identity-traversal-and-compatibility.md).
+A materialized child's own `branch`, `sentinel`, and `entry` interpretation facts
+are not yet populated; only its core structure (nodes, edges, joins) is
+extracted. Deep traversal can also fail in the framework.
 
-Current source records an `expanded-subgraph-metadata` gap on the containing graph
-when child nodes are expanded, so Python strict mode raises for that result. This
-correction is unreleased; the original beta.1 can report such a view as complete.
+This correction is unreleased; the original beta.1–beta.3 releases instead
+flattened expanded scope into the root graph and recorded an
+`expanded-subgraph-metadata` gap for it.
 
 ## Validation succeeds but the hash is wrong
 

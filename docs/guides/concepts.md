@@ -44,13 +44,15 @@ The current producers use `main` as the root graph ID and retain `__start__` and
 `x-langgraph`. Consumers should tolerate extensions without treating them as core
 facts.
 
-The schema permits separate graphs connected with `subgraphId`. The current
-LangGraph producers' `depth` option instead uses the framework's drawable expansion,
-which flattens visible child nodes into `main`. Do not assume it emits a hierarchy
-of `subgraphId` references. At depth `0`, child contents stay opaque.
-Current source records an `expanded-subgraph-metadata` graph gap when child nodes
-are expanded because child declarations are not fully inspected. That correction
-is listed under [Unreleased](../../CHANGELOG.md#unreleased).
+The schema permits separate graphs connected with `subgraphId`. Current source's
+LangGraph producers now populate exactly that at positive depth: a node holding a
+confirmed compiled child keeps its own id in its containing graph and gains a
+core `subgraphId` addressing a materialized child graph, a first-class `graphs[]`
+entry with its own structure and gaps, derived deterministically as
+`parentGraphId:parentNodeId`. At depth `0`, child contents stay opaque exactly as
+before. See
+[ADR 0012](../decisions/0012-nested-graph-identity-traversal-and-compatibility.md).
+This correction is listed under [Unreleased](../../CHANGELOG.md#unreleased).
 
 ## Two kinds of uncertainty
 

@@ -50,20 +50,30 @@ The document format remains `0.1` and the structure-hash algorithm version remai
 promise compatibility with beta.1's erroneous output. Inspect completeness
 separately from hashes; gaps and producer limitations are not hashed structure.
 
-## Retain incomplete expanded documents
+## Retain incomplete expanded documents (superseded in beta.4)
 
-Beta.1 could report expanded child views as complete. Beta.2 records an
-`expanded-subgraph-metadata` gap on the containing graph when child nodes are
-actually expanded. Child join, routing, and interrupt declarations are not fully
-inspected through the drawable view. A positive depth alone does not imply a gap
-if no child nodes expand.
+Beta.1 could report expanded child views as complete. Beta.2 recorded an
+`expanded-subgraph-metadata` gap on the containing graph when child nodes were
+actually expanded, because the drawable view flattened parent identity away and
+child join, routing, and interrupt declarations were not fully inspected.
+
+[ADR 0012](../decisions/0012-nested-graph-identity-traversal-and-compatibility.md)
+retires that gap in beta.4: positive depth no longer flattens a confirmed
+compiled child's parent node away. The parent keeps its own id and gains a core
+`subgraphId` addressing the child as its own first-class `graphs[]` entry, with
+the same completeness contract as any other graph. A depth expansion that
+merely materializes children no longer implies incompleteness by itself; see
+`ARCHITECTURE.md`'s "Nested graph identity and traversal" section for the
+current contract. This section's original beta.2 behavior — flattening the
+child, retiring the parent's id, and blanket-marking the graph incomplete — no
+longer reflects current output; the example below shows current behavior.
 
 Save this minimal Python example as `upgrade.py` and run `python upgrade.py`:
 
 ```python
 from langgraph.graph import END, START, StateGraph
 
-from agent_topology.langgraph import IncompleteTopologyError, describe
+from agent_topology.langgraph import describe
 from agent_topology.spec import canonical_json
 
 child = StateGraph(dict)
@@ -77,24 +87,27 @@ parent.add_edge(START, "child")
 parent.add_edge("child", END)
 graph = parent.compile()
 
-try:
-    document = describe(graph, depth=1, strict=True)
-except IncompleteTopologyError as error:
-    document = error.document
+document = describe(graph, depth=1, strict=True)
 
-# Preserve the canonical result, including gaps and its computed hash.
+# Preserve the canonical result, including its computed hash.
 print(canonical_json(document))
 ```
 
-With beta.2 this catches `IncompleteTopologyError` and prints the retained
-incomplete document. Update strict-mode callers to save/report `error.document`
-before enforcing their failure policy. Do not retry extraction or discard gaps
-just to make a check pass.
+As of beta.4, this prints a complete document: node `child` keeps its own id in
+`main`'s structure and gains `subgraphId: "main:child"`, addressing a second
+`graphs[]` entry with its own `step` structure. Strict mode does not raise here,
+because materializing this child introduces no gap. A gap (and, in Python,
+`IncompleteTopologyError` under `strict=True`) still occurs when the document
+records one for an unrelated reason — an unresolved dynamic router, for
+example — never merely because depth expanded a child. Update any strict-mode
+caller that assumed a positive depth always risked incompleteness: catch
+`IncompleteTopologyError` and save/report `error.document` only when a gap is
+actually possible for your graph; do not retry extraction or discard gaps just
+to make a check pass.
 
 The TypeScript API has no `strict` option or incomplete-topology exception. Inspect
 `completeness.gaps` and retain the returned document. This JavaScript example uses
-the same public API. Two child nodes are needed here because LangGraph.js keeps a
-one-node child opaque. Save it as `upgrade.mjs` and run `node upgrade.mjs`:
+the same public API. Save it as `upgrade.mjs` and run `node upgrade.mjs`:
 
 ```javascript
 import { Annotation, END, START, StateGraph } from "@langchain/langgraph";
@@ -105,9 +118,7 @@ const State = Annotation.Root({ value: Annotation() });
 const child = new StateGraph(State)
   .addNode("step", (state) => state)
   .addEdge(START, "step")
-  .addNode("finish", (state) => state)
-  .addEdge("step", "finish")
-  .addEdge("finish", END)
+  .addEdge("step", END)
   .compile();
 const graph = new StateGraph(State)
   .addNode("child", child)
@@ -123,12 +134,11 @@ if (document.completeness.gaps.length > 0) {
 }
 ```
 
-Expect canonical JSON on stdout and exit status `1` from this example's consumer
-policy. Verify that the gap code is `expanded-subgraph-metadata`, its element is
-`{ graphId: "main", kind: "graph", id: "main" }`, and the document is incomplete.
-Use `depth=0` / `{ depth: 0 }` when an opaque child is sufficient; describe the
-compiled child separately when its declarations matter. Expanded output does not
-provide complete recursive metadata.
+Expect canonical JSON on stdout and exit status `0`: the document is complete,
+`graphs` contains `main` and `main:child`, and node `child` carries
+`subgraphId: "main:child"`. Use `depth=0` / `{ depth: 0 }` when an opaque child
+is sufficient; a materialized child's own recursive branch/sentinel/entry
+metadata remains separate follow-up work tracked against the nesting ADR.
 
 Producer-wide limitations, including `dynamic-interrupts`, are unchanged. Display
 them separately: they do not make a document incomplete or cause Python strict

@@ -18,11 +18,24 @@ future package versions will move together.
   children) and accepting only non-negative integers; an invalid, missing, or
   negative value is a usage error (status `2`). `agt describe` output at a given
   depth is equivalent to calling the Python API with the same `depth`, including
-  the existing `expanded-subgraph-metadata` gap and `--strict` status `6` for an
-  actual child gap. The CLI still only imports and describes a module-level
-  compiled-object target; it does not invoke the graph or call a factory to
-  build one. See [ADR 0007](docs/decisions/0007-langgraph-owns-the-foundation-cli.md)
-  and the [CLI reference](docs/reference/cli.md).
+  `--strict` status `6` for an actual graph-specific gap. The CLI still only
+  imports and describes a module-level compiled-object target; it does not
+  invoke the graph or call a factory to build one. See
+  [ADR 0007](docs/decisions/0007-langgraph-owns-the-foundation-cli.md) and the
+  [CLI reference](docs/reference/cli.md).
+- Both LangGraph producers retain a confirmed compiled child's parent node under
+  its own id at every depth instead of flattening it away. Within the requested
+  `depth` budget, the parent node additionally gains a core `subgraphId`
+  addressing the child as its own first-class `graphs[]` entry, deterministically
+  derived as `parentGraphId:parentNodeId`; a derived id that would collide with an
+  existing graph id is never emitted, and the node stays opaque with a new
+  `child-graph-id-collision` gap instead. `depth = N` now materializes levels
+  `1..N`; level `N`'s own children keep the unchanged depth-0 opaque-child
+  contract, and depth-0 output remains byte-identical to today's.
+  `expanded-subgraph-metadata` is retired: it can no longer be emitted. A
+  materialized child's own recursive `branch`/`sentinel`/`entry` interpretation
+  facts remain future work. See
+  [ADR 0012](docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md).
 
 ## v0.1.0-beta.3 public preview — 2026-09-12
 

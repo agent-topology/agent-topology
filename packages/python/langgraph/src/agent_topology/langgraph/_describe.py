@@ -125,41 +125,16 @@ def _builder_structure(
     return _edge_documents(edge_values), joins, unknown_routers
 
 
-def _drawable_structure(
-    compiled_graph: CompiledStateGraph,
-    drawable: Any,
-) -> tuple[list[dict[str, str]], list[dict[str, Any]], set[str]]:
-    """Preserve expanded drawable topology while correcting visible root metadata."""
-    builder_edges, builder_joins, unknown_routers = _builder_structure(compiled_graph)
-    direct_declarations = {
-        (edge["source"], edge["target"])
-        for edge in builder_edges
-        if edge["kind"] == "direct"
-    }
-    represented_joins = [
-        join
-        for join in builder_joins
-        if set(join["sources"] + [join["target"]]) <= set(drawable.nodes)
-    ]
-    joined_pairs = {
-        (source, join["target"])
-        for join in represented_joins
-        for source in join["sources"]
-    }
-    edge_values = [
-        (
-            str(edge.source),
-            str(edge.target),
-            "conditional" if edge.conditional else "direct",
-        )
-        for edge in drawable.edges
-        if (str(edge.source), str(edge.target)) not in joined_pairs
-        and not (
-            str(edge.source) in unknown_routers
-            and (str(edge.source), str(edge.target)) not in direct_declarations
-        )
-    ]
-    return _edge_documents(edge_values), represented_joins, unknown_routers
+def _mapped_compiled_child(
+    compiled_graph: CompiledStateGraph, drawable: Any, node_id: str
+) -> CompiledStateGraph | None:
+    """Return the compiled child confirmed bound at node_id, mapped by runtime
+    identity, never by display name or wrapper inspection."""
+    runtime_node = compiled_graph.nodes.get(node_id)
+    if runtime_node is None or drawable.nodes[node_id].data is not runtime_node.bound:
+        return None
+    bound = runtime_node.bound
+    return bound if isinstance(bound, CompiledStateGraph) else None
 
 
 def _branch_interpretation(
@@ -362,6 +337,95 @@ def _entry_interpretation(
     extension["nodes"] = [records[node_id] for node_id in sorted(records)]
 
 
+def _extract_graph(
+    compiled_graph: CompiledStateGraph,
+    graph_id: str,
+    remaining_depth: int,
+    assigned_ids: set[str],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Build one graph and materialize its confirmed compiled children within
+    the remaining depth budget, depth-first in sorted-sibling order.
+
+    Returns ``(graphs, gaps)``: ``graphs[0]`` is this graph, followed by every
+    graph materialized beneath it in traversal order; ``gaps`` covers this
+    graph and everything materialized beneath it.
+    """
+    drawable = compiled_graph.get_graph(xray=0)
+    node_ids = [str(node_id) for node_id in drawable.nodes]
+    interrupt_before = set(map(str, compiled_graph.interrupt_before_nodes))
+    interrupt_after = set(map(str, compiled_graph.interrupt_after_nodes))
+    nodes = [
+        _node_document(
+            str(node_id),
+            node,
+            interrupt_before=interrupt_before,
+            interrupt_after=interrupt_after,
+        )
+        for node_id, node in drawable.nodes.items()
+    ]
+    edges, joins, unknown_routers = _builder_structure(compiled_graph)
+
+    targets = {edge["target"] for edge in edges} | {join["target"] for join in joins}
+    sources = (
+        {edge["source"] for edge in edges}
+        | {source for join in joins for source in join["sources"]}
+        | unknown_routers
+    )
+    graph_name = compiled_graph.get_name()
+    graph_document: dict[str, Any] = {
+        "id": graph_id,
+        "structure": {
+            "nodes": nodes,
+            "edges": edges,
+            "joins": joins,
+            "entryNodeIds": [node_id for node_id in node_ids if node_id not in targets],
+            "exitNodeIds": [node_id for node_id in node_ids if node_id not in sources],
+        },
+        "x-langgraph": {"traversalDepth": remaining_depth},
+    }
+    if isinstance(graph_name, str) and graph_name:
+        graph_document["name"] = graph_name
+
+    gaps = [
+        {
+            "code": "unknown-routing-targets",
+            "message": "Not every destination of this router could be determined.",
+            "element": {"graphId": graph_id, "kind": "node", "id": source},
+        }
+        for source in sorted(unknown_routers)
+    ]
+
+    descendants: list[dict[str, Any]] = []
+    if remaining_depth > 0:
+        node_lookup = {node["id"]: node for node in nodes}
+        for node_id in sorted(compiled_graph.nodes):
+            child = _mapped_compiled_child(compiled_graph, drawable, node_id)
+            if child is None:
+                continue
+            derived_id = f"{graph_id}:{node_id}"
+            if derived_id in assigned_ids:
+                gaps.append(
+                    {
+                        "code": "child-graph-id-collision",
+                        "message": (
+                            "A materialized child graph id would collide with "
+                            "an existing graph id; the child was left opaque."
+                        ),
+                        "element": {"graphId": graph_id, "kind": "node", "id": node_id},
+                    }
+                )
+                continue
+            assigned_ids.add(derived_id)
+            node_lookup[node_id]["subgraphId"] = derived_id
+            child_graphs, child_gaps = _extract_graph(
+                child, derived_id, remaining_depth - 1, assigned_ids
+            )
+            descendants.extend(child_graphs)
+            gaps.extend(child_gaps)
+
+    return [graph_document, *descendants], gaps
+
+
 def describe(
     compiled_graph: CompiledStateGraph,
     *,
@@ -375,9 +439,13 @@ def describe(
         compiled_graph: A graph returned by ``StateGraph.compile()``.
         graph_id: Document-local identifier for the graph. Callers composing
             producer outputs should supply a distinct stable value for each graph.
-        depth: Number of nested graph levels to expand. The default, ``0``, keeps
-            subgraphs opaque. A positive value is passed to LangGraph's drawable
-            graph traversal.
+        depth: Number of nested graph levels to materialize as their own
+            addressable ``graphs[]`` entries. The default, ``0``, keeps
+            subgraphs opaque, unchanged from prior releases. ``depth = N``
+            materializes levels ``1..N``; level ``N``'s own children remain
+            governed by the unchanged depth-0 opaque-child contract. A node
+            holding a confirmed compiled child always keeps its own id in its
+            containing graph, at every depth.
         strict: Raise :class:`IncompleteTopologyError` when graph-specific gaps
             are present. Producer limitations do not cause strict extraction to fail.
 
@@ -413,70 +481,13 @@ def describe(
     if not isinstance(strict, bool):
         raise TypeError("strict must be a boolean")
 
-    drawable = compiled_graph.get_graph(xray=depth)
-    node_ids = [str(node_id) for node_id in drawable.nodes]
-    interrupt_before = set(map(str, compiled_graph.interrupt_before_nodes))
-    interrupt_after = set(map(str, compiled_graph.interrupt_after_nodes))
-    nodes = [
-        _node_document(
-            str(node_id),
-            node,
-            interrupt_before=interrupt_before,
-            interrupt_after=interrupt_after,
-        )
-        for node_id, node in drawable.nodes.items()
-    ]
-
-    if depth == 0:
-        edges, joins, unknown_routers = _builder_structure(compiled_graph)
-    else:
-        edges, joins, unknown_routers = _drawable_structure(compiled_graph, drawable)
-
-    targets = {edge["target"] for edge in edges} | {join["target"] for join in joins}
-    sources = (
-        {edge["source"] for edge in edges}
-        | {source for join in joins for source in join["sources"]}
-        | unknown_routers
-    )
-    graph_name = compiled_graph.get_name()
-    graph_document: dict[str, Any] = {
-        "id": graph_id,
-        "structure": {
-            "nodes": nodes,
-            "edges": edges,
-            "joins": joins,
-            "entryNodeIds": [node_id for node_id in node_ids if node_id not in targets],
-            "exitNodeIds": [node_id for node_id in node_ids if node_id not in sources],
-        },
-        "x-langgraph": {"traversalDepth": depth},
-    }
-    _branch_interpretation(compiled_graph, drawable, graph_document, depth)
-    _subgraph_interpretation(compiled_graph, drawable, graph_document, depth)
-    _sentinel_interpretation(compiled_graph, drawable, graph_document, depth)
-    _entry_interpretation(compiled_graph, drawable, graph_document, depth)
-    if isinstance(graph_name, str) and graph_name:
-        graph_document["name"] = graph_name
-
-    gaps = [
-        {
-            "code": "unknown-routing-targets",
-            "message": "Not every destination of this router could be determined.",
-            "element": {"graphId": graph_id, "kind": "node", "id": source},
-        }
-        for source in sorted(unknown_routers)
-    ]
-    root_node_ids = {START, END, *compiled_graph.builder.nodes}
-    if depth > 0 and any(node_id not in root_node_ids for node_id in node_ids):
-        gaps.append(
-            {
-                "code": "expanded-subgraph-metadata",
-                "message": (
-                    "Expanded child graphs expose drawable shape, but their join, "
-                    "routing, and interrupt declarations are not fully inspected."
-                ),
-                "element": {"graphId": graph_id, "kind": "graph", "id": graph_id},
-            }
-        )
+    graphs, gaps = _extract_graph(compiled_graph, graph_id, depth, {graph_id})
+    root_document = graphs[0]
+    root_drawable = compiled_graph.get_graph(xray=0)
+    _branch_interpretation(compiled_graph, root_drawable, root_document, depth)
+    _subgraph_interpretation(compiled_graph, root_drawable, root_document, depth)
+    _sentinel_interpretation(compiled_graph, root_drawable, root_document, depth)
+    _entry_interpretation(compiled_graph, root_drawable, root_document, depth)
 
     document = {
         "topologyVersion": "0.1",
@@ -493,7 +504,7 @@ def describe(
             "source": {"kind": "compiled-object"},
         },
         "producerLimitations": _PRODUCER_LIMITATIONS,
-        "graphs": [graph_document],
+        "graphs": graphs,
         "completeness": {
             "status": "incomplete" if gaps else "complete",
             "gaps": gaps,

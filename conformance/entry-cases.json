@@ -302,14 +302,9 @@
         "reason": "entry-not-established",
         "observedRoot": false
       },
-      "child:start": {
+      "child": {
         "status": "unknown",
-        "reason": "scope-not-inspected",
-        "observedRoot": false
-      },
-      "child:__start__-user": {
-        "status": "unknown",
-        "reason": "scope-not-inspected",
+        "reason": "entry-not-established",
         "observedRoot": false
       }
     },
@@ -358,14 +353,9 @@
         "reason": "entry-not-established",
         "observedRoot": false
       },
-      "child:start": {
+      "child": {
         "status": "unknown",
-        "reason": "scope-not-inspected",
-        "observedRoot": false
-      },
-      "child:__start__-user": {
-        "status": "unknown",
-        "reason": "scope-not-inspected",
+        "reason": "entry-not-established",
         "observedRoot": false
       }
     },

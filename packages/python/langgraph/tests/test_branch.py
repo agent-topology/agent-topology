@@ -170,19 +170,23 @@ def test_expanded_child_scope(depth, nesting):
     check(document, depth)
     facts = meaning(document)
     assert facts.pop("retained")["value"] == "all-declared"
-    if depth < nesting:
-        assert facts == {}
+    # Branch/sentinel/entry facts for a materialized child's own nodes are
+    # populated by #140, not here: root's own extension never leaks them.
+    assert facts == {}
+    assert not any(
+        gap["code"] == "expanded-subgraph-metadata"
+        for gap in document["completeness"]["gaps"]
+    )
+    child_node = next(
+        n for n in document["graphs"][0]["structure"]["nodes"] if n["id"] == "child"
+    )
+    if depth >= 1:
+        assert child_node["subgraphId"] == "main:child"
+        expected_graphs = 2 if nesting == 1 or depth < 2 else 3
+        assert len(document["graphs"]) == expected_graphs
     else:
-        assert facts == {
-            ("child:" + "inner:" * (nesting - 1) + "router"): {
-                "status": "unknown",
-                "reason": "scope-not-inspected",
-            }
-        }
-        assert any(
-            gap["code"] == "expanded-subgraph-metadata"
-            for gap in document["completeness"]["gaps"]
-        )
+        assert "subgraphId" not in child_node
+        assert len(document["graphs"]) == 1
 
 
 @pytest.mark.parametrize("depth", [0, 1, 2])
@@ -199,11 +203,9 @@ def test_rewritten_root_connections(depth):
     outer.add_edge("right", END)
     document = describe(outer.compile(), depth=depth)
     check(document, depth)
-    assert meaning(document)[START] == (
-        CASES[0]["expected"]["router"]
-        if depth == 0
-        else {"status": "unknown", "reason": "scope-not-inspected"}
-    )
+    # Root's own branch facts are unaffected by materialization at any depth:
+    # the framework's flattening view is never consulted anymore.
+    assert meaning(document)[START] == CASES[0]["expected"]["router"]
 
 
 def test_branch_merge_preserves_other_task_facts():

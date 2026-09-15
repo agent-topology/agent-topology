@@ -10,6 +10,7 @@ import {
   validateDocument,
 } from "@agent-topology/spec";
 import { describe } from "../dist/index.js";
+import { extractGraph } from "../dist/internal.js";
 const { interpretationStatus } = await import(
   new URL("../../spec/tests/interpretation-helper.mjs", import.meta.url).href
 );
@@ -87,10 +88,7 @@ for (const recipe of cases) {
       /** @type {any} */ (document.graphs[0][key]).traversalDepth,
       recipe.depth,
     );
-    assert.deepEqual(
-      meaning(document),
-      recipe.typescriptExpected ?? recipe.expected,
-    );
+    assert.deepEqual(meaning(document), recipe.expected);
     const reversed = await describe(
       compileCase(recipe.mode, true, recipe.width ?? 1),
       { depth: recipe.depth },
@@ -101,11 +99,20 @@ for (const recipe of cases) {
     delete stripped.graphs[0][key];
     assert.deepEqual(computeStructureHash(stripped), document.structureHash);
     assert.equal(document.structureHash.algorithmVersion, "1");
-    assert.equal(document.graphs.length, 1);
+    let materialized = 0;
+    if (recipe.mode === "child" && recipe.depth >= 1) materialized = 1;
+    else if (recipe.mode === "grandchild" && recipe.depth >= 1)
+      materialized = recipe.depth >= 2 ? 2 : 1;
+    assert.equal(document.graphs.length, 1 + materialized);
+    const childNode = document.graphs[0].structure.nodes.find(
+      (n) => n.id === "child",
+    );
+    if (materialized) assert.equal(childNode.subgraphId, "main:child");
+    else assert.equal(childNode.subgraphId, undefined);
     assert.ok(
-      document.graphs[0].structure.nodes.every(
-        (n) => n.subgraphId === undefined,
-      ),
+      document.graphs[0].structure.nodes
+        .filter((n) => n.id !== "child")
+        .every((n) => n.subgraphId === undefined),
     );
   });
 }
@@ -115,23 +122,22 @@ for (const mode of ["child", "grandchild"])
       const document = await describe(compileCase(mode, false, 2), { depth });
       assert.equal(validateDocument(document).valid, true);
       assert.equal(interpretationStatus(document), "valid");
-      const facts = meaning(document);
-      if (mode === "grandchild" && depth === 1) {
-        assert.equal(facts.child.value, "opaque-child");
-        return;
-      }
-      assert.equal(facts.child, undefined);
-      assert.ok(Object.keys(facts).length);
-      for (const fact of Object.values(facts))
-        assert.deepEqual(fact, {
-          status: "unknown",
-          reason: "scope-not-inspected",
-        });
+      assert.deepEqual(meaning(document), {});
       assert.ok(
-        document.completeness.gaps.some(
+        !document.completeness.gaps.some(
           (g) => g.code === "expanded-subgraph-metadata",
         ),
       );
+      const childNode = document.graphs[0].structure.nodes.find(
+        (n) => n.id === "child",
+      );
+      assert.equal(childNode.subgraphId, "main:child");
+      const materializedIds = new Set(
+        document.graphs.slice(1).map((g) => g.id),
+      );
+      assert.ok(materializedIds.has("main:child"));
+      if (mode === "grandchild" && depth >= 2)
+        assert.ok(materializedIds.has("main:child:inner"));
     });
   }
 test("retained identity preserves branch facts", async () => {
@@ -171,17 +177,6 @@ test("retained identity preserves branch facts", async () => {
     assert.equal(interpretationStatus(document), "valid");
   }
 });
-for (const depth of [1, 2]) {
-  test(`positive depth ${depth} can remain opaque`, async () => {
-    const compiled = compileCase("child");
-    const drawable = await compiled.getGraphAsync({ xray: 0 });
-    // Controlled framework traversal fallback over a real compiled child.
-    compiled.getGraphAsync = async () => drawable;
-    const document = await describe(compiled, { depth });
-    assert.equal(meaning(document).child.value, "opaque-child");
-    assert.equal(interpretationStatus(document), "valid");
-  });
-}
 test("opaque assertion conflicts with a materialized reference", async () => {
   const document = await describe(compileCase("child"));
   const child = structuredClone(document.graphs[0]);
@@ -205,6 +200,67 @@ test("display name and core shape do not establish child identity", async () => 
     status: "unknown",
     reason: "identity-unavailable",
   });
+});
+
+test("node ids cannot contain the derived id delimiter", () => {
+  // LangGraph.js itself reserves ':' in node names, so a producer-caused
+  // collision (two derivation paths concatenating to the same string) can
+  // never arise from any real compiled graph. Confirm the premise, then
+  // exercise the fallback directly below.
+  const builder = /** @type {any} */ (new StateGraph(State));
+  assert.throws(
+    () => builder.addNode("sub:grand", forbidden),
+    /reserved character/,
+  );
+});
+
+test("reused child at two call sites", async () => {
+  const shared = chain([["step", forbidden]]);
+  const builder = /** @type {any} */ (new StateGraph(State));
+  builder.addNode("left", shared);
+  builder.addNode("right", shared);
+  builder.addEdge(START, "left");
+  builder.addEdge("left", "right");
+  builder.addEdge("right", END);
+  const document = await describe(builder.compile(), { depth: 1 });
+  assert.equal(validateDocument(document).valid, true);
+  assert.equal(interpretationStatus(document), "valid");
+  assert.deepEqual(document.completeness.gaps, []);
+  const graphIds = new Set(document.graphs.map((g) => g.id));
+  assert.deepEqual(graphIds, new Set(["main", "main:left", "main:right"]));
+  const left = document.graphs.find((g) => g.id === "main:left");
+  const right = document.graphs.find((g) => g.id === "main:right");
+  assert.deepEqual(left.structure, right.structure);
+  assert.equal(document.structureHash.algorithmVersion, "1");
+});
+
+test("derived id collision falls back to opaque", async () => {
+  const builder = /** @type {any} */ (new StateGraph(State));
+  builder.addNode("child", chain([["step", forbidden]]));
+  builder.addEdge(START, "child");
+  builder.addEdge("child", END);
+  // Seed assignedIds as if "main:child" were already taken elsewhere in the
+  // traversal, since no real graph can make two derivations collide.
+  const { graphs, gaps } = await extractGraph(
+    /** @type {any} */ (builder.compile()),
+    "main",
+    1,
+    new Set(["main", "main:child"]),
+  );
+  assert.deepEqual(
+    graphs.map((g) => g.id),
+    ["main"],
+  );
+  const node = graphs[0].structure.nodes.find((n) => n.id === "child");
+  assert.equal(node.subgraphId, undefined);
+  assert.deepEqual(gaps, [
+    {
+      code: "child-graph-id-collision",
+      message:
+        "A materialized child graph id would collide with an existing graph id; the child was left opaque.",
+      element: { graphId: "main", kind: "node", id: "child" },
+    },
+  ]);
 });
 
 test("real producer documents validate and canonicalize across languages", async () => {
@@ -263,7 +319,6 @@ test("real producer documents validate and canonicalize across languages", async
         .map(/** @param {any} r */ (r) => [r.nodeId, r.subgraph]),
     );
     assert.deepEqual(pythonMeaning, cases[index].expected);
-    if (!cases[index].typescriptExpected)
-      assert.deepEqual(meaning(document), pythonMeaning);
+    assert.deepEqual(meaning(document), pythonMeaning);
   });
 });
