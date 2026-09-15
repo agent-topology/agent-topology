@@ -13,6 +13,16 @@ future package versions will move together.
 - Require a separate post-publication closeout before a draft GitHub prerelease
   becomes public, and automatically reopen release issues closed as completed with
   missing acceptance criteria.
+- The Python CLI exposes the `describe` API's traversal depth through
+  `agt describe --depth N`, defaulting to `0` (backward compatible, opaque
+  children) and accepting only non-negative integers; an invalid, missing, or
+  negative value is a usage error (status `2`). `agt describe` output at a given
+  depth is equivalent to calling the Python API with the same `depth`, including
+  the existing `expanded-subgraph-metadata` gap and `--strict` status `6` for an
+  actual child gap. The CLI still only imports and describes a module-level
+  compiled-object target; it does not invoke the graph or call a factory to
+  build one. See [ADR 0007](docs/decisions/0007-langgraph-owns-the-foundation-cli.md)
+  and the [CLI reference](docs/reference/cli.md).
 
 ## v0.1.0-beta.3 public preview — 2026-09-12
 
