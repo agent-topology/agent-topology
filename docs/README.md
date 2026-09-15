@@ -38,6 +38,8 @@ standard library. It makes no path-coverage or policy-verdict claim.
 - [Beta.2 verified release](releases/v0.1.0-beta.2.md)
 - [Upgrade from beta.2 to beta.3](guides/upgrading-beta.3.md)
 - [Beta.3 verified release](releases/v0.1.0-beta.3.md)
+- [Upgrade from beta.3 to beta.4](guides/upgrading-beta.4.md)
+- [Beta.4 release candidate — not published](releases/v0.1.0-beta.4.md)
 - [Changelog](../CHANGELOG.md)
 
 Documentation in the default branch describes the current source. Fixes under

@@ -16,7 +16,9 @@ axes.
 ## Publication sequence
 
 For beta.2 and later, prepare and qualify from `rc/<version>` as described
-below. [0.1.0-beta.3](releases/v0.1.0-beta.3.md) is the most recent published and
+below. [0.1.0-beta.4](releases/v0.1.0-beta.4.md) is the current candidate, prepared
+in source on `rc/0.1.0-beta.4` but not published.
+[0.1.0-beta.3](releases/v0.1.0-beta.3.md) is the most recent published and
 verified coordinated release. Its closeout preserved the immutable registry artifacts
 and tag while synchronizing the GitHub prerelease and live documentation.
 

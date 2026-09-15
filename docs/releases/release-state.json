@@ -31,6 +31,34 @@
       }
     ]
   },
-  "candidate": null,
+  "candidate": {
+    "coordinatedVersion": "0.1.0-beta.4",
+    "tag": "v0.1.0-beta.4",
+    "branch": "rc/0.1.0-beta.4",
+    "releaseNotes": "docs/releases/v0.1.0-beta.4.md",
+    "migrationGuide": "docs/guides/upgrading-beta.4.md",
+    "packages": [
+      {
+        "name": "agent-topology-spec",
+        "ecosystem": "python",
+        "version": "0.1.0b4"
+      },
+      {
+        "name": "agent-topology-langgraph",
+        "ecosystem": "python",
+        "version": "0.1.0b4"
+      },
+      {
+        "name": "@agent-topology/spec",
+        "ecosystem": "npm",
+        "version": "0.1.0-beta.4"
+      },
+      {
+        "name": "@agent-topology/langgraph",
+        "ecosystem": "npm",
+        "version": "0.1.0-beta.4"
+      }
+    ]
+  },
   "partialPublications": []
 }

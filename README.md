@@ -12,6 +12,12 @@ available from their public registries and remain independently versioned. See t
 exact released versions. See the [release notes](docs/releases/v0.1.0-beta.3.md) and
 [upgrade guide](docs/guides/upgrading-beta.3.md) before migrating from beta.2.
 
+Current source prepares **beta.4** on `rc/0.1.0-beta.4`; it is not published.
+The installation commands below still select published beta.3. See the
+[beta.4 release candidate](docs/releases/v0.1.0-beta.4.md) and
+[upgrade guide](docs/guides/upgrading-beta.4.md) for changes and the remaining
+publication checks.
+
 Start with the [documentation](docs/README.md):
 [Python quickstart](docs/getting-started/python.md),
 [TypeScript / JavaScript quickstart](docs/getting-started/typescript.md), and
@@ -384,7 +390,8 @@ more dangerous than an obviously absent one.
   as separate, fully addressable `graphs[]` entries, with their own
   branch/sentinel/entry interpretation facts populated the same way a root
   graph's are — see
-  [ADR 0012](docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md).
+  [ADR 0012](docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md)
+  and the [beta.4 upgrade guide](docs/guides/upgrading-beta.4.md).
 - **Runtime-constructed graphs.** A graph assembled from configuration at startup is
   described as it exists at that moment, not as all the graphs it might have been.
 - **Provisional core boundary.** Python and TypeScript exercise the same LangGraph

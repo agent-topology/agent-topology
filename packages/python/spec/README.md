@@ -4,7 +4,7 @@ Validate, canonicalize, and hash agent-topology JSON documents in Python 3.11–
 This package has no framework dependency and does not install a CLI.
 
 ```bash
-python -m pip install "agent-topology-spec==0.1.0b3"
+python -m pip install "agent-topology-spec==0.1.0b4"
 ```
 
 ```python

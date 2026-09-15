@@ -17,7 +17,18 @@ def _state() -> dict:
 
 
 def test_current_release_state_is_published_and_coherent() -> None:
+    # check_published also asserts package READMEs select the published
+    # version, which a prepared candidate (see the next test) deliberately
+    # moves ahead of; that invariant intentionally pauses while a candidate
+    # is active and resumes once its closeout PR clears it back to null.
+    state = check_release_docs.load_state()
+    if state.get("candidate") is not None:
+        pytest.skip("an active candidate pauses full published-phase coherence")
     check_release_docs.check_phase("published")
+
+
+def test_current_release_state_has_a_coherent_candidate() -> None:
+    check_release_docs.check_phase("candidate")
 
 
 def test_finalization_stage_uses_closeout_source_and_binds_qualified_commit() -> None:
@@ -80,12 +91,17 @@ def test_beta3_evidence_retains_receipts_and_cross_language_f8_replay() -> None:
     assert results["@agent-topology/spec"]["version"] == "0.1.0-beta.3"
 
 
-def test_candidate_phase_requires_explicit_candidate() -> None:
+def test_candidate_phase_requires_explicit_candidate(tmp_path: Path) -> None:
+    state = _state()
+    state["candidate"] = None
+    path = tmp_path / "release-state.json"
+    path.write_text(json.dumps(state), encoding="utf-8")
+
     with pytest.raises(
         check_release_docs.ReleaseDocsError,
         match="candidate phase requires candidate release state",
     ):
-        check_release_docs.check_phase("candidate")
+        check_release_docs.check_phase("candidate", state_path=path)
 
 
 def test_release_state_rejects_duplicate_package(tmp_path: Path) -> None:
@@ -174,21 +190,24 @@ def test_candidate_accepts_candidate_docs_and_current_manifests(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     state = _state()
-    candidate = copy.deepcopy(state["coordinatedPublished"])
-    candidate["branch"] = "rc/0.1.0-beta.3"
+    # `_read_manifest_version` resolves PACKAGE_LAYOUT paths, which were bound
+    # to the real repository root at import time and are unaffected by the
+    # ROOT monkeypatch below, so this candidate must match the real,
+    # currently-prepared source manifests rather than an arbitrary version.
+    candidate = copy.deepcopy(state["candidate"])
     state["candidate"] = candidate
     candidate_doc = tmp_path / "candidate.md"
     candidate_doc.write_text("Prepared in source; not published.", encoding="utf-8")
     python_producer = tmp_path / "packages/python/langgraph"
     python_producer.mkdir(parents=True)
     (python_producer / "pyproject.toml").write_text(
-        '[project]\ndependencies = ["agent-topology-spec>=0.1.0b3,<0.2.0"]\n',
+        '[project]\ndependencies = ["agent-topology-spec>=0.1.0b4,<0.2.0"]\n',
         encoding="utf-8",
     )
     npm_producer = tmp_path / "packages/typescript/langgraph"
     npm_producer.mkdir(parents=True)
     (npm_producer / "package.json").write_text(
-        json.dumps({"peerDependencies": {"@agent-topology/spec": "0.1.0-beta.3"}}),
+        json.dumps({"peerDependencies": {"@agent-topology/spec": "0.1.0-beta.4"}}),
         encoding="utf-8",
     )
 
