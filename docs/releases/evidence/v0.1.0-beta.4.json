@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "coordinatedVersion": "0.1.0-beta.4",
+  "sourceCommit": "05486d7ee9cee7650779cb0e9c00a85bd152a3e8",
+  "tag": "v0.1.0-beta.4",
+  "coordinatedComplete": true,
+  "githubRelease": "https://github.com/agent-topology/agent-topology/releases/tag/v0.1.0-beta.4",
+  "registryVerifiedAt": "2026-09-16T00:19:01.329821+00:00",
+  "finalizationStage": {
+    "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35039466176",
+    "registryEvidence": "passed",
+    "cleanRegistryInstallation": "passed"
+  },
+  "publicationSequence": [
+    {
+      "package": "agent-topology-spec",
+      "registry": "pypi",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35037453083",
+      "outcome": "published on first attempt"
+    },
+    {
+      "package": "@agent-topology/spec",
+      "registry": "npm",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35037454970",
+      "outcome": "published on first attempt"
+    },
+    {
+      "package": "agent-topology-langgraph",
+      "registry": "pypi",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35037851979",
+      "outcome": "published on retry after a transient failure",
+      "priorAttempt": {
+        "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35037610116",
+        "failedStep": "Verify the published spec from the public registry before publishing (scripts/verify_spec_registry.py)",
+        "error": "public registry install of agent-topology-spec==0.1.0b4 failed after 3 attempts: No solution found when resolving dependencies",
+        "diagnosis": "Transient PyPI Simple-index propagation delay a few seconds after the specification publish completed, not a registry rejection. No artifact was uploaded to PyPI by this attempt; the already-published specification was left untouched.",
+        "recovery": "Per docs/releasing.md#recovering-a-partial-publication, queried the registry directly (uv pip install --python <clean venv> --no-deps agent-topology-spec==0.1.0b4) and confirmed success before retrying only the missing producer publish."
+      }
+    },
+    {
+      "package": "@agent-topology/langgraph",
+      "registry": "npm",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35037611546",
+      "outcome": "published on first attempt"
+    }
+  ],
+  "registryArtifactVerification": {
+    "purpose": "Verify nested extraction/reference behavior, CLI depth, and a minimum offline consumer replay against the actual published registry artifacts (fresh clean installs from PyPI/npm), independently of qualification's saved build artifacts.",
+    "fixture": "The same two-level nested graph used in qualification: a parent StateGraph with one node ('sub') holding a compiled one-node child StateGraph ('inner'), described at graphId 'main'.",
+    "installedVersions": {
+      "python": ["agent-topology-spec==0.1.0b4", "agent-topology-langgraph==0.1.0b4", "langgraph==1.2.11"],
+      "typescript": ["@agent-topology/spec@0.1.0-beta.4", "@agent-topology/langgraph@0.1.0-beta.4", "@langchain/langgraph@1.4.14"]
+    },
+    "depthResults": {
+      "python": {
+        "depth0": "graphs=['main']; 'sub' node has no subgraphId; x-topology-interpretation version 1; subgraph=opaque-child",
+        "depth1": "graphs=['main','main:sub']; 'sub' node gains subgraphId 'main:sub'; main's x-topology-interpretation version 2 asserts subgraph=materialized-child on 'sub' (evidence materialized-subgraph-reference); main:sub stays version 1"
+      },
+      "typescript": {
+        "depth0": "graphs=['main']; 'sub' node subgraphId is null; x-topology-interpretation version 1; subgraph=opaque-child",
+        "depth1": "graphs=['main','main:sub']; 'sub' node gains subgraphId 'main:sub'; main's x-topology-interpretation version 2 asserts subgraph=materialized-child on 'sub' (evidence materialized-subgraph-reference); main:sub stays version 1"
+      },
+      "outcome": "Both registry-installed artifacts reproduce the qualified depth-0 compatibility guarantee and positive-depth materialization contract exactly; no divergence from qualification/beta.4/qualification.json's artifactDepthVerification was found."
+    },
+    "cliDepthCheck": {
+      "command": "agt describe --depth 1 --out cli_depth1.json fixture.py:graph",
+      "result": "exit code 0; output byte-identical to the direct Python API call at depth=1 after excluding provenance.generatedAt (independent per-invocation timestamp)."
+    },
+    "minimumOfflineConsumerReplay": {
+      "description": "Cross-language, offline producer-to-consumer replay using only the registry-installed packages (no dedicated CI workflow covers this combination).",
+      "results": [
+        "Python-produced depth=1 document validated by the npm @agent-topology/spec consumer (assertTopologyDocument): passed",
+        "TypeScript-produced depth=1 document validated by the PyPI agent-topology-spec consumer (validate_document): passed, no errors"
+      ]
+    }
+  },
+  "packages": [
+    {
+      "name": "agent-topology-spec",
+      "version": "0.1.0b4",
+      "registry": "pypi",
+      "metadataUrl": "https://pypi.org/pypi/agent-topology-spec/0.1.0b4/json",
+      "artifacts": [
+        {
+          "filename": "agent_topology_spec-0.1.0b4-py3-none-any.whl",
+          "url": "https://files.pythonhosted.org/packages/24/b0/d55f753b6e18469192a4b96f6f08d16c5f97bab50489ce1608da5b3833bf/agent_topology_spec-0.1.0b4-py3-none-any.whl",
+          "sha256": "8873164617d06baad5914e9a359d039a8b67677a0d6e3a128201d13f47f8c190",
+          "provenanceUrl": "https://pypi.org/integrity/agent-topology-spec/0.1.0b4/agent_topology_spec-0.1.0b4-py3-none-any.whl/provenance"
+        },
+        {
+          "filename": "agent_topology_spec-0.1.0b4.tar.gz",
+          "url": "https://files.pythonhosted.org/packages/21/c9/85092a983814e37b7aeeebaee280321966ac1cb42328e431c0adae3dcb5a/agent_topology_spec-0.1.0b4.tar.gz",
+          "sha256": "1119bd518165e28a56d6bf006b10b6607dbb792594542552ddf740557ab61050",
+          "provenanceUrl": "https://pypi.org/integrity/agent-topology-spec/0.1.0b4/agent_topology_spec-0.1.0b4.tar.gz/provenance"
+        }
+      ],
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35037453083"
+    },
+    {
+      "name": "agent-topology-langgraph",
+      "version": "0.1.0b4",
+      "registry": "pypi",
+      "metadataUrl": "https://pypi.org/pypi/agent-topology-langgraph/0.1.0b4/json",
+      "artifacts": [
+        {
+          "filename": "agent_topology_langgraph-0.1.0b4-py3-none-any.whl",
+          "url": "https://files.pythonhosted.org/packages/19/6e/410a6f2dc0d260d3c96360b28848a1b70c31578ec3233d921ee73b289eb0/agent_topology_langgraph-0.1.0b4-py3-none-any.whl",
+          "sha256": "57c91c26e6a244774d4960783dd90f070f477c4a100b1c61d9b6f3b9e2a00c27",
+          "provenanceUrl": "https://pypi.org/integrity/agent-topology-langgraph/0.1.0b4/agent_topology_langgraph-0.1.0b4-py3-none-any.whl/provenance"
+        },
+        {
+          "filename": "agent_topology_langgraph-0.1.0b4.tar.gz",
+          "url": "https://files.pythonhosted.org/packages/f3/e6/b8936ab4cbc6e4df01f0aeb68c37c91db7c8b30bb7af97c7590a8d0a95d1/agent_topology_langgraph-0.1.0b4.tar.gz",
+          "sha256": "d97b1796fa611185e0117fce87cc319b254504598b3531253e829e77c0bdaf51",
+          "provenanceUrl": "https://pypi.org/integrity/agent-topology-langgraph/0.1.0b4/agent_topology_langgraph-0.1.0b4.tar.gz/provenance"
+        }
+      ],
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35037851979"
+    },
+    {
+      "name": "@agent-topology/spec",
+      "version": "0.1.0-beta.4",
+      "registry": "npm",
+      "metadataUrl": "https://registry.npmjs.org/%40agent-topology%2Fspec",
+      "artifacts": [
+        {
+          "filename": "spec-0.1.0-beta.4.tgz",
+          "url": "https://registry.npmjs.org/@agent-topology/spec/-/spec-0.1.0-beta.4.tgz",
+          "sha256": "5b288d8a449e78cb1d26173cbc1e4aaaecfe9056758eead4d886fcfd99bcee76",
+          "sha1": "33aaf4b3141b079884231b5dc72efef48394d3ca",
+          "integrity": "sha512-5uhTcoU7et6nx8zxZkbLmhzNCG27yBKY86wrLwdE3ADHN57a3B11k9i/UkAXgawUMjOMXu3WtBxfwn4unEaOKQ==",
+          "provenanceUrl": "https://registry.npmjs.org/-/npm/v1/attestations/@agent-topology%2fspec@0.1.0-beta.4"
+        }
+      ],
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35037454970"
+    },
+    {
+      "name": "@agent-topology/langgraph",
+      "version": "0.1.0-beta.4",
+      "registry": "npm",
+      "metadataUrl": "https://registry.npmjs.org/%40agent-topology%2Flanggraph",
+      "artifacts": [
+        {
+          "filename": "langgraph-0.1.0-beta.4.tgz",
+          "url": "https://registry.npmjs.org/@agent-topology/langgraph/-/langgraph-0.1.0-beta.4.tgz",
+          "sha256": "f594fc2ea5974bf18d53fbdc778747c08b257f706151cc6e4c0ebabd5eb1eb10",
+          "sha1": "85c1f7b0c8befd8b501b91d5f202f6d67625e9c0",
+          "integrity": "sha512-o3O+3uIFME2zGvEoQQwYEkR1nHxDipQji6AYIF11NhmRlN8EcY0A5Y/jdybXiYI0qT7ohJcqjKI6JThZLkPM4g==",
+          "provenanceUrl": "https://registry.npmjs.org/-/npm/v1/attestations/@agent-topology%2flanggraph@0.1.0-beta.4"
+        }
+      ],
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35037611546"
+    }
+  ],
+  "immutableArtifactDocumentation": "The READMEs embedded in the beta.4 registry artifacts were already updated to select beta.4 install commands during release-candidate preparation, before qualification and publication. Registry artifacts were not overwritten; repository package READMEs and all live installation guides select beta.4."
+}
