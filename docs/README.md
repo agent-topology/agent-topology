@@ -39,11 +39,11 @@ standard library. It makes no path-coverage or policy-verdict claim.
 - [Upgrade from beta.2 to beta.3](guides/upgrading-beta.3.md)
 - [Beta.3 verified release](releases/v0.1.0-beta.3.md)
 - [Upgrade from beta.3 to beta.4](guides/upgrading-beta.4.md)
-- [Beta.4 release candidate — not published](releases/v0.1.0-beta.4.md)
+- [Beta.4 verified release](releases/v0.1.0-beta.4.md)
 - [Changelog](../CHANGELOG.md)
 
 Documentation in the default branch describes the current source. Fixes under
-**Unreleased** in the changelog are not included in the pinned beta.3 registry
+**Unreleased** in the changelog are not included in the pinned beta.4 registry
 packages. Use the release notes for exact published artifact identities; the
 immutable release tag identifies qualified code. A release becomes coordinated only
 after its separate closeout PR updates the publication record and installation guides.

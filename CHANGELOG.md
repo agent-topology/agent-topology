@@ -7,20 +7,22 @@ future package versions will move together.
 
 ## Unreleased
 
-### 0.1.0-beta.4 candidate
-
-Prepared on `rc/0.1.0-beta.4`: Python distributions use `0.1.0b4`, npm
-packages use `0.1.0-beta.4`, and the npm producer's spec peer uses beta.4.
-This candidate has not been published. See the
-[candidate release notes](docs/releases/v0.1.0-beta.4.md) and the
-[beta.3 to beta.4 upgrade guide](docs/guides/upgrading-beta.4.md).
-
 - Add a machine-readable release-state record and phase-specific documentation
   checks so artifact qualification cannot be mistaken for a completed public
   release.
 - Require a separate post-publication closeout before a draft GitHub prerelease
   becomes public, and automatically reopen release issues closed as completed with
   missing acceptance criteria.
+
+## v0.1.0-beta.4 public preview — 2026-09-15
+
+Prepared on `rc/0.1.0-beta.4`: Python distributions use `0.1.0b4`, npm
+packages use `0.1.0-beta.4`, and the npm producer's spec peer uses beta.4.
+All four registry packages, the immutable tag, the GitHub prerelease, and live
+installation documentation identify the published and verified beta.4 release. See the
+[release notes](docs/releases/v0.1.0-beta.4.md) and the
+[beta.3 to beta.4 upgrade guide](docs/guides/upgrading-beta.4.md).
+
 - The Python CLI exposes the `describe` API's traversal depth through
   `agt describe --depth N`, defaulting to `0` (backward compatible, opaque
   children) and accepting only non-negative integers; an invalid, missing, or

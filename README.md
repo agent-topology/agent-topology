@@ -4,19 +4,13 @@
 
 Status: **0.1 public preview** — provisional and pre-1.0. The four packages are
 available from their public registries and remain independently versioned. See the
-[v0.1.0-beta.3 release notes](docs/releases/v0.1.0-beta.3.md),
+[v0.1.0-beta.4 release notes](docs/releases/v0.1.0-beta.4.md),
 [0.1 contract](docs/0.1-contract.md), [changelog](CHANGELOG.md), and
 [Roadmap](#roadmap).
 
-**beta.3 is published and verified.** The installation commands below select the
-exact released versions. See the [release notes](docs/releases/v0.1.0-beta.3.md) and
-[upgrade guide](docs/guides/upgrading-beta.3.md) before migrating from beta.2.
-
-Current source prepares **beta.4** on `rc/0.1.0-beta.4`; it is not published.
-The installation commands below still select published beta.3. See the
-[beta.4 release candidate](docs/releases/v0.1.0-beta.4.md) and
-[upgrade guide](docs/guides/upgrading-beta.4.md) for changes and the remaining
-publication checks.
+**beta.4 is published and verified.** The installation commands below select the
+exact released versions. See the [release notes](docs/releases/v0.1.0-beta.4.md) and
+[upgrade guide](docs/guides/upgrading-beta.4.md) before migrating from beta.3.
 
 Start with the [documentation](docs/README.md):
 [Python quickstart](docs/getting-started/python.md),
@@ -48,14 +42,14 @@ validate, serialize, and hash the resulting documents.
 ## Installation
 
 The public preview has four distinct installation paths. Pin the ecosystem-native
-`beta.3` version when evaluating the current release.
+`beta.4` version when evaluating the current release.
 
 | Package                             | Install                                                                                |
 | ----------------------------------- | -------------------------------------------------------------------------------------- |
-| Python document utilities           | `python -m pip install "agent-topology-spec==0.1.0b3"`                                 |
-| Python LangGraph producer and `agt` | `python -m pip install "agent-topology-langgraph==0.1.0b3"`                            |
-| TypeScript document utilities       | `npm install @agent-topology/spec@0.1.0-beta.3`                                        |
-| TypeScript LangGraph.js producer    | `npm install @agent-topology/spec@0.1.0-beta.3 @agent-topology/langgraph@0.1.0-beta.3` |
+| Python document utilities           | `python -m pip install "agent-topology-spec==0.1.0b4"`                                 |
+| Python LangGraph producer and `agt` | `python -m pip install "agent-topology-langgraph==0.1.0b4"`                            |
+| TypeScript document utilities       | `npm install @agent-topology/spec@0.1.0-beta.4`                                        |
+| TypeScript LangGraph.js producer    | `npm install @agent-topology/spec@0.1.0-beta.4 @agent-topology/langgraph@0.1.0-beta.4` |
 
 The Python distributions install into the native namespace and are imported as
 `agent_topology.spec` and `agent_topology.langgraph`. The TypeScript packages are
@@ -162,7 +156,7 @@ accepted by this API. Producer-specific metadata is emitted only beneath the
 
 The Python distributions build as `agent-topology-spec` and
 `agent-topology-langgraph`, imported as `agent_topology.spec` and
-`agent_topology.langgraph`. Both `0.1.0b3` distributions are available from PyPI.
+`agent_topology.langgraph`. Both `0.1.0b4` distributions are available from PyPI.
 TypeScript applications can use `@agent-topology/spec` to
 validate, canonicalize, serialize, and hash documents without a framework runtime.
 They can use the async `describe` API from `@agent-topology/langgraph` to inspect a
@@ -185,7 +179,7 @@ CLI; `agt` remains owned by the Python Foundation producer.
 All four packages are built, qualified, and published as independent operations.
 Repository CI inspects their exact public contents and metadata, installs the
 artifacts in clean projects, and binds qualification to the source commit and artifact
-digests. The [v0.1.0-beta.3 release notes](docs/releases/v0.1.0-beta.3.md)
+digests. The [v0.1.0-beta.4 release notes](docs/releases/v0.1.0-beta.4.md)
 record the public artifacts, qualification receipts, and source commits. Maintainers
 use the [release and partial-publication recovery guide](docs/releasing.md).
 
@@ -193,10 +187,10 @@ use the [release and partial-publication recovery guide](docs/releasing.md).
 
 | Package                                  | Runtime          | Framework compatibility |
 | ---------------------------------------- | ---------------- | ----------------------- |
-| `agent-topology-spec` 0.1.0b3            | Python 3.11–3.14 | No framework dependency |
-| `agent-topology-langgraph` 0.1.0b3       | Python 3.11–3.14 | LangGraph 1.2.10–1.2.11 |
-| `@agent-topology/spec` 0.1.0-beta.3      | Node.js 20+      | No framework dependency |
-| `@agent-topology/langgraph` 0.1.0-beta.3 | Node.js 20+      | LangGraph.js 1.4.14     |
+| `agent-topology-spec` 0.1.0b4            | Python 3.11–3.14 | No framework dependency |
+| `agent-topology-langgraph` 0.1.0b4       | Python 3.11–3.14 | LangGraph 1.2.10–1.2.11 |
+| `@agent-topology/spec` 0.1.0-beta.4      | Node.js 20+      | No framework dependency |
+| `@agent-topology/langgraph` 0.1.0-beta.4 | Node.js 20+      | LangGraph.js 1.4.14     |
 
 Only the versions listed above have conformance evidence. Producers refuse untested
 framework releases before inspecting a graph.
@@ -385,7 +379,7 @@ more dangerous than an obviously absent one.
   expansion. Published beta.3's expanded drawable shape did not fully preserve
   child join, routing, and interrupt declarations, and recorded this as an
   `expanded-subgraph-metadata` gap; see the
-  [beta.3 release notes](docs/releases/v0.1.0-beta.3.md). Current source instead
+  [beta.3 release notes](docs/releases/v0.1.0-beta.3.md). Published beta.4 instead
   retains a parent node's own id and materializes its confirmed compiled children
   as separate, fully addressable `graphs[]` entries, with their own
   branch/sentinel/entry interpretation facts populated the same way a root

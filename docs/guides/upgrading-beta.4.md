@@ -2,15 +2,13 @@
 
 [Documentation home](../README.md) · [Release notes](../releases/v0.1.0-beta.4.md)
 
-Status: **Prepared in source; not published.** The installation commands in
-this repository's README, package READMEs, and quickstarts still select the
-published beta.3 versions. This guide describes what changes for a beta.3
-consumer once beta.4 passes registry verification; do not install these
-candidate versions from a public registry before then.
+Status: **Published and verified.** The four beta.4 registry packages, immutable tag,
+GitHub prerelease, and repository installation paths identify the coordinated beta.4
+public preview.
 
 ## Select the packages
 
-| Package | beta.3 → beta.4 candidate | Runtime | Framework |
+| Package | beta.3 → beta.4 | Runtime | Framework |
 | --- | --- | --- | --- |
 | `agent-topology-spec` | `0.1.0b3` → `0.1.0b4` | Python 3.11–3.14 | None |
 | `agent-topology-langgraph` | `0.1.0b3` → `0.1.0b4` | Python 3.11–3.14 | LangGraph 1.2.10–1.2.11 |
