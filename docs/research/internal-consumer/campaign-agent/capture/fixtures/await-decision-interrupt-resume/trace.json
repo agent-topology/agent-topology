@@ -1,0 +1,356 @@
+{
+  "events": [
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nodeId": "validate_input",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 1,
+      "taskId": "62f34867-8aa0-87fa-87d0-12638a446d50"
+    },
+    {
+      "eventType": "observer.attempt.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 1,
+        "fields": [
+          {
+            "kind": "kind",
+            "name": "node.id",
+            "value": "draft_rules"
+          },
+          {
+            "kind": "outcome",
+            "name": "verdict",
+            "value": "accepted"
+          },
+          {
+            "kind": "outcome",
+            "name": "directive",
+            "value": "complete"
+          },
+          {
+            "kind": "usage",
+            "name": "usage",
+            "value": {
+              "cost_usd": 4e-05,
+              "input_tokens": 10,
+              "output_tokens": 5
+            }
+          },
+          {
+            "kind": "hash",
+            "name": "policy.hash",
+            "value": "d1a6a92045a07bc1d78203e5a10bfb94056fbb30921d30aa216f1743a7cebf58"
+          },
+          {
+            "kind": "hash",
+            "name": "bundle.hash",
+            "value": "d78b501277a899ead986d97f03592e20fe8a2ec45d5d2621fe8480caa7c0b677"
+          },
+          {
+            "kind": "kind",
+            "name": "capability.id",
+            "value": "cap.campaign_rules_draft"
+          },
+          {
+            "kind": "version",
+            "name": "bundle.version",
+            "value": 1
+          }
+        ],
+        "profileHash": "d8b64aa0fcad5deabdf5ca8ea915cf65ae8f9c9244a77cbda56c7211d151b5ef"
+      },
+      "nodeId": "draft_rules",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 2
+    },
+    {
+      "eventType": "observer.step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [
+        {
+          "kind": "hash",
+          "name": "policy.hash",
+          "value": "d1a6a92045a07bc1d78203e5a10bfb94056fbb30921d30aa216f1743a7cebf58"
+        },
+        {
+          "kind": "hash",
+          "name": "bundle.hash",
+          "value": "d78b501277a899ead986d97f03592e20fe8a2ec45d5d2621fe8480caa7c0b677"
+        },
+        {
+          "kind": "kind",
+          "name": "capability.id",
+          "value": "cap.campaign_rules_draft"
+        },
+        {
+          "kind": "version",
+          "name": "bundle.version",
+          "value": 1
+        }
+      ],
+      "nodeId": "draft_rules",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 3
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nodeId": "draft_rules",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 4,
+      "taskId": "459aac17-367f-e173-817d-956b1a0d478a"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nodeId": "commit_rules",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 5,
+      "taskId": "25cae4d0-3aeb-0733-b4eb-a0da4e6e2a2b"
+    },
+    {
+      "eventType": "observer.attempt.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 1,
+        "fields": [
+          {
+            "kind": "kind",
+            "name": "node.id",
+            "value": "draft_concept"
+          },
+          {
+            "kind": "outcome",
+            "name": "verdict",
+            "value": "accepted"
+          },
+          {
+            "kind": "outcome",
+            "name": "directive",
+            "value": "complete"
+          },
+          {
+            "kind": "usage",
+            "name": "usage",
+            "value": {
+              "cost_usd": 4e-05,
+              "input_tokens": 10,
+              "output_tokens": 5
+            }
+          },
+          {
+            "kind": "hash",
+            "name": "policy.hash",
+            "value": "d1a6a92045a07bc1d78203e5a10bfb94056fbb30921d30aa216f1743a7cebf58"
+          },
+          {
+            "kind": "hash",
+            "name": "bundle.hash",
+            "value": "876d434c75eb15b60d5b00db9553de1d2e9c30e0d0bf4f28a83762eda272c283"
+          },
+          {
+            "kind": "kind",
+            "name": "capability.id",
+            "value": "cap.campaign_concept_draft"
+          },
+          {
+            "kind": "version",
+            "name": "bundle.version",
+            "value": 1
+          }
+        ],
+        "profileHash": "d8b64aa0fcad5deabdf5ca8ea915cf65ae8f9c9244a77cbda56c7211d151b5ef"
+      },
+      "nodeId": "draft_concept",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 6
+    },
+    {
+      "eventType": "observer.step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [
+        {
+          "kind": "hash",
+          "name": "policy.hash",
+          "value": "d1a6a92045a07bc1d78203e5a10bfb94056fbb30921d30aa216f1743a7cebf58"
+        },
+        {
+          "kind": "hash",
+          "name": "bundle.hash",
+          "value": "876d434c75eb15b60d5b00db9553de1d2e9c30e0d0bf4f28a83762eda272c283"
+        },
+        {
+          "kind": "kind",
+          "name": "capability.id",
+          "value": "cap.campaign_concept_draft"
+        },
+        {
+          "kind": "version",
+          "name": "bundle.version",
+          "value": 1
+        }
+      ],
+      "nodeId": "draft_concept",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 7
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nodeId": "draft_concept",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 8,
+      "taskId": "d2e50deb-1de6-36c0-cb63-108a963fbc5e"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nodeId": "commit_concept",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 9,
+      "taskId": "e5290ac0-9fb1-23f7-f0ab-3564435b3e68"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nodeId": "gate_readiness_check",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 10,
+      "taskId": "09241c26-9007-ba0a-aedd-ee6c26ecb7b6"
+    },
+    {
+      "eventType": "task.awaiting_approval",
+      "invocationRunId": "invocation-1",
+      "nodeId": "await_decision",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 11,
+      "taskId": "5cc1e334-9dce-a74a-2d75-d83e7f036baa"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-2",
+      "nodeId": "await_decision",
+      "nodeOccurrence": 2,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 12,
+      "taskId": "5cc1e334-9dce-a74a-2d75-d83e7f036baa"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-2",
+      "nodeId": "apply_decision",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 13,
+      "taskId": "3100c4c8-e315-97f2-5ff6-ffd39fb067b0"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-2",
+      "nodeId": "approved",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-await-decision-1",
+      "sequence": 14,
+      "taskId": "5cdc4a81-82a7-c5ea-7a2d-f78adf655852"
+    }
+  ],
+  "finalOutcome": "approved",
+  "invocations": [
+    {
+      "interruptValue": {
+        "concept": {
+          "accessibility_legal_statement": "Offer valid while supplies last.",
+          "audience": "Existing customers",
+          "campaign_assets": [],
+          "channel_roles": [],
+          "copy_baseline": {
+            "cta_copy": "",
+            "hook_or_headline": "Spring into savings",
+            "narrative": "Customers save more this spring.",
+            "required_terms_attribution_disclosures": [],
+            "supporting_copy": ""
+          },
+          "cta_table": [],
+          "intended_response": "Sign up for the spring plan",
+          "message_hierarchy": {
+            "commercial": "",
+            "emotional": "",
+            "primary": "Spring savings are here",
+            "supporting": []
+          },
+          "objective": "Grow spring signups",
+          "success_criteria": "500 signups",
+          "unresolved_decisions": []
+        },
+        "contract_id": "716ff484-82f1-4dc4-9830-b6d3681e7960",
+        "gate": {
+          "artifact_or_revision": 1,
+          "content_hash": "d88647f3da6fbaa85a267fa6865629c865bfc9f581334a12a92ddf91bf582641"
+        },
+        "readiness": {
+          "ready": true,
+          "unresolved_items": []
+        },
+        "rules": {
+          "approved_sources": [],
+          "approved_terminology": [],
+          "legal_requirements": [],
+          "mandatory_assets": [],
+          "naming_restrictions": [],
+          "prohibited_or_future_claims": [],
+          "promotion_boundaries": [],
+          "source_attribution_requirements": [],
+          "supported_claims": []
+        }
+      },
+      "label": "invocation-1 (real await_decision interrupt() call, graph pauses)",
+      "paused": true,
+      "pausedAtNodeId": "await_decision",
+      "run_id": "invocation-1"
+    },
+    {
+      "label": "invocation-2 (Command(resume=...), same checkpoint thread)",
+      "paused": false,
+      "pausedAtNodeId": null,
+      "run_id": "invocation-2"
+    }
+  ],
+  "provenance": {
+    "captureMechanism": "campaign_agent.campaign_contract.create_graph (real, approved graph); real langgraph.types.interrupt() inside the real await_decision node body; fake model gateway and DecisionAuthorization reused from campaign-agent's own test_approve_produces_canonical_hash_with_no_duplicate_fields fixture; a host-attached InMemorySaver checkpointer, which campaign-agent's production factory does not itself provide; node/task identity read from LangGraph's own stream_mode='debug' task_result events (the only mechanism that observes await_decision at all -- campaign_contract's own code never calls RunObserver for it, unlike git-agent's human_approval), cross-checked against agent_workflow_core.observers.RunObserver step/attempt callbacks for the two nodes (draft_rules, draft_concept) that do call it",
+    "consumer": {
+      "commit": "a1532d5eed2d356792d5c3ee460d2bb8fb23db1e",
+      "ref": "main",
+      "repository": "https://github.com/milocosmopolitan/campaign-agent"
+    },
+    "framework": {
+      "name": "langgraph",
+      "version": "1.2.11"
+    },
+    "generatedAt": "2026-09-17T00:00:00Z",
+    "generator": "docs/research/internal-consumer/campaign-agent/capture/capture.py",
+    "kind": "sanitized-source-pinned-capture",
+    "sanitization": [
+      "thread_id and invocation_run_id are host-chosen literals, never real UUIDs",
+      "the resumed DecisionInput (decision_id/actor_ref/artifact_or_revision/action) and its DecisionAuthorization are fabricated fixture values, not a real decision or authorization payload",
+      "the captured interrupt proposal (concept/rules/readiness/gate) is entirely derived from campaign-agent's own fake model-gateway fixture text (rules_outcome()/concept_outcome()), never a real model completion or real campaign content",
+      "no prompts, model completions, paths, or credentials enter observer metadata -- enforced structurally by agent_workflow_core.observers.MetadataField, not by this script",
+      "no real campaign/GitHub effect occurred: this scenario's await_decision gate exercises no write port at all -- only the fake model gateway and the in-memory checkpointer"
+    ],
+    "scenario": "await-decision-interrupt-resume",
+    "unresolvedEvidence": []
+  },
+  "traceVersion": "1"
+}
