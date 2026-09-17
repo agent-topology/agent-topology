@@ -1,0 +1,147 @@
+{
+  "allDeclaredChildInvokesConfirmedByIdentity": true,
+  "captureMechanism": "campaign_agent.channel_concept.create_graph (real, approved graph); agent_topology.langgraph.describe() called on the exact compiled object before it is ever invoked (confirmed via a CompiledStateGraph.invoke/ainvoke patch that raises during describe(), same as verify_declared_children.py), asserting prepare_brief's depth-0 x-topology-interpretation subgraph fact is a known declared-child-call and its depth-2 materialized subgraph matches copy_brief_prepare's own standalone describe() output; then a real invocation through prepare_brief/draft_copy/review_copy for direction d1, resumed through await_decision to approved; a CompiledStateGraph.invoke spy records, for each nested child.invoke() call, whether the invoked object `is` (Python identity) the declared child describe() resolved for that node -- correlating the static declared-child-call evidence with the object actually invoked at runtime, not by display name; LangGraph's stream_mode='debug' task_result events and agent_workflow_core.observers.RunObserver step/attempt callbacks (threaded into every declared child's own RuntimeContext.observer) are recorded onto the same event sequence, each tagged nestedUnderNodeId from the invoke spy's own bookkeeping",
+  "consumerCommit": "a1532d5eed2d356792d5c3ee460d2bb8fb23db1e",
+  "coreCommit": "6d88227a6b4dad5af45ab20c4870094ceef53f55",
+  "declaredChildCallCorrelationConfirmed": true,
+  "declaredChildGraphNamesByNode": {
+    "draft_copy": "channel_concept.copy_draft",
+    "prepare_brief": "channel_concept.copy_brief_prepare",
+    "review_copy": "channel_concept.copy_review"
+  },
+  "declaredChildIdentityConfirmedByNode": {
+    "draft_copy": true,
+    "prepare_brief": true,
+    "review_copy": true
+  },
+  "distinctInvocationRunIds": [
+    "invocation-1",
+    "invocation-2"
+  ],
+  "distinctRunIds": [
+    "capture-thread-declared-child-1"
+  ],
+  "eventTypesByInvocation": {
+    "invocation-1": [
+      "task.passed",
+      "observer.attempt.passed",
+      "observer.step.passed",
+      "task.passed",
+      "task.passed",
+      "observer.attempt.passed",
+      "observer.step.passed",
+      "invoke.declared-child-call",
+      "task.passed",
+      "observer.attempt.passed",
+      "observer.step.passed",
+      "invoke.declared-child-call",
+      "task.passed",
+      "observer.attempt.passed",
+      "observer.step.passed",
+      "invoke.declared-child-call",
+      "task.passed",
+      "observer.attempt.passed",
+      "observer.step.passed",
+      "task.passed",
+      "task.passed",
+      "task.passed",
+      "task.passed",
+      "observer.attempt.passed",
+      "observer.step.passed",
+      "task.passed",
+      "task.passed",
+      "task.passed",
+      "task.passed",
+      "task.awaiting_approval"
+    ],
+    "invocation-2": [
+      "task.passed",
+      "task.passed",
+      "task.passed"
+    ]
+  },
+  "finalOutcome": "approved",
+  "firstInvocationPaused": true,
+  "nestedObserverNodeIdsByParent": {
+    "draft_copy": [
+      "generate"
+    ],
+    "prepare_brief": [
+      "select_evidence"
+    ],
+    "review_copy": [
+      "review_message"
+    ]
+  },
+  "pausedAtNodeId": "await_decision",
+  "replayVersion": "1",
+  "retryAttemptsObserved": 0,
+  "scenario": "prepare-brief-declared-child",
+  "secondInvocationPaused": false,
+  "sequencesContiguousPerRun": true,
+  "staticRelationship": {
+    "declaredChildGraph": "copy_brief_prepare",
+    "depth0EvidenceKind": "declared-child-call",
+    "matchesStandaloneFactory": true,
+    "materializedSubgraphId": "channel_concept:prepare_brief",
+    "nodeId": "prepare_brief",
+    "parent": "channel_concept"
+  },
+  "taskLevelEventsNeverNested": true,
+  "taskOccurrencesByNode": {
+    "apply_decision": [
+      1
+    ],
+    "assess_direction": [
+      1
+    ],
+    "await_decision": [
+      1,
+      2
+    ],
+    "compare_directions": [
+      1
+    ],
+    "design_direction": [
+      1
+    ],
+    "draft_copy": [
+      1
+    ],
+    "finish": [
+      1
+    ],
+    "make_wireframe": [
+      1
+    ],
+    "next_direction": [
+      1
+    ],
+    "notify": [
+      1
+    ],
+    "prepare_brief": [
+      1
+    ],
+    "prepare_notice": [
+      1
+    ],
+    "review_copy": [
+      1
+    ],
+    "validate_assess_output": [
+      1
+    ],
+    "validate_compare_output": [
+      1
+    ],
+    "validate_design_output": [
+      1
+    ],
+    "validate_input": [
+      1
+    ]
+  },
+  "totalEvents": 33,
+  "unresolvedEvidence": []
+}
