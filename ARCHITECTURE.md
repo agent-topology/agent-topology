@@ -114,6 +114,16 @@ Unknown interpretation does not change completeness or strict-mode behavior.
 Equal structure hashes do not establish equal extension metadata. No core field,
 hash algorithm, renderer, or vendor-neutrality claim is added by this decision.
 
+[ADR 0013](docs/decisions/0013-sentinel-branch-promotion-bar-unmet-compatibility-floor.md)
+reviewed ADR 0008's promotion bar against real consumer evidence (cordboard's
+AT-2/AT-3) and declined promotion: a structurally different framework's
+producer evidence, ADR 0005's still-unmet gate, remains the missing
+requirement. It publishes a compatibility floor instead — no in-place
+redefinition of a shipped revision, permanent forward opacity for
+unrecognized revisions, and no silent removal without a superseding ADR and
+migration notes — so a consumer can pin to revision `"1"`/`"2"` without
+promotion ever happening.
+
 ## Nested graph identity and traversal
 
 [ADR 0012](docs/decisions/0012-nested-graph-identity-traversal-and-compatibility.md)

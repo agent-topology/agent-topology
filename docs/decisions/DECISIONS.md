@@ -18,6 +18,7 @@ authority for why a choice was made and when it may be revisited.
 | Diagram data, renderers, visual output, or what conformance compares | [ADR 0004](0004-rendering-is-not-part-of-the-core-document.md) |
 | Core versus `x-*` extensions, vendor neutrality, v0 status, or the evidence required from a second framework | [ADR 0005](0005-vendor-neutrality-is-provisional-at-v0.md) |
 | Experimental consumer interpretation, branch selection evidence, opaque children, sentinel roles, or observed roots versus confirmed entries | [ADR 0008](0008-experimental-consumer-interpretation.md) |
+| Whether sentinel/branch facts promote into the core schema, or the compatibility guarantee consumers get while they stay experimental | [ADR 0013](0013-sentinel-branch-promotion-bar-unmet-compatibility-floor.md) |
 | Numeric canonical byte spelling, the supported numeric domain, or whether a canonicalisation change requires a new hash algorithm version | [ADR 0009](0009-numeric-canonical-form.md), [ADR 0010](0010-numeric-domain-parsed-value-narrowing.md) |
 | Graph identifier uniqueness, ownership, producer selection, composition, or the distinction between graph ids and names | [ADR 0011](0011-document-local-consumer-addressable-graph-ids.md) |
 | Nested/positive-depth traversal, retained parent identity, materialized child graph addressing, `expanded-subgraph-metadata` retirement, or `x-topology-interpretation` revision 2 | [ADR 0012](0012-nested-graph-identity-traversal-and-compatibility.md) |
@@ -48,6 +49,7 @@ For a change spanning several rows, read every routed ADR. Common paths are:
 | [0010](0010-numeric-domain-parsed-value-narrowing.md) | Accepted | Amend ADR 0009's integer-literal `2^53` domain boundary: narrow out-of-range integer literals to the nearest binary64 double in both languages instead of rejecting them in Python only, closing the domain under its own canonical JSON round trip. |
 | [0011](0011-document-local-consumer-addressable-graph-ids.md) | Accepted | Make graph identifiers unique document-local addresses selected by producer callers, while graph authors continue to own optional display names. |
 | [0012](0012-nested-graph-identity-traversal-and-compatibility.md) | Accepted | Retain runtime-observable parent nodes and address materialized children with deterministic, call-site-derived graph ids at positive depth, reconciling ADR 0008 and ADR 0011 without a topology-version, schema, or hash-algorithm change. |
+| [0013](0013-sentinel-branch-promotion-bar-unmet-compatibility-floor.md) | Accepted | Decline promoting sentinel/branch facts into the core schema — ADR 0008's promotion bar and ADR 0005's second-framework gate remain unmet — and publish an explicit no-silent-removal, no-in-place-redefinition compatibility floor for the experimental extension. |
 
 ## Adding or changing a decision
 
