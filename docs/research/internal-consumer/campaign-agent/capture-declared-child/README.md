@@ -5,9 +5,9 @@ advancing [#181](https://github.com/agent-topology/agent-topology/issues/181)
 past [#192](https://github.com/agent-topology/agent-topology/issues/192)'s
 campaign gate capture using the fake-port harness precedent it set. Recorded
 2026-09-17. This is a research probe, not a new agent-topology contract; ADRs
-[0001](../../../decisions/0001-scope-topology-extraction-and-trace-correlation.md),
-[0002](../../../decisions/0002-record-what-could-not-be-observed.md), and
-[0008](../../../decisions/0008-experimental-consumer-interpretation.md) remain
+[0001](../../../../decisions/0001-scope-topology-extraction-and-trace-correlation.md),
+[0002](../../../../decisions/0002-record-what-could-not-be-observed.md), and
+[0008](../../../../decisions/0008-experimental-consumer-interpretation.md) remain
 authoritative, and [../README.md](../README.md) remains the parent static
 review this follow-up advances.
 
