@@ -91,6 +91,18 @@ The work that is easy to forget and expensive to add after the merge:
   issue-planning documentation updated with the behavior they own.
 - The PR body closes its issue (`Closes #<ISSUE_NUMBER>`).
 - The commit message `ghpr` generated actually describes the change.
+- **If the issue carries the `area:release` label, check off its `- [ ]`
+  acceptance boxes to `- [x]` in the issue body now, via `gh issue edit
+  <ISSUE_NUMBER> --body-file <file>`, for every criterion this review just
+  confirmed.** `.github/workflows/release-issue-close.yml` runs
+  `scripts/check_release_issue.py` on the `issues: closed` webhook and
+  reopens the issue immediately (with a `release-issue-close-guard` comment)
+  if any box is still unchecked at that instant — it reads the issue body
+  from the webhook payload captured at close time, not a later edit, so
+  checking boxes *after* the PR merges and the issue auto-closes on `Closes
+  #<N>` is too late and guarantees a reopen/re-close race. Do this edit
+  before merging so the close-time snapshot already has every box checked.
+  Non-release issues have no such guard and do not need this step.
 - The final report records the reviewed commit SHA, acceptance-criteria mapping,
   CI state, and documentation/ADR assessment so the review can be audited later.
 
