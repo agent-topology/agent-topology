@@ -1,0 +1,63 @@
+{
+  "events": [
+    {
+      "eventType": "attempt.failed",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 1
+      },
+      "nodeId": "flaky_step",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-repeat-attempt-1",
+      "sequence": 1
+    },
+    {
+      "eventType": "attempt.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 2
+      },
+      "nodeId": "flaky_step",
+      "nodeOccurrence": 2,
+      "runId": "capture-thread-repeat-attempt-1",
+      "sequence": 2
+    },
+    {
+      "eventType": "step.passed",
+      "invocationRunId": "invocation-1",
+      "nodeId": "flaky_step",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-repeat-attempt-1",
+      "sequence": 3
+    }
+  ],
+  "finalOutcome": "visited",
+  "invocations": [
+    {
+      "label": "invocation-1 (single invoke(); node retries in-process, no pause)",
+      "paused": false,
+      "pausedAtNodeId": null,
+      "run_id": "invocation-1"
+    }
+  ],
+  "provenance": {
+    "captureMechanism": "one-node synthetic StateGraph with a real LangGraph RetryPolicy(max_attempts=2); no interrupt(), no Command(resume=...), no second invoke() call -- reuses capture.py's (#191) _RecordingObserver event shape rather than growing git-agent's or campaign-agent's real graphs to force a retry path",
+    "consumer": null,
+    "framework": {
+      "name": "langgraph",
+      "version": "1.2.11"
+    },
+    "generatedAt": "2026-09-17T00:00:00Z",
+    "generator": "docs/research/internal-consumer/git-agent/capture/capture_repeat_attempt.py",
+    "kind": "sanitized-synthetic-minimal-fixture",
+    "sanitization": [
+      "thread_id/run_id/invocationRunId are host-chosen literals, never real UUIDs",
+      "no external consumer checkout is read or referenced: this graph is entirely synthetic, built only against langgraph (already a direct dependency of this repo's own packages/python/langgraph package)",
+      "no prompts, payloads, paths, or credentials enter observer metadata",
+      "no repository mutation, model call, push, or GitHub effect occurs"
+    ],
+    "scenario": "repeat-attempt",
+    "unresolvedEvidence": []
+  },
+  "traceVersion": "1"
+}

@@ -150,3 +150,68 @@ or that retries are distinguishable from resume beyond the structural
 dedicated minimal case). `ApprovalDecision`/`IssueMutationReceipt` values
 here are fabricated fixture literals, not a real decision or a real GitHub
 mutation.
+
+## Minimal repeat-attempt fixture (issue #194)
+
+[capture_repeat_attempt.py](capture_repeat_attempt.py) is the dedicated
+"separate, smaller fixture" this scenario's `expected.json` already forward-
+references (`retryAttemptsObserved: 0 ... see issue #194`). Per
+[#181](https://github.com/agent-topology/agent-topology/issues/181)'s third
+acceptance bullet, a retry-mechanics case must not grow the full campaign or
+git-agent input, so this one does not reuse `human_approval` or
+`issue_resolution` at all. It reuses only what's cheap to reuse: the
+`_RecordingObserver` event shape from [capture.py](capture.py) (`nodeId`,
+`runId`, `invocationRunId`, `nodeOccurrence`, attempt vs. step counted on
+separate counters), applied to the smallest graph that can exercise a real
+LangGraph retry -- one node, one `RetryPolicy(max_attempts=2)`, no
+`interrupt()`, no `Command(resume=...)`, one `invoke()` call. campaign-agent's
+fake-port harness ([#192](https://github.com/agent-topology/agent-topology/issues/192))
+does not exist yet, so this is the cheaper of the two harnesses named in
+#194.
+
+Because the graph is entirely synthetic, no external consumer checkout is
+read or pinned: `langgraph` (`1.2.11`, matching the version git-agent and
+campaign-agent both resolve to) is already a direct dependency of this repo's
+own `packages/python/langgraph` package, so that package's own environment
+is all this capture needs.
+
+```bash
+uv run --project packages/python/langgraph python capture_repeat_attempt.py
+python3 -I -S replay_repeat_attempt.py --format json > fixtures/repeat-attempt/expected.json
+```
+
+### Fixture hashes at generation (sha256)
+
+```
+8b11e14d0c05d43968686bd1e090429c11636f0a12dc765816a859859f3fd7c0  fixtures/repeat-attempt/trace.json
+9b434c7bfcbfe85c6be7bf077c241d830ebcade6d10fbb2a8dbfc6fe75afc6e8  fixtures/repeat-attempt/expected.json
+```
+
+Generated with `shasum -a 256 fixtures/repeat-attempt/*.json`;
+`tests/test_git_agent_repeat_attempt_capture.py` re-checks these values.
+
+### Offline replay (no checkout, no LangGraph, no network)
+
+```bash
+python3 -I -S replay_repeat_attempt.py --check
+```
+
+Reproduces, from the committed fixture alone: one logical run, one
+invocation (`paused: false` -- no resume in this fixture), attempt numbers
+`[1, 2]` (`attempt.failed` then `attempt.passed`), and exactly one step
+occurrence for the retried node (`stepOccurrencesByNode: {"flaky_step": [1]}`)
+-- the node was stepped into once even though it took two attempts.
+`tests/test_git_agent_repeat_attempt_capture.py` runs this as a subprocess
+with `-I -S` to enforce that this stays true.
+
+### Disposition
+
+This closes #194: a repeat/retry attempt is now distinguishable from a
+resume invocation in the normalized output, using the same five identities
+(`nodeId`, `runId`, `invocationRunId`, `nodeOccurrence`, `attemptNumber`) the
+human-approval capture above established, without growing either real
+consumer's input. It does not prove anything about git-agent's or
+campaign-agent's *own* retry-capable nodes specifically -- only that the
+event shape keeps attempt and occurrence counters independent when a real
+LangGraph `RetryPolicy` fires. A capture against a real consumer's own retry
+path, if one is needed later, is separately scoped work.
