@@ -120,4 +120,6 @@ next command, for the user to run:
 ghpr run <ISSUE_NUMBER> --trace-db /Users/minhokang/Work/local-workbench/giro.trace.db --verified "all green" --ci-exists 
 ```
 
-After that lands a PR, the follow-up unit of work is `review-pr <PR_NUMBER>`.
+After that lands a PR, the follow-up unit of work is `review-pr <PR_NUMBER>`,
+whose wrap-up step checks off this issue's `area:release` acceptance boxes
+(if any) before merge — see that skill for why the timing matters.
