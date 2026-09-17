@@ -1,0 +1,1 @@
+OK refused on langgraph==1.2.9 (library): Unsupported LangGraph version 1.2.9. agent-topology-langgraph has conformance evidence only for 1.2.10, 1.2.11. Install a tested release with `python -m pip install "langgraph>=1.2.10,<=1.2.11"`.

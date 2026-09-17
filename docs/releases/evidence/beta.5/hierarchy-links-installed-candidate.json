@@ -1,0 +1,80 @@
+{
+  "consumer": "campaign-agent",
+  "head": "a1532d5eed2d356792d5c3ee460d2bb8fb23db1e",
+  "langgraph": "1.2.11",
+  "producerSource": "/private/tmp/beta5-consumer/venv/lib/python3.14/site-packages/agent_topology/langgraph/__init__.py",
+  "hierarchyLinks": [
+    {
+      "parent": "channel_concept",
+      "nodeId": "prepare_brief",
+      "declaredChildGraph": "copy_brief_prepare",
+      "depth0Evidence": {
+        "kind": "declared-child-call",
+        "source": "compiled.__agent_topology_children__"
+      },
+      "materializedSubgraphId": "channel_concept:prepare_brief",
+      "materializedNodeCount": 9,
+      "matchesStandaloneFactory": true
+    },
+    {
+      "parent": "channel_concept",
+      "nodeId": "draft_copy",
+      "declaredChildGraph": "copy_draft",
+      "depth0Evidence": {
+        "kind": "declared-child-call",
+        "source": "compiled.__agent_topology_children__"
+      },
+      "materializedSubgraphId": "channel_concept:draft_copy",
+      "materializedNodeCount": 9,
+      "matchesStandaloneFactory": true
+    },
+    {
+      "parent": "channel_concept",
+      "nodeId": "review_copy",
+      "declaredChildGraph": "copy_review",
+      "depth0Evidence": {
+        "kind": "declared-child-call",
+        "source": "compiled.__agent_topology_children__"
+      },
+      "materializedSubgraphId": "channel_concept:review_copy",
+      "materializedNodeCount": 9,
+      "matchesStandaloneFactory": true
+    },
+    {
+      "parent": "channel_production",
+      "nodeId": "revise_copy",
+      "declaredChildGraph": "copy_revision",
+      "depth0Evidence": {
+        "kind": "declared-child-call",
+        "source": "compiled.__agent_topology_children__"
+      },
+      "materializedSubgraphId": "channel_production:revise_copy",
+      "materializedNodeCount": 9,
+      "matchesStandaloneFactory": true
+    },
+    {
+      "parent": "channel_production",
+      "nodeId": "review_copy",
+      "declaredChildGraph": "copy_review",
+      "depth0Evidence": {
+        "kind": "declared-child-call",
+        "source": "compiled.__agent_topology_children__"
+      },
+      "materializedSubgraphId": "channel_production:review_copy",
+      "materializedNodeCount": 9,
+      "matchesStandaloneFactory": true
+    },
+    {
+      "parent": "channel_production",
+      "nodeId": "prepare_copy_feedback",
+      "declaredChildGraph": "copy_feedback_prepare",
+      "depth0Evidence": {
+        "kind": "declared-child-call",
+        "source": "compiled.__agent_topology_children__"
+      },
+      "materializedSubgraphId": "channel_production:prepare_copy_feedback",
+      "materializedNodeCount": 9,
+      "matchesStandaloneFactory": true
+    }
+  ]
+}

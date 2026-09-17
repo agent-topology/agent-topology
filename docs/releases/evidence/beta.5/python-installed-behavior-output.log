@@ -1,0 +1,8 @@
+OK repeated-join-declaration dedup -> join:a+b:sink
+OK permuted-join-declaration dedup -> join:a+b:sink
+OK declare_children depth=0 -> opaque-child, declared-child-call evidence
+OK declare_children depth=1 -> subgraphId + materialized-subgraph-reference evidence
+OK declare_children depth=1 document validates
+OK materialized child node-id set matches the child's own standalone describe()
+OK CLI --depth 1 --strict ->  ['main', 'main:grand']
+ALL INSTALLED-ARTIFACT BEHAVIOR CHECKS PASSED

@@ -1,0 +1,30 @@
+{
+  "receiptVersion": 1,
+  "distribution": "agent-topology-spec",
+  "package": "spec",
+  "version": "0.1.0b4",
+  "commit": "dc030305096444908b1ba19a3458a6d97c9cf90b",
+  "unchanged": true,
+  "unchangedSinceCommit": "05486d7ee9cee7650779cb0e9c00a85bd152a3e8",
+  "unchangedSinceTag": "v0.1.0-beta.4",
+  "sourceDiffCommand": "git diff v0.1.0-beta.4..dc030305096444908b1ba19a3458a6d97c9cf90b -- packages/python/spec spec/agent-topology.schema.json",
+  "sourceDiffResult": "empty",
+  "artifacts": [
+    {
+      "filename": "agent_topology_spec-0.1.0b4-py3-none-any.whl",
+      "sha256": "8873164617d06baad5914e9a359d039a8b67677a0d6e3a128201d13f47f8c190",
+      "registryUrl": "https://files.pythonhosted.org/packages/24/b0/d55f753b6e18469192a4b96f6f08d16c5f97bab50489ce1608da5b3833bf/agent_topology_spec-0.1.0b4-py3-none-any.whl"
+    },
+    {
+      "filename": "agent_topology_spec-0.1.0b4.tar.gz",
+      "sha256": "1119bd518165e28a56d6bf006b10b6607dbb792594542552ddf740557ab61050",
+      "registryUrl": "https://files.pythonhosted.org/packages/21/c9/85092a983814e37b7aeeebaee280321966ac1cb42328e431c0adae3dcb5a/agent_topology_spec-0.1.0b4.tar.gz"
+    }
+  ],
+  "checks": [
+    "source-tree-unchanged-since-beta.4",
+    "pypi-published-digest-match",
+    "local-rebuild-wheel-digest-match"
+  ],
+  "notes": "Reused unchanged registry artifact per the changed/unchanged distinction in release-state.json candidate.packages[].unchanged. Not rebuilt or re-authorized through release-python.yml for this candidate: the source tree is byte-identical to the qualified/published v0.1.0-beta.4 commit (empty git diff, checked above), the wheel digest recorded in docs/releases/evidence/beta.4/python-spec-qualification.json exactly matches the live PyPI JSON API response for agent-topology-spec==0.1.0b4 (queried 2026-09-17), and a local `uv build` of packages/python/spec at the frozen beta.5 commit reproduces the identical wheel sha256 byte-for-byte. The sdist tarball's sha256 is the PyPI-published digest, not a local rebuild: sdist packaging embeds build-time metadata that is not byte-reproducible across builds even for identical source (confirmed locally), so only the wheel digest and the empty source diff are used as reproducibility evidence; the PyPI digest itself is the authoritative registry artifact for reuse."
+}

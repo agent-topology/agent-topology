@@ -1,0 +1,5 @@
+OK repeated-join-declaration dedup -> join:a+b:sink
+OK permuted-join-declaration dedup -> join:a+b:sink
+OK delimiter-bearing distinct source sets stay distinct -> [ 'join:a+b\\+c:sink', 'join:a\\+b+c:sink' ]
+OK canonicalStringify succeeds on installed artifact output
+ALL INSTALLED-ARTIFACT BEHAVIOR CHECKS PASSED
