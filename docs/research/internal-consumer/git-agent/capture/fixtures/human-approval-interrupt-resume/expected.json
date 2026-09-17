@@ -1,0 +1,90 @@
+{
+  "attemptOccurrencesByNode": {
+    "draft_status_report": [
+      1
+    ],
+    "triage_failure": [
+      1
+    ]
+  },
+  "captureMechanism": "git_agent.graphs.issue_resolution.create_graph (real, approved graph); real langgraph.types.interrupt() inside the real human_approval node body; fake input/ports reused from git-agent's own test_complete_red_interrupt_observes_steps_and_model_attempts fixture; a host-attached InMemorySaver checkpointer, which git-agent's production factory does not itself provide",
+  "consumerCommit": "b67cb35a6195609a5d89976768fb5a4884f17ca1",
+  "distinctInvocationRunIds": [
+    "invocation-1",
+    "invocation-2"
+  ],
+  "distinctRunIds": [
+    "capture-thread-human-approval-1"
+  ],
+  "eventTypesByInvocation": {
+    "invocation-1": [
+      "step.passed",
+      "step.passed",
+      "step.passed",
+      "step.passed",
+      "attempt.passed",
+      "step.passed",
+      "attempt.passed",
+      "step.passed",
+      "step.passed",
+      "step.passed",
+      "step.awaiting_approval"
+    ],
+    "invocation-2": [
+      "step.passed",
+      "step.passed",
+      "step.passed"
+    ]
+  },
+  "finalOutcome": "red_reported",
+  "firstInvocationPaused": true,
+  "humanApprovalStepOccurrences": [
+    1,
+    2
+  ],
+  "nodeReExecutedOnResume": true,
+  "pausedAtNodeId": "human_approval",
+  "replayVersion": "1",
+  "retryAttemptsObserved": 0,
+  "scenario": "human-approval-interrupt-resume",
+  "secondInvocationPaused": false,
+  "sequencesContiguousPerRun": true,
+  "stepOccurrencesByNode": {
+    "authorize_effect_plan": [
+      1
+    ],
+    "build_effect_plan": [
+      1
+    ],
+    "collect_context": [
+      1
+    ],
+    "draft_status_report": [
+      1
+    ],
+    "finalize_result": [
+      1
+    ],
+    "gate_blocked": [
+      1
+    ],
+    "gate_verification": [
+      1
+    ],
+    "human_approval": [
+      1,
+      2
+    ],
+    "post_status_comment": [
+      1
+    ],
+    "run_verification": [
+      1
+    ],
+    "triage_failure": [
+      1
+    ]
+  },
+  "totalEvents": 14,
+  "unresolvedEvidence": []
+}

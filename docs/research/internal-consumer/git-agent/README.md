@@ -37,3 +37,14 @@ No repository mutation, model call, push or GitHub effect is needed to measure
 those contracts. This review did not execute the workflow or establish a passing
 runtime integration. External fixture/adapter changes belong in git-agent issues;
 producer and CLI changes belong in agent-topology.
+
+## Dynamic capture (issue #191)
+
+[capture/](capture/) has since run: a real interrupt through git-agent's
+actual `human_approval` node (fake input/ports reused from git-agent's own
+tests), paused once and resumed once, advancing IC-03 from `pending` to
+`verified` for this node specifically. See
+[capture/README.md](capture/README.md#disposition) for exactly what is and is
+not proven -- it does not cover campaign-agent, nested/child correlation, or
+retry attempts, each tracked separately under
+[#181](https://github.com/agent-topology/agent-topology/issues/181).
