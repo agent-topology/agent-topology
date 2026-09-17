@@ -13,7 +13,7 @@ future package versions will move together.
   source id's own `+`/`\` characters can no longer forge a collision with a
   differently-grouped source set. No structure-hash algorithm version change;
   every existing valid fixture's join id and hash are unaffected. See
-  [ADR 0014](docs/decisions/0014-join-identity-deduplication-and-unambiguous-encoding.md).
+  [ADR 0015](docs/decisions/0015-join-identity-deduplication-and-unambiguous-encoding.md).
 - Add a machine-readable release-state record and phase-specific documentation
   checks so artifact qualification cannot be mistaken for a completed public
   release.

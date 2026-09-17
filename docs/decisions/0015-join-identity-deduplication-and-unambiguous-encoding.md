@@ -1,4 +1,4 @@
-# 0014. Join identity: deduplicate equivalent declarations, encode sources unambiguously
+# 0015. Join identity: deduplicate equivalent declarations, encode sources unambiguously
 
 - Status: Accepted
 - Date: 2026-09-17

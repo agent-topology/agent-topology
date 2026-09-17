@@ -1,5 +1,7 @@
 # Pre-beta source and consumer review — 2026-09-17
 
+Follow-up: [proposed issue bodies and release dependency plan](issue-plan.md).
+
 ## Decision
 
 Do not freeze the next candidate before resolving the join-identity defect and

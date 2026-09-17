@@ -14,7 +14,7 @@ authority for why a choice was made and when it may be revisited.
 | --- | --- |
 | Project scope, the first consumer, trace correlation, or excluded policy/coverage work | [ADR 0001](0001-scope-topology-extraction-and-trace-correlation.md) |
 | Completeness, producer limitations, graph-specific gaps, strict mode, or unknown routing targets | [ADR 0002](0002-record-what-could-not-be-observed.md) |
-| Stable output, canonical ordering, structure hashes, join identity, or supported framework-version ranges | [ADR 0003](0003-canonical-ordering-and-versioned-structure-hash.md), [ADR 0014](0014-join-identity-deduplication-and-unambiguous-encoding.md) |
+| Stable output, canonical ordering, structure hashes, join identity, or supported framework-version ranges | [ADR 0003](0003-canonical-ordering-and-versioned-structure-hash.md), [ADR 0015](0015-join-identity-deduplication-and-unambiguous-encoding.md) |
 | Diagram data, renderers, visual output, or what conformance compares | [ADR 0004](0004-rendering-is-not-part-of-the-core-document.md) |
 | Core versus `x-*` extensions, vendor neutrality, v0 status, or the evidence required from a second framework | [ADR 0005](0005-vendor-neutrality-is-provisional-at-v0.md) |
 | Experimental consumer interpretation, branch selection evidence, opaque children, sentinel roles, or observed roots versus confirmed entries | [ADR 0008](0008-experimental-consumer-interpretation.md) |
@@ -22,6 +22,7 @@ authority for why a choice was made and when it may be revisited.
 | Numeric canonical byte spelling, the supported numeric domain, or whether a canonicalisation change requires a new hash algorithm version | [ADR 0009](0009-numeric-canonical-form.md), [ADR 0010](0010-numeric-domain-parsed-value-narrowing.md) |
 | Graph identifier uniqueness, ownership, producer selection, composition, or the distinction between graph ids and names | [ADR 0011](0011-document-local-consumer-addressable-graph-ids.md) |
 | Nested/positive-depth traversal, retained parent identity, materialized child graph addressing, `expanded-subgraph-metadata` retirement, or `x-topology-interpretation` revision 2 | [ADR 0012](0012-nested-graph-identity-traversal-and-compatibility.md) |
+| A wrapped/composed child call that hides the compiled child behind a plain node function, `declare_children`, or the `declared-child-call` evidence kind | [ADR 0014](0014-explicit-construction-time-child-declaration.md) |
 | Monorepo/package boundaries, Python versus TypeScript, independent releases, published names/imports, or the `agt` command name | [ADR 0006](0006-repository-layout-and-language-boundaries.md) |
 | Ownership of the `agt` executable, `describe` dispatch, CLI producer discovery, command collisions, or `agt diff` ownership | [ADR 0007](0007-langgraph-owns-the-foundation-cli.md) |
 
@@ -50,7 +51,8 @@ For a change spanning several rows, read every routed ADR. Common paths are:
 | [0011](0011-document-local-consumer-addressable-graph-ids.md) | Accepted | Make graph identifiers unique document-local addresses selected by producer callers, while graph authors continue to own optional display names. |
 | [0012](0012-nested-graph-identity-traversal-and-compatibility.md) | Accepted | Retain runtime-observable parent nodes and address materialized children with deterministic, call-site-derived graph ids at positive depth, reconciling ADR 0008 and ADR 0011 without a topology-version, schema, or hash-algorithm change. |
 | [0013](0013-sentinel-branch-promotion-bar-unmet-compatibility-floor.md) | Accepted | Decline promoting sentinel/branch facts into the core schema — ADR 0008's promotion bar and ADR 0005's second-framework gate remain unmet — and publish an explicit no-silent-removal, no-in-place-redefinition compatibility floor for the experimental extension. |
-| [0014](0014-join-identity-deduplication-and-unambiguous-encoding.md) | Accepted | Deduplicate join declarations that share a sorted source set and target, and escape the `+` join-id delimiter, so both producers stop emitting duplicate or collided join identities; no structure-hash algorithm version change. |
+| [0014](0014-explicit-construction-time-child-declaration.md) | Accepted | Add `declare_children`, an explicit construction-time, runtime-identity declaration a factory makes once per graph, as a second evidence source for ADR 0012's materialized-child identity — additive to, not a replacement of, the existing direct-bound check; rejects both framework-native direct composition and LangGraph's own closure-based subgraph detection as unable to preserve campaign's wrapped-child behavior. |
+| [0015](0015-join-identity-deduplication-and-unambiguous-encoding.md) | Accepted | Deduplicate join declarations that share a sorted source set and target, and escape the `+` join-id delimiter, so both producers stop emitting duplicate or collided join identities; no structure-hash algorithm version change. |
 
 ## Adding or changing a decision
 

@@ -426,7 +426,7 @@ def test_delimiter_bearing_join_sources_is_an_extraction_failure(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """The public API's upstream-unobservable delimiter disposition (see
-    test_join_identity.py and ADR 0014) surfaces through the CLI as the
+    test_join_identity.py and ADR 0015) surfaces through the CLI as the
     existing generic extraction-error status, not a fabricated document.
     """
     target = tmp_path / "graph.py"

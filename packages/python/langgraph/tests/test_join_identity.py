@@ -4,7 +4,7 @@ conformance/fixtures/join-permuted-sources and join-repeated-declaration cover
 the shared, cross-language-equal dedup cases (see conformance/README.md). This
 file covers what cannot be a shared fixture: Python's upstream-unobservable
 delimiter failure, general declaration-order stability for genuinely distinct
-joins, and a negative control against over-eager deduplication. See ADR 0014.
+joins, and a negative control against over-eager deduplication. See ADR 0015.
 """
 
 from __future__ import annotations
