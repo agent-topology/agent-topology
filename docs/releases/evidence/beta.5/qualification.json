@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "coordinatedVersion": "0.1.0-beta.5",
+  "sourceCommit": "dc030305096444908b1ba19a3458a6d97c9cf90b",
+  "branch": "rc/0.1.0-beta.5",
+  "publish": false,
+  "qualifiedAt": "2026-09-17T17:20:36Z",
+  "matrixRuns": [
+    {
+      "workflow": "Python packages",
+      "run": "https://github.com/agent-topology/agent-topology/actions/runs/35251179474",
+      "covers": "Python producer/spec test matrices (3.11-3.14), release-tools/release-docs/public-docs guards"
+    },
+    {
+      "workflow": "TypeScript packages",
+      "run": "https://github.com/agent-topology/agent-topology/actions/runs/35251179473",
+      "covers": "TypeScript producer/spec test matrices (Node 20/22), clean ESM/CommonJS examples, typescript-quality"
+    },
+    {
+      "workflow": "LangGraph compatibility",
+      "run": "https://github.com/agent-topology/agent-topology/actions/runs/35251179697",
+      "covers": "Every supported LangGraph (Python 1.2.10, 1.2.11) and LangGraph.js (1.4.14) version from each producer's compatibility contract, including shared nested conformance and the #182 join-identity fixture set at depths 0/1/2"
+    }
+  ],
+  "packages": [
+    {
+      "name": "agent-topology-spec",
+      "ecosystem": "python",
+      "version": "0.1.0b4",
+      "changed": false,
+      "receipt": "python-spec-qualification.json"
+    },
+    {
+      "name": "agent-topology-langgraph",
+      "ecosystem": "python",
+      "version": "0.1.0b5",
+      "changed": true,
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35251204480",
+      "receipt": "python-langgraph-qualification.json"
+    },
+    {
+      "name": "@agent-topology/spec",
+      "ecosystem": "npm",
+      "version": "0.1.0-beta.4",
+      "changed": false,
+      "receipt": "npm-spec-qualification.json"
+    },
+    {
+      "name": "@agent-topology/langgraph",
+      "ecosystem": "npm",
+      "version": "0.1.0-beta.5",
+      "changed": true,
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35251207022",
+      "receipt": "npm-langgraph-qualification.json"
+    }
+  ],
+  "changedPackageMatrix": {
+    "changed": ["agent-topology-langgraph (0.1.0b5)", "@agent-topology/langgraph (0.1.0-beta.5)"],
+    "unchanged": ["agent-topology-spec (0.1.0b4)", "@agent-topology/spec (0.1.0-beta.4)"],
+    "unqualifiedFrameworkVersionsAdmitted": "none: Python compatibility manifest stays exactly {1.2.10, 1.2.11} (packages/python/langgraph/src/agent_topology/langgraph/_compatibility.json), JS stays exactly {1.4.14} (packages/typescript/langgraph/src/compatibility.json); unchanged from beta.4. #177 (future 1.3.x/1.4.x qualification) is explicitly out of scope for this candidate."
+  },
+  "localVerification": {
+    "commands": [
+      "uv run --project packages/python/spec --group test python -m pytest tests/",
+      "uv run --project packages/python/spec --group test pytest packages/python/spec/tests",
+      "uv run --project packages/python/spec --group test pytest spec/tests",
+      "uv run --project packages/python/langgraph --group test pytest packages/python/langgraph/tests",
+      "uvx --from ruff==0.16.7 ruff format --check packages/python scripts tests",
+      "uvx --from ruff==0.16.7 ruff check packages/python scripts tests",
+      "python3 scripts/check_release_docs.py --phase candidate",
+      "npm --prefix packages/typescript/spec run check",
+      "npm --prefix packages/typescript/langgraph run check",
+      "packages/typescript/spec/node_modules/.bin/prettier --check scripts/*.mjs tests/*.mjs .github/workflows/typescript-packages.yml .github/workflows/release-npm.yml",
+      "node --test tests/typescript-release-tools.test.mjs"
+    ],
+    "outcome": "All commands passed on the frozen commit (dc030305096444908b1ba19a3458a6d97c9cf90b) checked out locally. `pytest tests/` (255 passed, 2 skipped) covers test_declared_children.py and test_join_identity.py from the source tree, plus consumer replay and cross-language regression suites with no dedicated CI workflow (test_consumer_regression.py, test_internal_consumer_capture.py, test_internal_consumer_dynamic_capture.py, test_trace_correlation_example.py, test_campaign_agent_*.py, test_git_agent_*.py, spec/tests). packages/python/langgraph/tests (216 passed) and packages/python/spec/tests (40 passed) run in isolation too. TypeScript: packages/typescript/spec check (43 tests) and packages/typescript/langgraph check (164 tests, including join-identity.test.mjs) both passed."
+  },
+  "artifactBehaviorVerification": {
+    "purpose": "The shared install smoke scripts invoked by both release workflows (scripts/smoke_langgraph_installation.py, scripts/smoke_typescript_installation.mjs) only exercise a minimal single-node depth=0 graph; they were not modified for this qualification. Beta.5's two behavior changes (#182 join-identity dedup/escaping, ADR 0015; #185 declare_children, ADR 0014, Python-only) were verified directly against the same clean-installed wheel/tarball artifacts referenced above, not the source tree.",
+    "python": {
+      "artifacts": [
+        "agent_topology_spec-0.1.0b4-py3-none-any.whl",
+        "agent_topology_langgraph-0.1.0b5-py3-none-any.whl"
+      ],
+      "environment": "langgraph==1.2.11 in a clean venv",
+      "script": "verify_python_installed_behavior.py",
+      "outputLog": "python-installed-behavior-output.log",
+      "checks": [
+        "repeated join declaration (add_edge(['a','b'],'sink') twice) dedups to one join:a+b:sink",
+        "permuted join declaration (['a','b'] then ['b','a']) dedups to the same join:a+b:sink",
+        "declare_children at depth=0 reports opaque-child with evidence.kind=declared-child-call",
+        "declare_children at depth=1 materializes subgraphId + materialized-subgraph-reference evidence, and the document validates",
+        "the materialized child's node-id set is identical to the child's own standalone describe() output",
+        "agt describe --depth 1 --strict CLI flag produces the same materialized graph set as the library call, and output is canonical JSON"
+      ],
+      "outcome": "All checks passed against the clean-installed wheel; see python-installed-behavior-output.log."
+    },
+    "typescript": {
+      "artifacts": [
+        "agent-topology-spec-0.1.0-beta.4.tgz",
+        "agent-topology-langgraph-0.1.0-beta.5.tgz"
+      ],
+      "environment": "@langchain/langgraph@1.4.14 in a clean npm install",
+      "script": "verify_ts_installed_behavior.mjs behavior",
+      "outputLog": "ts-installed-behavior-output.log",
+      "checks": [
+        "repeated join declaration dedups to one join:a+b:sink",
+        "permuted join declaration dedups to the same join:a+b:sink",
+        "delimiter-bearing distinct source sets ([a+b,c] vs [a,b+c]) stay distinct: join:a+b\\+c:sink vs join:a\\+b+c:sink, both valid",
+        "canonicalStringify succeeds on the installed artifact's describe() output"
+      ],
+      "outcome": "All checks passed against the clean-installed tarball; see ts-installed-behavior-output.log. No TypeScript declare_children check: beta.5 makes no TS producer change for that feature (Python-only, per the candidate notes)."
+    }
+  },
+  "exactVersionRefusal": {
+    "purpose": "Confirm artifact metadata and the runtime exact-version refusal agree on the installed candidate artifacts, using a nearby unsupported negative case for each changed language interface, per issue #171's acceptance criterion.",
+    "python": {
+      "negativeCase": "langgraph==1.2.9 (the adjacent patch immediately below the supported 1.2.10-1.2.11 range; 1.2.12 does not exist on PyPI as of this qualification)",
+      "libraryOutputLog": "python-version-refusal-output.log",
+      "cliOutputLog": "python-cli-version-refusal-output.log",
+      "outcome": "Both agent_topology.langgraph.describe() and the `agt describe` CLI (installed from the same wheel) raise/report UnsupportedLangGraphVersionError naming the exact tested versions (1.2.10, 1.2.11) and an install remediation command; CLI exits 5."
+    },
+    "typescript": {
+      "negativeCase": "@langchain/langgraph@1.4.15-rc.0 (a real published prerelease immediately above the supported 1.4.14; installed as a single deduped copy via npm `overrides`, since the producer's own package.json pins @langchain/langgraph as an exact regular dependency, not a peer, so a plain `npm install` of the tarball always nests its own 1.4.14 copy alongside any differently-versioned top-level install -- refusal is only reachable when a consumer's tooling forces one shared instance, e.g. npm overrides/resolutions, a monorepo hoisting a single copy, or Yarn PnP)",
+      "outputLog": "ts-version-refusal-output.log",
+      "outcome": "describe() from the installed tarball rejects with UnsupportedLangGraphVersionError naming the exact tested version (1.4.14) and an install remediation command."
+    }
+  },
+  "installedConsumerReplay": {
+    "purpose": "Reproduce #178/#186's pinned campaign-agent consumer acceptance (six declared-child hierarchy links across channel_concept/channel_production) against the clean-installed beta.5 candidate wheels instead of the agent-topology source tree, per issue #171's acceptance criterion. No workflow node is invoked (CompiledStateGraph.invoke/ainvoke are patched to raise); campaign-agent's own test-support fixtures (`tests.<factory>.support.policy()`, i.e. fake ports) supply construction-time dependencies, so no real LLM/tool/network call occurs.",
+    "consumerRepository": "https://github.com/milocosmopolitan/campaign-agent",
+    "consumerCommit": "a1532d5eed2d356792d5c3ee460d2bb8fb23db1e",
+    "consumerCommitDescription": "pinned merge of campaign-agent PR #63 (no tag/release exists); same commit #178/#186's original acceptance used",
+    "installedArtifacts": [
+      "agent_topology_spec-0.1.0b4-py3-none-any.whl",
+      "agent_topology_langgraph-0.1.0b5-py3-none-any.whl"
+    ],
+    "script": "verify_declared_children_installed_candidate.py (adapted from docs/research/internal-consumer/campaign-agent/verify_declared_children.py to import the installed wheels from site-packages instead of prepending the agent-topology source tree)",
+    "output": "hierarchy-links-installed-candidate.json",
+    "outcome": "All six relationships (channel_concept/{prepare_brief,draft_copy,review_copy}, channel_production/{revise_copy,review_copy,prepare_copy_feedback}) reproduce depth-0 declared-child-call evidence and depth-2 materialization whose node-id set exactly matches each child's own standalone describe() output (9/9 nodes each) -- identical to the #186 review's findings, now against the installed candidate artifact rather than source. producerSource in the output JSON confirms agent_topology.langgraph was imported from the venv's site-packages wheel, not a local checkout."
+  },
+  "cleanState": {
+    "ciWorkflows": "Every dispatched/triggered workflow run above executed `git diff --exit-code && test -z \"$(git status --porcelain --untracked-files=all)\"` after building and installing; none reported a source or working-tree change.",
+    "localBuilds": "Local `uv build` and `npm pack` reruns of the frozen commit left the checkout clean (git status verified); no artifact or source was modified after qualification."
+  },
+  "registryBackedProducerPreflight": "Not applicable to this qualification: both changed producers are unpublished candidates (publish=false throughout), so verify_spec_registry.py / verify_npm_registry_peer.mjs (which gate publish=true only) were correctly not exercised. Publication, including that preflight, is out of this issue's scope (issue #171 explicitly does not publish artifacts) and belongs to the follow-on publication issue (#172).",
+  "notes": "Non-publishing qualification only, for issue #171 (parent #166, blocked-by #170). No artifact was published to any registry. Unchanged packages (agent-topology-spec 0.1.0b4, @agent-topology/spec 0.1.0-beta.4) were reused with registry-digest evidence rather than rebuilt/re-authorized; see their receipts' `unchanged` fields. See docs/releases/v0.1.0-beta.5.md for the candidate release notes and docs/releases/release-state.json candidate.qualification for the state-tracked summary."
+}

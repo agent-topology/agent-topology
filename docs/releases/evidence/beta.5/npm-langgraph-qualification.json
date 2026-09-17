@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "ecosystem": "npm",
+  "package": "langgraph",
+  "name": "@agent-topology/langgraph",
+  "version": "0.1.0-beta.5",
+  "commit": "dc030305096444908b1ba19a3458a6d97c9cf90b",
+  "checks": [
+    "artifact-inspection",
+    "clean-installation",
+    "package-tests",
+    "supported-langgraph-conformance",
+    "typescript-quality"
+  ],
+  "artifact": {
+    "filename": "agent-topology-langgraph-0.1.0-beta.5.tgz",
+    "name": "@agent-topology/langgraph",
+    "package": "langgraph",
+    "sha256": "138ff62729f623bcf441b75ecb4ae06f82ba564a57d8fe7884c9fcc7b98c5e5c",
+    "version": "0.1.0-beta.5"
+  }
+}
