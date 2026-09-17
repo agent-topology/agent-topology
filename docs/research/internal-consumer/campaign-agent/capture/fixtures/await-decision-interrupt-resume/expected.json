@@ -1,0 +1,94 @@
+{
+  "awaitDecisionTaskIdStableAcrossInvocations": true,
+  "awaitDecisionTaskOccurrences": [
+    1,
+    2
+  ],
+  "captureMechanism": "campaign_agent.campaign_contract.create_graph (real, approved graph); real langgraph.types.interrupt() inside the real await_decision node body; fake model gateway and DecisionAuthorization reused from campaign-agent's own test_approve_produces_canonical_hash_with_no_duplicate_fields fixture; a host-attached InMemorySaver checkpointer, which campaign-agent's production factory does not itself provide; node/task identity read from LangGraph's own stream_mode='debug' task_result events (the only mechanism that observes await_decision at all -- campaign_contract's own code never calls RunObserver for it, unlike git-agent's human_approval), cross-checked against agent_workflow_core.observers.RunObserver step/attempt callbacks for the two nodes (draft_rules, draft_concept) that do call it",
+  "consumerCommit": "a1532d5eed2d356792d5c3ee460d2bb8fb23db1e",
+  "distinctInvocationRunIds": [
+    "invocation-1",
+    "invocation-2"
+  ],
+  "distinctRunIds": [
+    "capture-thread-await-decision-1"
+  ],
+  "eventTypesByInvocation": {
+    "invocation-1": [
+      "task.passed",
+      "observer.attempt.passed",
+      "observer.step.passed",
+      "task.passed",
+      "task.passed",
+      "observer.attempt.passed",
+      "observer.step.passed",
+      "task.passed",
+      "task.passed",
+      "task.passed",
+      "task.awaiting_approval"
+    ],
+    "invocation-2": [
+      "task.passed",
+      "task.passed",
+      "task.passed"
+    ]
+  },
+  "finalOutcome": "approved",
+  "firstInvocationPaused": true,
+  "nodeReExecutedOnResume": true,
+  "observerAndTaskOccurrencesAgreeForModelNodes": true,
+  "observerAttemptOccurrencesByNode": {
+    "draft_concept": [
+      1
+    ],
+    "draft_rules": [
+      1
+    ]
+  },
+  "observerStepOccurrencesByNode": {
+    "draft_concept": [
+      1
+    ],
+    "draft_rules": [
+      1
+    ]
+  },
+  "pausedAtNodeId": "await_decision",
+  "replayVersion": "1",
+  "retryAttemptsObserved": 0,
+  "scenario": "await-decision-interrupt-resume",
+  "secondInvocationPaused": false,
+  "sequencesContiguousPerRun": true,
+  "taskOccurrencesByNode": {
+    "apply_decision": [
+      1
+    ],
+    "approved": [
+      1
+    ],
+    "await_decision": [
+      1,
+      2
+    ],
+    "commit_concept": [
+      1
+    ],
+    "commit_rules": [
+      1
+    ],
+    "draft_concept": [
+      1
+    ],
+    "draft_rules": [
+      1
+    ],
+    "gate_readiness_check": [
+      1
+    ],
+    "validate_input": [
+      1
+    ]
+  },
+  "totalEvents": 14,
+  "unresolvedEvidence": []
+}
