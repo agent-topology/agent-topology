@@ -1,0 +1,355 @@
+{
+  "events": [
+    {
+      "eventType": "step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [],
+      "nodeId": "collect_context",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 1
+    },
+    {
+      "eventType": "step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [],
+      "nodeId": "gate_blocked",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 2
+    },
+    {
+      "eventType": "step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [],
+      "nodeId": "run_verification",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 3
+    },
+    {
+      "eventType": "step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [],
+      "nodeId": "gate_verification",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 4
+    },
+    {
+      "eventType": "attempt.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 1,
+        "fields": [
+          {
+            "kind": "kind",
+            "name": "node.id",
+            "value": "triage_failure"
+          },
+          {
+            "kind": "outcome",
+            "name": "verdict",
+            "value": "accepted"
+          },
+          {
+            "kind": "outcome",
+            "name": "directive",
+            "value": "complete"
+          },
+          {
+            "kind": "usage",
+            "name": "usage",
+            "value": {
+              "cost_usd": 0.0,
+              "input_tokens": 0,
+              "output_tokens": 0
+            }
+          },
+          {
+            "kind": "hash",
+            "name": "policy.hash",
+            "value": "e0c31db39e65ff5792c2f80a38437360659d45cd012f0e13b7e6d74beb035bf5"
+          },
+          {
+            "kind": "hash",
+            "name": "bundle.hash",
+            "value": "f00ac71c8c315fb687941211a25353e4fa0543610bb3ba1337bc3f1e6f795d65"
+          },
+          {
+            "kind": "kind",
+            "name": "capability.id",
+            "value": "cap.failure_triage"
+          },
+          {
+            "kind": "version",
+            "name": "bundle.version",
+            "value": 1
+          }
+        ],
+        "profileHash": "069246901be61167fc026b9f351ae7115a0fc9c2baced705b683909feff4f653"
+      },
+      "nodeId": "triage_failure",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 5
+    },
+    {
+      "eventType": "step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [
+        {
+          "kind": "hash",
+          "name": "policy.hash",
+          "value": "e0c31db39e65ff5792c2f80a38437360659d45cd012f0e13b7e6d74beb035bf5"
+        },
+        {
+          "kind": "hash",
+          "name": "bundle.hash",
+          "value": "f00ac71c8c315fb687941211a25353e4fa0543610bb3ba1337bc3f1e6f795d65"
+        },
+        {
+          "kind": "kind",
+          "name": "capability.id",
+          "value": "cap.failure_triage"
+        },
+        {
+          "kind": "version",
+          "name": "bundle.version",
+          "value": 1
+        }
+      ],
+      "nodeId": "triage_failure",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 6
+    },
+    {
+      "eventType": "attempt.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 1,
+        "fields": [
+          {
+            "kind": "kind",
+            "name": "node.id",
+            "value": "draft_status_report"
+          },
+          {
+            "kind": "outcome",
+            "name": "verdict",
+            "value": "accepted"
+          },
+          {
+            "kind": "outcome",
+            "name": "directive",
+            "value": "complete"
+          },
+          {
+            "kind": "usage",
+            "name": "usage",
+            "value": {
+              "cost_usd": 0.0,
+              "input_tokens": 0,
+              "output_tokens": 0
+            }
+          },
+          {
+            "kind": "hash",
+            "name": "policy.hash",
+            "value": "e0c31db39e65ff5792c2f80a38437360659d45cd012f0e13b7e6d74beb035bf5"
+          },
+          {
+            "kind": "hash",
+            "name": "bundle.hash",
+            "value": "6848c854c9573887f31f2bfc1bd519c758bf2103dbad683d6eef7f939a9f2cce"
+          },
+          {
+            "kind": "kind",
+            "name": "capability.id",
+            "value": "cap.status_report"
+          },
+          {
+            "kind": "version",
+            "name": "bundle.version",
+            "value": 1
+          }
+        ],
+        "profileHash": "069246901be61167fc026b9f351ae7115a0fc9c2baced705b683909feff4f653"
+      },
+      "nodeId": "draft_status_report",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 7
+    },
+    {
+      "eventType": "step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [
+        {
+          "kind": "hash",
+          "name": "policy.hash",
+          "value": "e0c31db39e65ff5792c2f80a38437360659d45cd012f0e13b7e6d74beb035bf5"
+        },
+        {
+          "kind": "hash",
+          "name": "bundle.hash",
+          "value": "6848c854c9573887f31f2bfc1bd519c758bf2103dbad683d6eef7f939a9f2cce"
+        },
+        {
+          "kind": "kind",
+          "name": "capability.id",
+          "value": "cap.status_report"
+        },
+        {
+          "kind": "version",
+          "name": "bundle.version",
+          "value": 1
+        }
+      ],
+      "nodeId": "draft_status_report",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 8
+    },
+    {
+      "eventType": "step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [
+        {
+          "kind": "count",
+          "name": "effect.receipt_count",
+          "value": 0
+        }
+      ],
+      "nodeId": "build_effect_plan",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 9
+    },
+    {
+      "eventType": "step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [
+        {
+          "kind": "count",
+          "name": "effect.receipt_count",
+          "value": 0
+        }
+      ],
+      "nodeId": "authorize_effect_plan",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 10
+    },
+    {
+      "eventType": "step.awaiting_approval",
+      "invocationRunId": "invocation-1",
+      "metadata": [],
+      "nodeId": "human_approval",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 11
+    },
+    {
+      "eventType": "step.passed",
+      "invocationRunId": "invocation-2",
+      "metadata": [
+        {
+          "kind": "count",
+          "name": "effect.receipt_count",
+          "value": 0
+        }
+      ],
+      "nodeId": "human_approval",
+      "nodeOccurrence": 2,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 12
+    },
+    {
+      "eventType": "step.passed",
+      "invocationRunId": "invocation-2",
+      "metadata": [
+        {
+          "kind": "outcome",
+          "name": "result.outcome",
+          "value": "red_reported"
+        },
+        {
+          "kind": "count",
+          "name": "effect.receipt_count",
+          "value": 1
+        },
+        {
+          "kind": "hash",
+          "name": "effect.receipt_hash.0",
+          "value": "4ea7e15140dd7f58c3df971069726822e47ae9d46946918210bdfe38b1ede57c"
+        }
+      ],
+      "nodeId": "post_status_comment",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 13
+    },
+    {
+      "eventType": "step.passed",
+      "invocationRunId": "invocation-2",
+      "metadata": [
+        {
+          "kind": "count",
+          "name": "effect.receipt_count",
+          "value": 1
+        },
+        {
+          "kind": "hash",
+          "name": "effect.receipt_hash.0",
+          "value": "4ea7e15140dd7f58c3df971069726822e47ae9d46946918210bdfe38b1ede57c"
+        }
+      ],
+      "nodeId": "finalize_result",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-human-approval-1",
+      "sequence": 14
+    }
+  ],
+  "finalOutcome": "red_reported",
+  "invocations": [
+    {
+      "label": "invocation-1 (real human_approval interrupt() call, graph pauses)",
+      "paused": true,
+      "pausedAtNodeId": "human_approval",
+      "run_id": "invocation-1"
+    },
+    {
+      "label": "invocation-2 (Command(resume=...), same checkpoint thread)",
+      "paused": false,
+      "pausedAtNodeId": null,
+      "run_id": "invocation-2"
+    }
+  ],
+  "provenance": {
+    "captureMechanism": "git_agent.graphs.issue_resolution.create_graph (real, approved graph); real langgraph.types.interrupt() inside the real human_approval node body; fake input/ports reused from git-agent's own test_complete_red_interrupt_observes_steps_and_model_attempts fixture; a host-attached InMemorySaver checkpointer, which git-agent's production factory does not itself provide",
+    "consumer": {
+      "commit": "b67cb35a6195609a5d89976768fb5a4884f17ca1",
+      "ref": "main",
+      "repository": "https://github.com/milocosmopolitan/git-agent"
+    },
+    "framework": {
+      "name": "langgraph",
+      "version": "1.2.11"
+    },
+    "generatedAt": "2026-09-17T00:00:00Z",
+    "generator": "docs/research/internal-consumer/git-agent/capture/capture.py",
+    "kind": "sanitized-source-pinned-capture",
+    "sanitization": [
+      "thread_id and invocation_run_id are host-chosen literals, never real UUIDs",
+      "the resume HumanApprovalResponse (decision/approver_subject/decided_at/expires_at) is a fabricated fixture value, not a real decision or authorization payload",
+      "plan_hash/policy_hash/authorization_hash appear only as opaque hex digests already treated as safe by git-agent's own observer metadata contract (never raw plan/payload content)",
+      "no prompts, payloads, paths, or credentials enter observer metadata -- enforced structurally by agent_workflow_core.observers.MetadataField, not by this script",
+      "no real GitHub/git effect occurred: the issue-comment port is scripted (FakeGitHubIssueMutatePort), the same fake used by git-agent's own tests"
+    ],
+    "scenario": "human-approval-interrupt-resume",
+    "unresolvedEvidence": []
+  },
+  "traceVersion": "1"
+}
