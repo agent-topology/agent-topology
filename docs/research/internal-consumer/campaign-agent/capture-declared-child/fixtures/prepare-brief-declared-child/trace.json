@@ -1,0 +1,813 @@
+{
+  "events": [
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "validate_input",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 1,
+      "taskId": "83e84b71-83a1-eee9-90f8-ae911e4d2f66"
+    },
+    {
+      "eventType": "observer.attempt.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 1,
+        "fields": [
+          {
+            "kind": "kind",
+            "name": "node.id",
+            "value": "design_direction"
+          },
+          {
+            "kind": "outcome",
+            "name": "verdict",
+            "value": "accepted"
+          },
+          {
+            "kind": "outcome",
+            "name": "directive",
+            "value": "complete"
+          },
+          {
+            "kind": "usage",
+            "name": "usage",
+            "value": {
+              "cost_usd": 4e-05,
+              "input_tokens": 10,
+              "output_tokens": 5
+            }
+          },
+          {
+            "kind": "hash",
+            "name": "policy.hash",
+            "value": "f3e10fe71bb0c1fb841bac3efcbfd65a95671924a5fac9d123fcc86312426bc9"
+          },
+          {
+            "kind": "hash",
+            "name": "bundle.hash",
+            "value": "5cabae87e7293205ccc1740520e298bf8ff2ab25df24082c1275e7131a180336"
+          },
+          {
+            "kind": "kind",
+            "name": "capability.id",
+            "value": "cap.channel_structure"
+          },
+          {
+            "kind": "version",
+            "name": "bundle.version",
+            "value": 1
+          }
+        ],
+        "profileHash": "42524c34696118e52c0e30221f054725ab1445142014202706fed2042cce1a42"
+      },
+      "nestedUnderNodeId": null,
+      "nodeId": "design_direction",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 2
+    },
+    {
+      "eventType": "observer.step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [
+        {
+          "kind": "hash",
+          "name": "policy.hash",
+          "value": "f3e10fe71bb0c1fb841bac3efcbfd65a95671924a5fac9d123fcc86312426bc9"
+        },
+        {
+          "kind": "hash",
+          "name": "bundle.hash",
+          "value": "5cabae87e7293205ccc1740520e298bf8ff2ab25df24082c1275e7131a180336"
+        },
+        {
+          "kind": "kind",
+          "name": "capability.id",
+          "value": "cap.channel_structure"
+        },
+        {
+          "kind": "version",
+          "name": "bundle.version",
+          "value": 1
+        }
+      ],
+      "nestedUnderNodeId": null,
+      "nodeId": "design_direction",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 3
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "design_direction",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 4,
+      "taskId": "01b59dc9-fd0d-1319-c785-670ba555d20b"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "validate_design_output",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 5,
+      "taskId": "95f54f29-71cc-980d-62bb-08a52405a66a"
+    },
+    {
+      "eventType": "observer.attempt.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 1,
+        "fields": [
+          {
+            "kind": "kind",
+            "name": "node.id",
+            "value": "select_evidence"
+          },
+          {
+            "kind": "outcome",
+            "name": "verdict",
+            "value": "accepted"
+          },
+          {
+            "kind": "outcome",
+            "name": "directive",
+            "value": "complete"
+          },
+          {
+            "kind": "usage",
+            "name": "usage",
+            "value": {
+              "cost_usd": 4e-05,
+              "input_tokens": 10,
+              "output_tokens": 5
+            }
+          },
+          {
+            "kind": "hash",
+            "name": "policy.hash",
+            "value": "14fa04ad8c404ddd8357cc40a52cbc406191a1904128a785667b199a54995fe6"
+          },
+          {
+            "kind": "hash",
+            "name": "bundle.hash",
+            "value": "63cc9d180a51ec775cc89cfb6e4641fdf852fb0fe5e83af3eb7348c52d06f153"
+          },
+          {
+            "kind": "kind",
+            "name": "capability.id",
+            "value": "cap.copy_brief_evidence_select"
+          },
+          {
+            "kind": "version",
+            "name": "bundle.version",
+            "value": 1
+          }
+        ],
+        "profileHash": "42524c34696118e52c0e30221f054725ab1445142014202706fed2042cce1a42"
+      },
+      "nestedUnderNodeId": "prepare_brief",
+      "nodeId": "select_evidence",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 6
+    },
+    {
+      "eventType": "observer.step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [
+        {
+          "kind": "hash",
+          "name": "policy.hash",
+          "value": "14fa04ad8c404ddd8357cc40a52cbc406191a1904128a785667b199a54995fe6"
+        },
+        {
+          "kind": "hash",
+          "name": "bundle.hash",
+          "value": "63cc9d180a51ec775cc89cfb6e4641fdf852fb0fe5e83af3eb7348c52d06f153"
+        },
+        {
+          "kind": "kind",
+          "name": "capability.id",
+          "value": "cap.copy_brief_evidence_select"
+        },
+        {
+          "kind": "version",
+          "name": "bundle.version",
+          "value": 1
+        }
+      ],
+      "nestedUnderNodeId": "prepare_brief",
+      "nodeId": "select_evidence",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 7
+    },
+    {
+      "declaredChildGraphName": "channel_concept.copy_brief_prepare",
+      "declaredChildIdentityConfirmed": true,
+      "eventType": "invoke.declared-child-call",
+      "invocationRunId": "invocation-1",
+      "nodeId": "prepare_brief",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 8
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "prepare_brief",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 9,
+      "taskId": "d505a613-ef97-0637-c194-412443e2fd98"
+    },
+    {
+      "eventType": "observer.attempt.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 1,
+        "fields": [
+          {
+            "kind": "kind",
+            "name": "node.id",
+            "value": "generate"
+          },
+          {
+            "kind": "outcome",
+            "name": "verdict",
+            "value": "accepted"
+          },
+          {
+            "kind": "outcome",
+            "name": "directive",
+            "value": "complete"
+          },
+          {
+            "kind": "usage",
+            "name": "usage",
+            "value": {
+              "cost_usd": 4e-05,
+              "input_tokens": 10,
+              "output_tokens": 5
+            }
+          },
+          {
+            "kind": "hash",
+            "name": "policy.hash",
+            "value": "6b6490bfe8cac2b5bc68f044e98b8bf98757033ac6d196931115445d610a3046"
+          },
+          {
+            "kind": "hash",
+            "name": "bundle.hash",
+            "value": "d4c1df4f71605c53bb7b505b0e393b797af722ba522fa1ef9124a4812be4f363"
+          },
+          {
+            "kind": "kind",
+            "name": "capability.id",
+            "value": "cap.copy_generate"
+          },
+          {
+            "kind": "version",
+            "name": "bundle.version",
+            "value": 1
+          }
+        ],
+        "profileHash": "42524c34696118e52c0e30221f054725ab1445142014202706fed2042cce1a42"
+      },
+      "nestedUnderNodeId": "draft_copy",
+      "nodeId": "generate",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 10
+    },
+    {
+      "eventType": "observer.step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [
+        {
+          "kind": "hash",
+          "name": "policy.hash",
+          "value": "6b6490bfe8cac2b5bc68f044e98b8bf98757033ac6d196931115445d610a3046"
+        },
+        {
+          "kind": "hash",
+          "name": "bundle.hash",
+          "value": "d4c1df4f71605c53bb7b505b0e393b797af722ba522fa1ef9124a4812be4f363"
+        },
+        {
+          "kind": "kind",
+          "name": "capability.id",
+          "value": "cap.copy_generate"
+        },
+        {
+          "kind": "version",
+          "name": "bundle.version",
+          "value": 1
+        }
+      ],
+      "nestedUnderNodeId": "draft_copy",
+      "nodeId": "generate",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 11
+    },
+    {
+      "declaredChildGraphName": "channel_concept.copy_draft",
+      "declaredChildIdentityConfirmed": true,
+      "eventType": "invoke.declared-child-call",
+      "invocationRunId": "invocation-1",
+      "nodeId": "draft_copy",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 12
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "draft_copy",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 13,
+      "taskId": "841471fe-447c-4029-c96a-8dc33674467e"
+    },
+    {
+      "eventType": "observer.attempt.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 1,
+        "fields": [
+          {
+            "kind": "kind",
+            "name": "node.id",
+            "value": "review_message"
+          },
+          {
+            "kind": "outcome",
+            "name": "verdict",
+            "value": "accepted"
+          },
+          {
+            "kind": "outcome",
+            "name": "directive",
+            "value": "complete"
+          },
+          {
+            "kind": "usage",
+            "name": "usage",
+            "value": {
+              "cost_usd": 4e-05,
+              "input_tokens": 10,
+              "output_tokens": 5
+            }
+          },
+          {
+            "kind": "hash",
+            "name": "policy.hash",
+            "value": "24cea1660b0ebf0c963854e1bd8738575c1e5c2ba72e4367ba38ad0a5ee349a4"
+          },
+          {
+            "kind": "hash",
+            "name": "bundle.hash",
+            "value": "afbf6a87a8c3260b3977893fc5b1272a3fd51e198bb6badf7de5516f56caa96c"
+          },
+          {
+            "kind": "kind",
+            "name": "capability.id",
+            "value": "cap.copy_assess"
+          },
+          {
+            "kind": "version",
+            "name": "bundle.version",
+            "value": 1
+          }
+        ],
+        "profileHash": "42524c34696118e52c0e30221f054725ab1445142014202706fed2042cce1a42"
+      },
+      "nestedUnderNodeId": "review_copy",
+      "nodeId": "review_message",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 14
+    },
+    {
+      "eventType": "observer.step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [
+        {
+          "kind": "hash",
+          "name": "policy.hash",
+          "value": "24cea1660b0ebf0c963854e1bd8738575c1e5c2ba72e4367ba38ad0a5ee349a4"
+        },
+        {
+          "kind": "hash",
+          "name": "bundle.hash",
+          "value": "afbf6a87a8c3260b3977893fc5b1272a3fd51e198bb6badf7de5516f56caa96c"
+        },
+        {
+          "kind": "kind",
+          "name": "capability.id",
+          "value": "cap.copy_assess"
+        },
+        {
+          "kind": "version",
+          "name": "bundle.version",
+          "value": 1
+        }
+      ],
+      "nestedUnderNodeId": "review_copy",
+      "nodeId": "review_message",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 15
+    },
+    {
+      "declaredChildGraphName": "channel_concept.copy_review",
+      "declaredChildIdentityConfirmed": true,
+      "eventType": "invoke.declared-child-call",
+      "invocationRunId": "invocation-1",
+      "nodeId": "review_copy",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 16
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "review_copy",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 17,
+      "taskId": "c7c04042-9313-3d64-65ce-86f90b329b06"
+    },
+    {
+      "eventType": "observer.attempt.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 1,
+        "fields": [
+          {
+            "kind": "kind",
+            "name": "node.id",
+            "value": "assess_direction"
+          },
+          {
+            "kind": "outcome",
+            "name": "verdict",
+            "value": "accepted"
+          },
+          {
+            "kind": "outcome",
+            "name": "directive",
+            "value": "complete"
+          },
+          {
+            "kind": "usage",
+            "name": "usage",
+            "value": {
+              "cost_usd": 4e-05,
+              "input_tokens": 10,
+              "output_tokens": 5
+            }
+          },
+          {
+            "kind": "hash",
+            "name": "policy.hash",
+            "value": "f3e10fe71bb0c1fb841bac3efcbfd65a95671924a5fac9d123fcc86312426bc9"
+          },
+          {
+            "kind": "hash",
+            "name": "bundle.hash",
+            "value": "2d6e2831d20e12d83ffd5a0c1760b0b25be18012d184b1785187c592c9fe7ab8"
+          },
+          {
+            "kind": "kind",
+            "name": "capability.id",
+            "value": "cap.direction_assess"
+          },
+          {
+            "kind": "version",
+            "name": "bundle.version",
+            "value": 1
+          }
+        ],
+        "profileHash": "42524c34696118e52c0e30221f054725ab1445142014202706fed2042cce1a42"
+      },
+      "nestedUnderNodeId": null,
+      "nodeId": "assess_direction",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 18
+    },
+    {
+      "eventType": "observer.step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [
+        {
+          "kind": "hash",
+          "name": "policy.hash",
+          "value": "f3e10fe71bb0c1fb841bac3efcbfd65a95671924a5fac9d123fcc86312426bc9"
+        },
+        {
+          "kind": "hash",
+          "name": "bundle.hash",
+          "value": "2d6e2831d20e12d83ffd5a0c1760b0b25be18012d184b1785187c592c9fe7ab8"
+        },
+        {
+          "kind": "kind",
+          "name": "capability.id",
+          "value": "cap.direction_assess"
+        },
+        {
+          "kind": "version",
+          "name": "bundle.version",
+          "value": 1
+        }
+      ],
+      "nestedUnderNodeId": null,
+      "nodeId": "assess_direction",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 19
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "assess_direction",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 20,
+      "taskId": "96136cd5-c1f3-3b23-1b28-fccd97a533e3"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "validate_assess_output",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 21,
+      "taskId": "2eef21c9-ef49-b09e-2891-7aafa578f396"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "make_wireframe",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 22,
+      "taskId": "8e39aed4-63fa-41ea-3313-b6d389ae3ea9"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "next_direction",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 23,
+      "taskId": "c1f1d8de-d5e6-4f13-69a1-6794da95ac22"
+    },
+    {
+      "eventType": "observer.attempt.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": {
+        "attemptNumber": 1,
+        "fields": [
+          {
+            "kind": "kind",
+            "name": "node.id",
+            "value": "compare_directions"
+          },
+          {
+            "kind": "outcome",
+            "name": "verdict",
+            "value": "accepted"
+          },
+          {
+            "kind": "outcome",
+            "name": "directive",
+            "value": "complete"
+          },
+          {
+            "kind": "usage",
+            "name": "usage",
+            "value": {
+              "cost_usd": 4e-05,
+              "input_tokens": 10,
+              "output_tokens": 5
+            }
+          },
+          {
+            "kind": "hash",
+            "name": "policy.hash",
+            "value": "f3e10fe71bb0c1fb841bac3efcbfd65a95671924a5fac9d123fcc86312426bc9"
+          },
+          {
+            "kind": "hash",
+            "name": "bundle.hash",
+            "value": "54836db377b7a33d4ab565dba595d3094178ca5b55fad9cbd23d12273ba05e59"
+          },
+          {
+            "kind": "kind",
+            "name": "capability.id",
+            "value": "cap.direction_compare"
+          },
+          {
+            "kind": "version",
+            "name": "bundle.version",
+            "value": 1
+          }
+        ],
+        "profileHash": "42524c34696118e52c0e30221f054725ab1445142014202706fed2042cce1a42"
+      },
+      "nestedUnderNodeId": null,
+      "nodeId": "compare_directions",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 24
+    },
+    {
+      "eventType": "observer.step.passed",
+      "invocationRunId": "invocation-1",
+      "metadata": [
+        {
+          "kind": "hash",
+          "name": "policy.hash",
+          "value": "f3e10fe71bb0c1fb841bac3efcbfd65a95671924a5fac9d123fcc86312426bc9"
+        },
+        {
+          "kind": "hash",
+          "name": "bundle.hash",
+          "value": "54836db377b7a33d4ab565dba595d3094178ca5b55fad9cbd23d12273ba05e59"
+        },
+        {
+          "kind": "kind",
+          "name": "capability.id",
+          "value": "cap.direction_compare"
+        },
+        {
+          "kind": "version",
+          "name": "bundle.version",
+          "value": 1
+        }
+      ],
+      "nestedUnderNodeId": null,
+      "nodeId": "compare_directions",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 25
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "compare_directions",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 26,
+      "taskId": "26483a30-238f-be9b-cc71-7efa25f8a600"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "validate_compare_output",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 27,
+      "taskId": "a7921781-8d82-c8e5-d541-6715b18242ea"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "prepare_notice",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 28,
+      "taskId": "b07a55d3-bcde-0c17-61cd-f332fb80221e"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "notify",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 29,
+      "taskId": "bdbc5f08-61ab-336c-9f4d-4a26311faf1a"
+    },
+    {
+      "eventType": "task.awaiting_approval",
+      "invocationRunId": "invocation-1",
+      "nestedUnderNodeId": null,
+      "nodeId": "await_decision",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 30,
+      "taskId": "43e3518e-5f90-60db-6272-43d228da948b"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-2",
+      "nestedUnderNodeId": null,
+      "nodeId": "await_decision",
+      "nodeOccurrence": 2,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 31,
+      "taskId": "43e3518e-5f90-60db-6272-43d228da948b"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-2",
+      "nestedUnderNodeId": null,
+      "nodeId": "apply_decision",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 32,
+      "taskId": "71833cfa-ce3d-cca6-c034-87e5b6e1902c"
+    },
+    {
+      "eventType": "task.passed",
+      "invocationRunId": "invocation-2",
+      "nestedUnderNodeId": null,
+      "nodeId": "finish",
+      "nodeOccurrence": 1,
+      "runId": "capture-thread-declared-child-1",
+      "sequence": 33,
+      "taskId": "4f15b38d-9a5d-a466-70a3-9e3e441d6b13"
+    }
+  ],
+  "finalOutcome": "approved",
+  "invocations": [
+    {
+      "label": "invocation-1 (real prepare_brief -> copy_brief_prepare child.invoke(), draft_copy, review_copy, graph pauses at await_decision)",
+      "paused": true,
+      "pausedAtNodeId": "await_decision",
+      "run_id": "invocation-1"
+    },
+    {
+      "label": "invocation-2 (Command(resume=...), same checkpoint thread)",
+      "paused": false,
+      "pausedAtNodeId": null,
+      "run_id": "invocation-2"
+    }
+  ],
+  "notificationSendsObserved": 1,
+  "provenance": {
+    "captureMechanism": "campaign_agent.channel_concept.create_graph (real, approved graph); agent_topology.langgraph.describe() called on the exact compiled object before it is ever invoked (confirmed via a CompiledStateGraph.invoke/ainvoke patch that raises during describe(), same as verify_declared_children.py), asserting prepare_brief's depth-0 x-topology-interpretation subgraph fact is a known declared-child-call and its depth-2 materialized subgraph matches copy_brief_prepare's own standalone describe() output; then a real invocation through prepare_brief/draft_copy/review_copy for direction d1, resumed through await_decision to approved; a CompiledStateGraph.invoke spy records, for each nested child.invoke() call, whether the invoked object `is` (Python identity) the declared child describe() resolved for that node -- correlating the static declared-child-call evidence with the object actually invoked at runtime, not by display name; LangGraph's stream_mode='debug' task_result events and agent_workflow_core.observers.RunObserver step/attempt callbacks (threaded into every declared child's own RuntimeContext.observer) are recorded onto the same event sequence, each tagged nestedUnderNodeId from the invoke spy's own bookkeeping",
+    "consumer": {
+      "commit": "a1532d5eed2d356792d5c3ee460d2bb8fb23db1e",
+      "ref": "main",
+      "repository": "https://github.com/milocosmopolitan/campaign-agent"
+    },
+    "core": {
+      "commit": "6d88227a6b4dad5af45ab20c4870094ceef53f55",
+      "note": "this repository's own current agent_topology.langgraph/agent_topology.spec sources (packages/python/{langgraph,spec}/src), imported ahead of campaign-agent's own pinned agent-topology-langgraph git dependency -- this capture exercises this repository's live describe()/declare_children implementation, not the revision campaign-agent's own lockfile pins",
+      "repository": "https://github.com/agent-topology/agent-topology"
+    },
+    "framework": {
+      "name": "langgraph",
+      "version": "1.2.11"
+    },
+    "generatedAt": "2026-09-17T00:00:00Z",
+    "generator": "docs/research/internal-consumer/campaign-agent/capture-declared-child/capture.py",
+    "kind": "sanitized-source-pinned-capture",
+    "sanitization": [
+      "thread_id and invocation_run_id are host-chosen literals, never real UUIDs",
+      "the resumed decision (decision_id/actor_ref/action/selected_direction_id) and its DecisionAuthorization are fabricated fixture values, not a real decision or authorization payload",
+      "the captured direction/brief/draft/review content is entirely derived from campaign-agent's own fake model-gateway fixture text (direction_outcomes()/compare_candidate_outcome()), never a real model completion or real campaign content",
+      "the notification store is a throwaway SQLite file in a temporary directory, discarded after capture, using tests.notifications.support's FakeSender -- no real notification is sent",
+      "no prompts, model completions, paths, or credentials enter observer metadata -- enforced structurally by agent_workflow_core.observers.MetadataField, not by this script",
+      "no real campaign/GitHub effect occurred"
+    ],
+    "scenario": "prepare-brief-declared-child",
+    "unresolvedEvidence": []
+  },
+  "staticEvidence": {
+    "declaredChildGraph": "copy_brief_prepare",
+    "depth0Evidence": {
+      "kind": "declared-child-call",
+      "source": "compiled.__agent_topology_children__"
+    },
+    "matchesStandaloneFactory": true,
+    "materializedNodeCount": 9,
+    "materializedSubgraphId": "channel_concept:prepare_brief",
+    "nodeId": "prepare_brief",
+    "parent": "channel_concept"
+  },
+  "traceVersion": "1"
+}
