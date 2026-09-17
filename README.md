@@ -328,8 +328,16 @@ If no, it's an extension.
 | LangChain (LCEL)   | planned                                  |
 | others             | contributions welcome                    |
 
-A producer is a function from a framework's compiled object to this document. It should
-be small. If it needs configuration, the format is probably wrong.
+A producer is a function from a framework's compiled object to this document. Its
+responsibility is fixed and small: inspect the compiled graph, translate framework
+concepts into the core fields above, and put everything framework-specific under
+`x-*`. The document shape itself takes no configuration. Callers do control how
+much a producer extracts, through the options already shown above: `graph_id`
+chooses the document-local address, `depth` bounds how many levels of nested
+graphs are materialized, and `strict` decides whether graph-specific completeness
+gaps raise instead of only being recorded. These are extraction-time controls, not
+format configuration — the schema a producer must emit is the same regardless of
+which values are passed.
 
 ---
 
