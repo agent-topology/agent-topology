@@ -5,6 +5,12 @@ compiles all 11 current campaign/git factories, records wrapped-child limitation
 and reproduces join identity collisions. The September 15 findings below are
 historical; use the dated recheck for current consumer readiness.
 
+The pre-beta review's R2 finding (wrapped children hidden by lambdas) is now
+decided: [wrapped-child-contract-2026-09-17](wrapped-child-contract-2026-09-17/README.md)
+is the probe evidence behind [ADR 0014](../../decisions/0014-explicit-construction-time-child-declaration.md),
+which [#180](https://github.com/agent-topology/agent-topology/issues/180)
+implements against campaign's real six call sites.
+
 Recorded 2026-09-15. All three reference repositories are in development.
 This is historical research, not a new support guarantee or an accepted design.
 

@@ -22,6 +22,7 @@ authority for why a choice was made and when it may be revisited.
 | Numeric canonical byte spelling, the supported numeric domain, or whether a canonicalisation change requires a new hash algorithm version | [ADR 0009](0009-numeric-canonical-form.md), [ADR 0010](0010-numeric-domain-parsed-value-narrowing.md) |
 | Graph identifier uniqueness, ownership, producer selection, composition, or the distinction between graph ids and names | [ADR 0011](0011-document-local-consumer-addressable-graph-ids.md) |
 | Nested/positive-depth traversal, retained parent identity, materialized child graph addressing, `expanded-subgraph-metadata` retirement, or `x-topology-interpretation` revision 2 | [ADR 0012](0012-nested-graph-identity-traversal-and-compatibility.md) |
+| A wrapped/composed child call that hides the compiled child behind a plain node function, `declare_children`, or the `declared-child-call` evidence kind | [ADR 0014](0014-explicit-construction-time-child-declaration.md) |
 | Monorepo/package boundaries, Python versus TypeScript, independent releases, published names/imports, or the `agt` command name | [ADR 0006](0006-repository-layout-and-language-boundaries.md) |
 | Ownership of the `agt` executable, `describe` dispatch, CLI producer discovery, command collisions, or `agt diff` ownership | [ADR 0007](0007-langgraph-owns-the-foundation-cli.md) |
 
@@ -50,6 +51,7 @@ For a change spanning several rows, read every routed ADR. Common paths are:
 | [0011](0011-document-local-consumer-addressable-graph-ids.md) | Accepted | Make graph identifiers unique document-local addresses selected by producer callers, while graph authors continue to own optional display names. |
 | [0012](0012-nested-graph-identity-traversal-and-compatibility.md) | Accepted | Retain runtime-observable parent nodes and address materialized children with deterministic, call-site-derived graph ids at positive depth, reconciling ADR 0008 and ADR 0011 without a topology-version, schema, or hash-algorithm change. |
 | [0013](0013-sentinel-branch-promotion-bar-unmet-compatibility-floor.md) | Accepted | Decline promoting sentinel/branch facts into the core schema — ADR 0008's promotion bar and ADR 0005's second-framework gate remain unmet — and publish an explicit no-silent-removal, no-in-place-redefinition compatibility floor for the experimental extension. |
+| [0014](0014-explicit-construction-time-child-declaration.md) | Accepted | Add `declare_children`, an explicit construction-time, runtime-identity declaration a factory makes once per graph, as a second evidence source for ADR 0012's materialized-child identity — additive to, not a replacement of, the existing direct-bound check; rejects both framework-native direct composition and LangGraph's own closure-based subgraph detection as unable to preserve campaign's wrapped-child behavior. |
 
 ## Adding or changing a decision
 

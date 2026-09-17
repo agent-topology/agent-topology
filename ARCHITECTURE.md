@@ -150,6 +150,26 @@ key, not a LangGraph runtime checkpoint namespace; matching repeated dynamic
 invocations of one static call site to runtime evidence remains downstream
 work.
 
+## Wrapped child calls: an explicit, construction-time declaration
+
+[ADR 0014](docs/decisions/0014-explicit-construction-time-child-declaration.md)
+adds a second, independent way to reach ADR 0012's materialized-child identity
+for a real consumer shape ADR 0012 alone cannot see: a node whose bound
+runnable is a plain function that itself calls a compiled child's
+`.invoke(...)` (campaign-agent's six real call sites), rather than the
+compiled child directly. A factory that already holds the child object states
+the node-id-to-child mapping once, by direct reference, through
+`declare_children(compiled_graph, {node_id: child, ...})`; this is read-only
+metadata for `describe()` and changes nothing about how the node runs. Both
+framework-native direct composition and LangGraph's own closure-based
+subgraph detection were measured and rejected: neither preserves the input
+projection, per-call-site context narrowing, or exception-to-state-field
+translation these wrapped calls require, and closure detection is source/AST
+inspection, the category ADR 0012 already excludes as evidence. ADR 0012's id
+derivation, collision handling, and depth budget are unchanged; only the
+`x-topology-interpretation` evidence-kind vocabulary gains a second value,
+`declared-child-call`, alongside the existing `compiled-child`.
+
 ## Accepted numeric canonical form
 
 [ADR 0009](docs/decisions/0009-numeric-canonical-form.md) defines the
