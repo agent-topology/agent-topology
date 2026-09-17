@@ -27,6 +27,10 @@ def test_current_release_state_is_published_and_coherent() -> None:
     check_release_docs.check_phase("published")
 
 
+def test_current_release_state_has_a_coherent_candidate() -> None:
+    check_release_docs.check_phase("candidate")
+
+
 def test_finalization_stage_uses_closeout_source_and_binds_qualified_commit() -> None:
     workflow = (
         Path(__file__).resolve().parents[1] / ".github/workflows/release-finalize.yml"
@@ -190,8 +194,7 @@ def test_candidate_accepts_candidate_docs_and_current_manifests(
     # to the real repository root at import time and are unaffected by the
     # ROOT monkeypatch below, so this candidate must match the real,
     # currently-prepared source manifests rather than an arbitrary version.
-    candidate = copy.deepcopy(state["coordinatedPublished"])
-    candidate["branch"] = "rc/0.1.0-beta.4"
+    candidate = copy.deepcopy(state["candidate"])
     state["candidate"] = candidate
     candidate_doc = tmp_path / "candidate.md"
     candidate_doc.write_text("Prepared in source; not published.", encoding="utf-8")

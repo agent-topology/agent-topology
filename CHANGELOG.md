@@ -7,6 +7,22 @@ future package versions will move together.
 
 ## Unreleased
 
+### 0.1.0-beta.5 candidate
+
+Prepared on `rc/0.1.0-beta.5`: the Python producer distribution uses `0.1.0b5`
+and the npm producer package uses `0.1.0-beta.5`; both specification packages
+stay on their published beta.4 versions, unchanged. This candidate has not
+been published. See the
+[candidate release notes](docs/releases/v0.1.0-beta.5.md) and the
+[beta.4 to beta.5 upgrade guide](docs/guides/upgrading-beta.5.md).
+
+- Add `declare_children(compiled_graph, children)` to
+  `agent_topology.langgraph` (Python only): an explicit, construction-time
+  child-relationship declaration that gives `describe()` a second, additive
+  evidence source for a wrapped child call a factory binds through a plain
+  function rather than direct `add_node` composition. Purely additive; a
+  node without a declaration renders exactly as before. See
+  [ADR 0014](docs/decisions/0014-explicit-construction-time-child-declaration.md).
 - Fix both LangGraph producers emitting invalid, duplicate join identities:
   reversed, permuted, or repeated `add_edge(sources, target)` declarations of
   the same source set now collapse into one join instead of colliding, and a

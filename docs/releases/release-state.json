@@ -31,6 +31,42 @@
       }
     ]
   },
-  "candidate": null,
+  "candidate": {
+    "coordinatedVersion": "0.1.0-beta.5",
+    "tag": "v0.1.0-beta.5",
+    "branch": "rc/0.1.0-beta.5",
+    "releaseNotes": "docs/releases/v0.1.0-beta.5.md",
+    "migrationGuide": "docs/guides/upgrading-beta.5.md",
+    "packages": [
+      {
+        "name": "agent-topology-spec",
+        "ecosystem": "python",
+        "version": "0.1.0b4",
+        "unchanged": true,
+        "note": "Source, schema, and fixtures identical to the published v0.1.0-beta.4 agent-topology-spec artifact; retained without a rebuild. See docs/releases/v0.1.0-beta.5.md#selected-packages."
+      },
+      {
+        "name": "agent-topology-langgraph",
+        "ecosystem": "python",
+        "version": "0.1.0b5",
+        "unchanged": false,
+        "note": "New build: join-identity deduplication/escaping (ADR 0015) and declare_children (ADR 0014)."
+      },
+      {
+        "name": "@agent-topology/spec",
+        "ecosystem": "npm",
+        "version": "0.1.0-beta.4",
+        "unchanged": true,
+        "note": "Source, schema, and fixtures identical to the published v0.1.0-beta.4 @agent-topology/spec artifact; retained without a rebuild. See docs/releases/v0.1.0-beta.5.md#selected-packages."
+      },
+      {
+        "name": "@agent-topology/langgraph",
+        "ecosystem": "npm",
+        "version": "0.1.0-beta.5",
+        "unchanged": false,
+        "note": "New build: join-identity deduplication/escaping (ADR 0015). declare_children (ADR 0014) is Python-only for this candidate."
+      }
+    ]
+  },
   "partialPublications": []
 }
