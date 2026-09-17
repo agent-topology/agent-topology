@@ -13,6 +13,11 @@ future package versions will move together.
 - Require a separate post-publication closeout before a draft GitHub prerelease
   becomes public, and automatically reopen release issues closed as completed with
   missing acceptance criteria.
+- Publish the [LangGraph version-range expansion
+  policy](docs/reference/langgraph-version-policy.md): the seven-day review
+  cadence for new stable releases, the exact evidence required before a
+  version is added, the RC freeze rule, and where consumers can see pending
+  qualification work.
 
 ## v0.1.0-beta.4 public preview — 2026-09-15
 
