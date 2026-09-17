@@ -1,0 +1,19 @@
+{
+  "observedAt": "2026-09-17",
+  "repository": "https://github.com/milocosmopolitan/git-agent",
+  "remoteMain": "b67cb35a6195609a5d89976768fb5a4884f17ca1",
+  "latestRelease": null,
+  "latestTag": null,
+  "baseline": "remote main; no releases or tags",
+  "verification": "GitHub releases and commits/main APIs; git ls-remote --tags; local HEAD matched remote main",
+  "topologyCommit": "344954ee2df167e84df8cf072f7d8c067707da88",
+  "workingTree": "README.md modified at final check; inspected src/dev files unchanged",
+  "consumer": "git-agent",
+  "head": "b67cb35a6195609a5d89976768fb5a4884f17ca1",
+  "langgraph": "1.2.11",
+  "rows": [
+    {"graph":"issue_resolution","depth":0,"graphs":1,"nodes":21,"edges":44,"joins":0,"completeness":{"gaps":[],"status":"complete"},"staticInterruptNodes":[],"unknownChildNodes":["apply_commit","authorize_effect_plan","build_effect_plan","collect_context","draft_commit","draft_pull_request","draft_status_report","ensure_pull_request","finalize_result","gate_blocked","gate_verification","human_approval","map_to_checklist","notify_relations","post_status_comment","push_branch","reconcile_issue","run_verification","triage_failure"]},
+    {"graph":"issue_resolution","depth":1,"graphs":1,"nodes":21,"edges":44,"joins":0,"completeness":{"gaps":[],"status":"complete"},"staticInterruptNodes":[],"unknownChildNodes":["apply_commit","authorize_effect_plan","build_effect_plan","collect_context","draft_commit","draft_pull_request","draft_status_report","ensure_pull_request","finalize_result","gate_blocked","gate_verification","human_approval","map_to_checklist","notify_relations","post_status_comment","push_branch","reconcile_issue","run_verification","triage_failure"]},
+    {"graph":"issue_resolution","depth":2,"graphs":1,"nodes":21,"edges":44,"joins":0,"completeness":{"gaps":[],"status":"complete"},"staticInterruptNodes":[],"unknownChildNodes":["apply_commit","authorize_effect_plan","build_effect_plan","collect_context","draft_commit","draft_pull_request","draft_status_report","ensure_pull_request","finalize_result","gate_blocked","gate_verification","human_approval","map_to_checklist","notify_relations","post_status_comment","push_branch","reconcile_issue","run_verification","triage_failure"]}
+  ]
+}

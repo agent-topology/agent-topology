@@ -1,5 +1,10 @@
 # Internal consumer support research
 
+Latest recheck: [2026-09-17 pre-beta review](pre-beta-review-2026-09-17/README.md)
+compiles all 11 current campaign/git factories, records wrapped-child limitations,
+and reproduces join identity collisions. The September 15 findings below are
+historical; use the dated recheck for current consumer readiness.
+
 Recorded 2026-09-15. All three reference repositories are in development.
 This is historical research, not a new support guarantee or an accepted design.
 
