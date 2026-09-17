@@ -22,7 +22,7 @@ deduplication and no escaping.
 
 Two inputs, reproduced at topology commit `344954ee2df167e84df8cf072f7d8c067707da88`
 and pinned in
-[the pre-beta review](../research/internal-consumer/pre-beta-review-2026-09-17/README.md#r1--p1-producers-emit-invalid-duplicate-join-identities)
+[the pre-beta review](../research/internal-consumer/pre-beta-review-2026-09-17/README.md#r1-p1-producers-emit-invalid-duplicate-join-identities)
 and its reproducers
 ([`join_collision.py`](../research/internal-consumer/pre-beta-review-2026-09-17/join_collision.py),
 [`join_collision.mjs`](../research/internal-consumer/pre-beta-review-2026-09-17/join_collision.mjs)),
@@ -140,7 +140,7 @@ combination of node names it happens to collide on. Inventing a document for
 input this producer never receives, or reporting it as "extraction
 succeeded," would misattribute a limitation the review explicitly warned
 against conflating with this fix
-([pre-beta review, R1](../research/internal-consumer/pre-beta-review-2026-09-17/README.md#r1--p1-producers-emit-invalid-duplicate-join-identities)).
+([pre-beta review, R1](../research/internal-consumer/pre-beta-review-2026-09-17/README.md#r1-p1-producers-emit-invalid-duplicate-join-identities)).
 [`test_join_identity.py`](../../packages/python/langgraph/tests/test_join_identity.py)
 pins this as an explicit, tested expectation
 (`pytest.raises(InvalidUpdateError)`) rather than leaving it an unobserved
