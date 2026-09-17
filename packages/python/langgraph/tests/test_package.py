@@ -27,6 +27,7 @@ def test_langgraph_owns_only_its_namespace_portion() -> None:
     assert agent_topology.langgraph.__all__ == [
         "IncompleteTopologyError",
         "UnsupportedLangGraphVersionError",
+        "declare_children",
         "describe",
     ]
     assert not (package_dir.parent / "__init__.py").exists()

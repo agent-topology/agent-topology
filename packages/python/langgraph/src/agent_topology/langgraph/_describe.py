@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import tomllib
 from collections import Counter
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
@@ -125,7 +126,38 @@ def _builder_structure(
     return _edge_documents(edge_values), joins, unknown_routers
 
 
-def _mapped_compiled_child(
+_DECLARED_CHILDREN_ATTR = "__agent_topology_children__"
+
+
+def declare_children(
+    compiled_graph: CompiledStateGraph, children: Mapping[str, CompiledStateGraph]
+) -> CompiledStateGraph:
+    """Record, once per factory, which compiled child each node id invokes
+    (ADR 0014). A no-op at runtime: pure metadata read only by ``describe()``,
+    for node functions that wrap ``child.invoke(...)`` rather than binding the
+    child directly, so the existing direct-bound identity check in
+    ``_mapped_compiled_child`` has nothing to confirm.
+
+    Args:
+        compiled_graph: The graph returned by ``StateGraph.compile()`` whose
+            nodes the mapping describes.
+        children: Node id to the compiled child object it invokes.
+
+    Returns:
+        ``compiled_graph``, unchanged except for the recorded declaration.
+
+    Raises:
+        ValueError: If a key in ``children`` is not a node id in
+            ``compiled_graph``.
+    """
+    unknown = sorted(set(children) - set(compiled_graph.nodes))
+    if unknown:
+        raise ValueError(f"declare_children: not a node id in this graph: {unknown}")
+    setattr(compiled_graph, _DECLARED_CHILDREN_ATTR, dict(children))
+    return compiled_graph
+
+
+def _direct_bound_child(
     compiled_graph: CompiledStateGraph, drawable: Any, node_id: str
 ) -> CompiledStateGraph | None:
     """Return the compiled child confirmed bound at node_id, mapped by runtime
@@ -135,6 +167,29 @@ def _mapped_compiled_child(
         return None
     bound = runtime_node.bound
     return bound if isinstance(bound, CompiledStateGraph) else None
+
+
+def _declared_child(
+    compiled_graph: CompiledStateGraph, drawable: Any, node_id: str
+) -> CompiledStateGraph | None:
+    """Return the compiled child a factory declared at node_id via
+    ``declare_children`` (ADR 0014), confirmed mapped by runtime identity."""
+    runtime_node = compiled_graph.nodes.get(node_id)
+    if runtime_node is None or drawable.nodes[node_id].data is not runtime_node.bound:
+        return None
+    declared = getattr(compiled_graph, _DECLARED_CHILDREN_ATTR, {})
+    candidate = declared.get(node_id)
+    return candidate if isinstance(candidate, CompiledStateGraph) else None
+
+
+def _mapped_compiled_child(
+    compiled_graph: CompiledStateGraph, drawable: Any, node_id: str
+) -> CompiledStateGraph | None:
+    """Return the compiled child confirmed bound at node_id: a direct bind is
+    checked first, then a construction-time declaration (ADR 0014)."""
+    return _direct_bound_child(compiled_graph, drawable, node_id) or _declared_child(
+        compiled_graph, drawable, node_id
+    )
 
 
 def _interpretation_version(graph: dict[str, Any]) -> str:
@@ -244,14 +299,7 @@ def _subgraph_interpretation(
             }
             records.setdefault(node_id, {"nodeId": node_id})["subgraph"] = fact
             continue
-        runtime_node = compiled_graph.nodes.get(node_id)
-        mapped = (
-            runtime_node is not None
-            and drawable.nodes[node_id].data is runtime_node.bound
-        )
-        if not mapped:
-            fact = {"status": "unknown", "reason": "scope-not-inspected"}
-        elif isinstance(runtime_node.bound, CompiledStateGraph):
+        if _direct_bound_child(compiled_graph, drawable, node_id) is not None:
             fact = {
                 "status": "known",
                 "value": "opaque-child",
@@ -260,9 +308,26 @@ def _subgraph_interpretation(
                     "source": "compiled.nodes.bound",
                 },
             }
+        elif _declared_child(compiled_graph, drawable, node_id) is not None:
+            fact = {
+                "status": "known",
+                "value": "opaque-child",
+                "evidence": {
+                    "kind": "declared-child-call",
+                    "source": f"compiled.{_DECLARED_CHILDREN_ATTR}",
+                },
+            }
         else:
-            # Functions and wrappers may hide child invocation; absence is not proved.
-            fact = {"status": "unknown", "reason": "identity-unavailable"}
+            runtime_node = compiled_graph.nodes.get(node_id)
+            mapped = (
+                runtime_node is not None
+                and drawable.nodes[node_id].data is runtime_node.bound
+            )
+            if not mapped:
+                fact = {"status": "unknown", "reason": "scope-not-inspected"}
+            else:
+                # Functions/wrappers may hide child invocation; absence is not proved.
+                fact = {"status": "unknown", "reason": "identity-unavailable"}
         records.setdefault(node_id, {"nodeId": node_id})["subgraph"] = fact
     extension["nodes"] = [records[node_id] for node_id in sorted(records)]
 
