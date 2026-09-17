@@ -45,6 +45,10 @@ actual `human_approval` node (fake input/ports reused from git-agent's own
 tests), paused once and resumed once, advancing IC-03 from `pending` to
 `verified` for this node specifically. See
 [capture/README.md](capture/README.md#disposition) for exactly what is and is
-not proven -- it does not cover campaign-agent, nested/child correlation, or
-retry attempts, each tracked separately under
+not proven -- it does not cover campaign-agent or nested/child correlation,
+each tracked separately under
 [#181](https://github.com/agent-topology/agent-topology/issues/181).
+A separate, minimal synthetic fixture
+([capture/README.md#minimal-repeat-attempt-fixture-issue-194](capture/README.md#minimal-repeat-attempt-fixture-issue-194),
+[#194](https://github.com/agent-topology/agent-topology/issues/194)) now
+covers retry-attempt distinctness without growing this real graph.

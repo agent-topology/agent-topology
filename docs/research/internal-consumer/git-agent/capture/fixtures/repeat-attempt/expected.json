@@ -1,0 +1,41 @@
+{
+  "attemptNumbersObserved": [
+    1,
+    2
+  ],
+  "attemptOccurrencesByNode": {
+    "flaky_step": [
+      1,
+      2
+    ]
+  },
+  "captureMechanism": "one-node synthetic StateGraph with a real LangGraph RetryPolicy(max_attempts=2); no interrupt(), no Command(resume=...), no second invoke() call -- reuses capture.py's (#191) _RecordingObserver event shape rather than growing git-agent's or campaign-agent's real graphs to force a retry path",
+  "consumer": null,
+  "distinctInvocationRunIds": [
+    "invocation-1"
+  ],
+  "distinctRunIds": [
+    "capture-thread-repeat-attempt-1"
+  ],
+  "eventTypesByInvocation": {
+    "invocation-1": [
+      "attempt.failed",
+      "attempt.passed",
+      "step.passed"
+    ]
+  },
+  "finalOutcome": "visited",
+  "paused": false,
+  "repeatedWithinSingleInvocation": true,
+  "replayVersion": "1",
+  "retryAttemptsObserved": 1,
+  "scenario": "repeat-attempt",
+  "sequencesContiguousPerRun": true,
+  "stepOccurrencesByNode": {
+    "flaky_step": [
+      1
+    ]
+  },
+  "totalEvents": 3,
+  "unresolvedEvidence": []
+}
