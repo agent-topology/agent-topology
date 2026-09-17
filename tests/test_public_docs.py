@@ -21,6 +21,12 @@ PUBLISHED_PYTHON_SPEC_VERSION = PUBLISHED_VERSIONS["agent-topology-spec"]
 PUBLISHED_PYTHON_PRODUCER_VERSION = PUBLISHED_VERSIONS["agent-topology-langgraph"]
 PUBLISHED_NPM_SPEC_VERSION = PUBLISHED_VERSIONS["@agent-topology/spec"]
 PUBLISHED_NPM_PRODUCER_VERSION = PUBLISHED_VERSIONS["@agent-topology/langgraph"]
+CANDIDATE_RELEASE = RELEASE_STATE["candidate"]
+CANDIDATE_VERSIONS = {
+    package["name"]: package["version"] for package in CANDIDATE_RELEASE["packages"]
+}
+CANDIDATE_NOTES = ROOT / CANDIDATE_RELEASE["releaseNotes"]
+CANDIDATE_GUIDE = ROOT / CANDIDATE_RELEASE["migrationGuide"]
 PUBLIC_DOCS = (
     ROOT / "README.md",
     ROOT / "CHANGELOG.md",
@@ -301,3 +307,74 @@ def test_release_state_and_public_docs_are_in_published_phase() -> None:
     if RELEASE_STATE.get("candidate") is not None:
         pytest.skip("an active candidate pauses full published-phase coherence")
     check_release_docs.check_phase("published")
+
+
+@pytest.mark.parametrize("path", [CANDIDATE_NOTES, CANDIDATE_GUIDE])
+def test_beta5_candidate_notes_match_package_metadata(path: Path) -> None:
+    candidate_notes = path.read_text(encoding="utf-8")
+    with (ROOT / "packages/python/spec/pyproject.toml").open("rb") as source:
+        python_spec = tomllib.load(source)["project"]
+    with (ROOT / "packages/python/langgraph/pyproject.toml").open("rb") as source:
+        python_producer = tomllib.load(source)["project"]
+    typescript_spec = json.loads(
+        (ROOT / "packages/typescript/spec/package.json").read_text(encoding="utf-8")
+    )
+    typescript_producer = json.loads(
+        (ROOT / "packages/typescript/langgraph/package.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    for package in (python_spec, python_producer, typescript_spec, typescript_producer):
+        assert package["name"] in candidate_notes
+        assert package["version"] in candidate_notes
+
+    assert python_spec["version"] == CANDIDATE_VERSIONS["agent-topology-spec"]
+    assert typescript_spec["version"] == CANDIDATE_VERSIONS["@agent-topology/spec"]
+    assert python_producer["version"] == CANDIDATE_VERSIONS["agent-topology-langgraph"]
+    assert (
+        typescript_producer["version"]
+        == CANDIDATE_VERSIONS["@agent-topology/langgraph"]
+    )
+    assert "0.1.0-beta.5" in candidate_notes
+    assert "not published" in candidate_notes.lower()
+    assert "published and verified" not in candidate_notes.lower()
+    assert (
+        f"@agent-topology/spec@{typescript_producer['peerDependencies']['@agent-topology/spec']}"
+        in candidate_notes
+    )
+    assert (
+        next(
+            dependency
+            for dependency in python_producer["dependencies"]
+            if dependency.startswith("agent-topology-spec")
+        )
+        in candidate_notes
+    )
+
+
+def test_beta5_candidate_keeps_published_install_selections() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    with (ROOT / "packages/python/spec/pyproject.toml").open("rb") as source:
+        python_spec = tomllib.load(source)["project"]
+    typescript_spec = json.loads(
+        (ROOT / "packages/typescript/spec/package.json").read_text(encoding="utf-8")
+    )
+
+    python_spec_install = (
+        f'python -m pip install "{python_spec["name"]}'
+        f'=={PUBLISHED_PYTHON_SPEC_VERSION}"'
+    )
+    assert python_spec_install in readme
+    assert (
+        f"npm install {typescript_spec['name']}@{PUBLISHED_NPM_SPEC_VERSION}" in readme
+    )
+    # The candidate does not rebuild either specification package, so its
+    # own version equals the published one here — unlike beta.4, there is no
+    # ahead-of-published spec version to assert absent from install lines.
+    assert python_spec["version"] == PUBLISHED_PYTHON_SPEC_VERSION
+    assert typescript_spec["version"] == PUBLISHED_NPM_SPEC_VERSION
+
+
+def test_release_state_and_public_docs_have_a_coherent_candidate() -> None:
+    check_release_docs.check_phase("candidate")

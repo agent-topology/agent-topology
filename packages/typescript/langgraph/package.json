@@ -1,6 +1,6 @@
 {
   "name": "@agent-topology/langgraph",
-  "version": "0.1.0-beta.4",
+  "version": "0.1.0-beta.5",
   "description": "Describe compiled LangGraph.js graphs as canonical agent-topology documents",
   "license": "MIT",
   "repository": {
