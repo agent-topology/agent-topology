@@ -113,14 +113,30 @@ directly answers the "repeated child use" requirement. Two node ids that
 happen to bind the same compiled child object — `left` and `right` both
 holding the identical `retry_step` graph, say — receive distinct ids
 `main:left` and `main:right`. No shared-definition fact is asserted or needed;
-each materialized graph is independently addressed and independently hashed.
-Two materialized graphs that happen to be structurally identical hash
-identically per graph, which is correct and requires no special case: it is
+each materialized graph is independently addressed, and its structure and
+`id` both feed the one document-level structure hash below. Two materialized
+graphs that happen to be structurally identical project identical structural
+content into that hash, which is correct and requires no special case: it is
 the same behavior [ADR 0011](0011-document-local-consumer-addressable-graph-ids.md)
 already gives two independently composed documents that describe the same
 topology. This ADR does not assert, and a document must not assert, that two
-equal-hash graphs share one underlying compiled definition; that remains
-unobservable from structure alone.
+graphs with matching structural content share one underlying compiled
+definition; that remains unobservable from structure alone.
+
+> **Correction (2026-09-17, [issue #183](https://github.com/agent-topology/agent-topology/issues/183)):**
+> the two paragraphs above previously read "independently hashed" and
+> "hash identically per graph" / "equal-hash graphs," wording that implied a
+> per-graph hash value. No such value exists. The public `structureHash` is a
+> single, document-scoped field computed by the version-1 projection over
+> every `graphs[]` entry together, including each graph's `id`
+> ([`_structure_projection_v1`](../../packages/python/spec/src/agent_topology/spec/_canonical.py)).
+> Two structurally identical materialized graphs contribute identical
+> projected content only insofar as their `structure` matches; their
+> different derived `id`s (`main:left` vs. `main:right`) still make distinct
+> contributions to that one document hash. This corrects only the wording;
+> it changes no field, no hash projection, and does not introduce a per-graph
+> hash API. The call-site id derivation and collision rule above are
+> unaffected.
 
 ### Collision handling
 

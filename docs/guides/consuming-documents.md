@@ -90,6 +90,38 @@ A hash match is not authentication: anyone who edits a document can compute a ne
 hash. Retain trusted provenance or artifact-signing evidence separately when your
 application needs to know who produced it.
 
+## Completeness, interpretation, and runtime evidence prove different things
+
+Four claims are easy to conflate and must stay separate:
+
+- **Graph-specific completeness** (`completeness.status` and `completeness.gaps`,
+  [ADR 0002](../decisions/0002-record-what-could-not-be-observed.md)) says only
+  that the producer found no unresolved graph-specific unknown for *this*
+  document. It says nothing about interpretation facts, dynamic behavior, or
+  runtime outcomes.
+- **Interpretation unknowns** — the `unknown/*` branch, subgraph, sentinel, and
+  entry facts of the experimental `x-topology-interpretation` extension
+  ([ADR 0008](../decisions/0008-experimental-consumer-interpretation.md)) — are
+  a separate, optional layer. An `unknown` interpretation fact adds no
+  completeness gap and does not change strict-mode behavior; a `complete`
+  document can still carry unresolved interpretation facts throughout.
+- **Dynamic interruptions.** A `langgraph.types.interrupt()` call raised inside a
+  node body at runtime is not a static interrupt declaration and never appears
+  as one, regardless of how complete the document is or how much interpretation
+  metadata it carries. A real pause/resume is captured and offline-replayable in
+  [internal-consumer capture evidence](../research/internal-consumer/agent-workflow-core/capture/README.md#dynamic-interrupt-resume-and-repeated-attempt-issue-152);
+  it demonstrates that one pause occurred, not that static extraction would
+  catch every interrupt in a comparable graph.
+- **Successful runtime effects** — an approval actually gating a write, a
+  notification actually sent, a retry actually succeeding — are execution
+  outcomes. Nothing in the document, its completeness, or its interpretation
+  metadata establishes them; they remain domain runtime evidence, outside
+  topology extraction ([ADR 0001](../decisions/0001-scope-topology-extraction-and-trace-correlation.md)).
+
+None of the four implies another. A `complete` document with no gaps and fully
+resolved interpretation facts still proves nothing about whether a dynamic
+interrupt fires during a run, or whether the run's effects succeeded.
+
 ## Graph identity, names, and composition
 
 `graphs[].id` is a document-local address, not a display label. It must be unique in
