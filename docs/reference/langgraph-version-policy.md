@@ -29,11 +29,15 @@ policy; it is never inferred from a release simply being newer.
 A newly published stable patch release is reviewed against this policy within
 seven days of its publication.
 
-[#167](https://github.com/agent-topology/agent-topology/issues/167) adds a
-weekly, and manually dispatchable, check that compares stable PyPI releases
-against the compatibility manifest and surfaces any candidate this seven-day
-review missed. The check only detects and reports a gap; it does not qualify a
-release or edit the manifest (see [What this policy does not
+The [LangGraph release candidates](../../.github/workflows/langgraph-release-candidates.yml)
+workflow (added by
+[#167](https://github.com/agent-topology/agent-topology/issues/167)) runs
+weekly, and is manually dispatchable, and compares stable PyPI releases
+against the compatibility manifest to surface any candidate this seven-day
+review missed. It runs
+[`scripts/check_langgraph_release_candidates.py`](../../scripts/check_langgraph_release_candidates.py),
+which only detects and reports a gap; it does not qualify a release or edit
+the manifest (see [What this policy does not
 do](#what-this-policy-does-not-do)).
 
 ## Evidence required before a version is added
@@ -81,7 +85,7 @@ producer release instead.
   [#169](https://github.com/agent-topology/agent-topology/issues/169) for the
   1.3.x and 1.4.x qualification Features coordinated under
   [#165](https://github.com/agent-topology/agent-topology/issues/165).
-- The [#167](https://github.com/agent-topology/agent-topology/issues/167)
+- The [LangGraph release candidates](../../.github/workflows/langgraph-release-candidates.yml)
   workflow's run summary lists any stable release this policy's seven-day
   review has not yet covered.
 - A rejected install reports the exact tested versions and an installation
