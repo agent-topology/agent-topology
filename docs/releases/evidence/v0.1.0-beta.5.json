@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "coordinatedVersion": "0.1.0-beta.5",
+  "sourceCommit": "dc030305096444908b1ba19a3458a6d97c9cf90b",
+  "tag": "v0.1.0-beta.5",
+  "coordinatedComplete": true,
+  "githubRelease": "https://github.com/agent-topology/agent-topology/releases/tag/v0.1.0-beta.5",
+  "registryVerifiedAt": "2026-09-17T18:42:44.348676+00:00",
+  "finalizationStage": {
+    "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35260451899",
+    "registryEvidence": "passed",
+    "cleanRegistryInstallation": "passed"
+  },
+  "publicationSequence": [
+    {
+      "package": "agent-topology-spec",
+      "registry": "pypi",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35260096175",
+      "outcome": "reused unchanged from beta.4; this run re-qualified the already-public artifact against the frozen beta.5 commit without republishing"
+    },
+    {
+      "package": "@agent-topology/spec",
+      "registry": "npm",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35260098367",
+      "outcome": "reused unchanged from beta.4; this run re-qualified the already-public artifact against the frozen beta.5 commit without republishing"
+    },
+    {
+      "package": "agent-topology-langgraph",
+      "registry": "pypi",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35258086313",
+      "outcome": "published on first attempt, after the required reviewer approved the pypi-agent-topology-langgraph protected-environment deployment"
+    },
+    {
+      "package": "@agent-topology/langgraph",
+      "registry": "npm",
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35258088908",
+      "outcome": "published on first attempt (dist-tag beta; latest left unmoved at 0.1.0-beta.1), after the required reviewer approved the npm-public-preview protected-environment deployment"
+    }
+  ],
+  "registryArtifactVerification": {
+    "purpose": "Issue #172's clean public-registry installation verification, independent of qualification's saved build artifacts: 'Clean public-registry installs exercise each published interface, all exact supported framework versions, join regressions and unsupported/prerelease refusal.'",
+    "installedVersions": {
+      "python": ["agent-topology-spec==0.1.0b4", "agent-topology-langgraph==0.1.0b5", "langgraph==1.2.10 and 1.2.11 (both supported versions exercised)"],
+      "typescript": ["@agent-topology/spec@0.1.0-beta.4", "@agent-topology/langgraph@0.1.0-beta.5", "@langchain/langgraph@1.4.14"]
+    },
+    "checks": {
+      "pythonSmoke": "scripts/smoke_langgraph_installation.py passed against both supported langgraph versions (1.2.10, 1.2.11), each installed exclusively from public PyPI",
+      "pythonBehavior": "Repeated/permuted join-declaration dedup and declare_children depth 0/1/2 evidence (including the agt describe --depth --strict CLI path) reproduced exactly against the registry-installed wheel",
+      "pythonRefusal": "Both the library call and the agt CLI refused langgraph==1.2.9 (the adjacent unsupported patch) with UnsupportedLangGraphVersionError / exit code 5, naming the exact tested versions",
+      "typescriptSmoke": "scripts/smoke_typescript_installation.mjs passed against tarballs downloaded live via npm pack from the public registry (spec alone, producer with peer, and coexistence scenarios; ESM/CommonJS export-boundary checks)",
+      "typescriptBehavior": "Repeated/permuted join-declaration dedup, delimiter-escaping for +/\\ -bearing source ids, and canonicalStringify reproduced exactly against the registry-installed tarball",
+      "typescriptRefusal": "describe() refused the real published prerelease @langchain/langgraph@1.4.15-rc.0 (forced to a single deduped copy via npm overrides, since the producer pins @langchain/langgraph as a regular dependency) with UnsupportedLangGraphVersionError"
+    },
+    "outcome": "All 9 checks passed against artifacts installed exclusively from the real public PyPI and npm registries, with no local path, workspace link, editable install, or --find-links used anywhere. Full detail, commands, and per-check logs: docs/releases/evidence/beta.5/publication-install-verification.json and its sibling ts-registry-*/python-registry-*.log files."
+  },
+  "packages": [
+    {
+      "name": "agent-topology-spec",
+      "version": "0.1.0b4",
+      "registry": "pypi",
+      "metadataUrl": "https://pypi.org/pypi/agent-topology-spec/0.1.0b4/json",
+      "artifacts": [
+        {
+          "filename": "agent_topology_spec-0.1.0b4-py3-none-any.whl",
+          "url": "https://files.pythonhosted.org/packages/24/b0/d55f753b6e18469192a4b96f6f08d16c5f97bab50489ce1608da5b3833bf/agent_topology_spec-0.1.0b4-py3-none-any.whl",
+          "sha256": "8873164617d06baad5914e9a359d039a8b67677a0d6e3a128201d13f47f8c190",
+          "provenanceUrl": "https://pypi.org/integrity/agent-topology-spec/0.1.0b4/agent_topology_spec-0.1.0b4-py3-none-any.whl/provenance"
+        },
+        {
+          "filename": "agent_topology_spec-0.1.0b4.tar.gz",
+          "url": "https://files.pythonhosted.org/packages/21/c9/85092a983814e37b7aeeebaee280321966ac1cb42328e431c0adae3dcb5a/agent_topology_spec-0.1.0b4.tar.gz",
+          "sha256": "1119bd518165e28a56d6bf006b10b6607dbb792594542552ddf740557ab61050",
+          "provenanceUrl": "https://pypi.org/integrity/agent-topology-spec/0.1.0b4/agent_topology_spec-0.1.0b4.tar.gz/provenance"
+        }
+      ],
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35260096175"
+    },
+    {
+      "name": "agent-topology-langgraph",
+      "version": "0.1.0b5",
+      "registry": "pypi",
+      "metadataUrl": "https://pypi.org/pypi/agent-topology-langgraph/0.1.0b5/json",
+      "artifacts": [
+        {
+          "filename": "agent_topology_langgraph-0.1.0b5-py3-none-any.whl",
+          "url": "https://files.pythonhosted.org/packages/67/49/c6ceb8aa800f986596a7704cdc4c5a863488ed38e36251028dd8484093e1/agent_topology_langgraph-0.1.0b5-py3-none-any.whl",
+          "sha256": "de0ac39f0938d6a73c6e30f48b7c5f09e22fb500d78ff78f90542805201112b5",
+          "provenanceUrl": "https://pypi.org/integrity/agent-topology-langgraph/0.1.0b5/agent_topology_langgraph-0.1.0b5-py3-none-any.whl/provenance"
+        },
+        {
+          "filename": "agent_topology_langgraph-0.1.0b5.tar.gz",
+          "url": "https://files.pythonhosted.org/packages/ec/03/b06169081d904bef30b08df6f3e67b5b5148c59f3378312ff81da22aafd3/agent_topology_langgraph-0.1.0b5.tar.gz",
+          "sha256": "cadb74edfe008c2182e7245cfe35fce83842104bac70d2fe74c77face9c02221",
+          "provenanceUrl": "https://pypi.org/integrity/agent-topology-langgraph/0.1.0b5/agent_topology_langgraph-0.1.0b5.tar.gz/provenance"
+        }
+      ],
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35258086313"
+    },
+    {
+      "name": "@agent-topology/spec",
+      "version": "0.1.0-beta.4",
+      "registry": "npm",
+      "metadataUrl": "https://registry.npmjs.org/%40agent-topology%2Fspec",
+      "artifacts": [
+        {
+          "filename": "spec-0.1.0-beta.4.tgz",
+          "url": "https://registry.npmjs.org/@agent-topology/spec/-/spec-0.1.0-beta.4.tgz",
+          "sha256": "5b288d8a449e78cb1d26173cbc1e4aaaecfe9056758eead4d886fcfd99bcee76",
+          "sha1": "33aaf4b3141b079884231b5dc72efef48394d3ca",
+          "integrity": "sha512-5uhTcoU7et6nx8zxZkbLmhzNCG27yBKY86wrLwdE3ADHN57a3B11k9i/UkAXgawUMjOMXu3WtBxfwn4unEaOKQ==",
+          "provenanceUrl": "https://registry.npmjs.org/-/npm/v1/attestations/@agent-topology%2fspec@0.1.0-beta.4"
+        }
+      ],
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35260098367"
+    },
+    {
+      "name": "@agent-topology/langgraph",
+      "version": "0.1.0-beta.5",
+      "registry": "npm",
+      "metadataUrl": "https://registry.npmjs.org/%40agent-topology%2Flanggraph",
+      "artifacts": [
+        {
+          "filename": "langgraph-0.1.0-beta.5.tgz",
+          "url": "https://registry.npmjs.org/@agent-topology/langgraph/-/langgraph-0.1.0-beta.5.tgz",
+          "sha256": "138ff62729f623bcf441b75ecb4ae06f82ba564a57d8fe7884c9fcc7b98c5e5c",
+          "sha1": "dc7f8cd9350ca8125a3eaffaef4a802f12749f62",
+          "integrity": "sha512-fGtVueLzABxq17uaDxeTO6LBuRLvwBMLdeH8U9yqToQJa1A/mVxwIlmoVdQMEkyLy/NrFFsHRjumxGOoIeAZdw==",
+          "provenanceUrl": "https://registry.npmjs.org/-/npm/v1/attestations/@agent-topology%2flanggraph@0.1.0-beta.5"
+        }
+      ],
+      "workflowRun": "https://github.com/agent-topology/agent-topology/actions/runs/35258088908"
+    }
+  ],
+  "immutableArtifactDocumentation": "The two changed producer READMEs (packages/python/langgraph/README.md, packages/typescript/langgraph/README.md) already select their beta.5 install commands, prepared before qualification and publication. Registry artifacts were not overwritten; repository package READMEs and all live installation guides select agent-topology-langgraph==0.1.0b5 and @agent-topology/langgraph@0.1.0-beta.5, while the unchanged specification packages' READMEs and every other reference continue to select their already-published beta.4 versions."
+}

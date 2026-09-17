@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "coordinatedVersion": "0.1.0-beta.5",
+  "sourceCommit": "dc030305096444908b1ba19a3458a6d97c9cf90b",
+  "verifiedAt": "2026-09-17T18:40:00Z",
+  "purpose": "Issue #172's clean public-registry installation verification: 'Clean public-registry installs exercise each published interface, all exact supported framework versions, join regressions and unsupported/prerelease refusal.' Every install below used only the real public registry (PyPI / registry.npmjs.org); no local path, workspace link, editable install, --find-links, or locally built wheel/tarball for any agent-topology package was used anywhere. All environments were created under /tmp, outside the git working tree.",
+  "publishedPackagesUnderTest": [
+    { "name": "agent-topology-langgraph", "ecosystem": "python", "version": "0.1.0b5", "publicationEvidence": "docs/releases/evidence/beta.5/publication.json" },
+    { "name": "@agent-topology/langgraph", "ecosystem": "npm", "version": "0.1.0-beta.5", "publicationEvidence": "docs/releases/evidence/beta.5/publication.json" }
+  ],
+  "reusedUnchangedPackagesUnderTest": [
+    { "name": "agent-topology-spec", "ecosystem": "python", "version": "0.1.0b4" },
+    { "name": "@agent-topology/spec", "ecosystem": "npm", "version": "0.1.0-beta.4" }
+  ],
+  "python": {
+    "supportedVersionsExercised": ["1.2.10", "1.2.11"],
+    "unsupportedVersionExercised": "1.2.9 (the adjacent published patch immediately below the supported 1.2.10-1.2.11 range; same negative case #171's qualification used)",
+    "checks": [
+      {
+        "name": "smoke-1.2.10",
+        "description": "python3 -m venv; pip install agent-topology-spec==0.1.0b4 agent-topology-langgraph==0.1.0b5 langgraph==1.2.10 from public PyPI; ran scripts/smoke_langgraph_installation.py",
+        "installConfirmation": "pip show: agent-topology-spec 0.1.0b4, agent-topology-langgraph 0.1.0b5, langgraph 1.2.10 (exact)",
+        "outcome": "pass",
+        "log": "exit 0, no assertion output (script prints nothing on success)"
+      },
+      {
+        "name": "smoke-1.2.11",
+        "description": "Same as above with langgraph==1.2.11 from public PyPI; ran scripts/smoke_langgraph_installation.py",
+        "installConfirmation": "pip show: agent-topology-spec 0.1.0b4, agent-topology-langgraph 0.1.0b5, langgraph 1.2.11 (exact)",
+        "outcome": "pass",
+        "log": "exit 0, no assertion output (script prints nothing on success)"
+      },
+      {
+        "name": "installed-behavior",
+        "description": "Ran docs/releases/evidence/beta.5/verify_python_installed_behavior.py (join-identity dedup/escaping, declare_children depth 0/1/2, CLI --depth --strict) against the langgraph==1.2.11 registry install",
+        "outcome": "pass",
+        "log": "docs/releases/evidence/beta.5/python-registry-installed-behavior-output.log"
+      },
+      {
+        "name": "version-refusal-library",
+        "description": "Fresh venv installed agent-topology-spec==0.1.0b4, agent-topology-langgraph==0.1.0b5, langgraph==1.2.11 (satisfying the declared >=1.2.10,<=1.2.11 bound), then `pip install --no-deps --force-reinstall langgraph==1.2.9` to simulate a manually-overridden environment where pip's own dependency resolution would otherwise refuse the combination outright (confirmed separately: a direct `pip install agent-topology-langgraph==0.1.0b5 langgraph==1.2.9` fails with ResolutionImpossible, proving the metadata bound itself already blocks the normal install path). agent_topology.langgraph.describe() was then called against a minimal compiled graph.",
+        "installConfirmation": "pip show: agent-topology-spec 0.1.0b4, agent-topology-langgraph 0.1.0b5, langgraph 1.2.9 (exact, force-overridden)",
+        "outcome": "pass",
+        "log": "docs/releases/evidence/beta.5/python-registry-version-refusal-output.log"
+      },
+      {
+        "name": "version-refusal-cli",
+        "description": "`agt describe <graph.py>:graph --out <path>` from the same forced-1.2.9 venv",
+        "outcome": "pass",
+        "expectedReturncode": 5,
+        "log": "docs/releases/evidence/beta.5/python-registry-cli-version-refusal-output.log"
+      }
+    ]
+  },
+  "typescript": {
+    "supportedVersionsExercised": ["1.4.14"],
+    "unsupportedVersionExercised": "1.4.15-rc.0 (real published prerelease immediately above the supported 1.4.14; same negative case #171's qualification used)",
+    "checks": [
+      {
+        "name": "registry-smoke",
+        "description": "npm pack @agent-topology/spec@0.1.0-beta.4 and @agent-topology/langgraph@0.1.0-beta.5 from the public registry; ran scripts/smoke_typescript_installation.mjs --spec-tarball ... --langgraph-tarball ... (spec-alone, producer-with-peer, and coexistence scenarios; ESM/CommonJS export-boundary checks; documented-example execution)",
+        "outcome": "pass",
+        "log": "docs/releases/evidence/beta.5/ts-registry-smoke-output.log"
+      },
+      {
+        "name": "installed-behavior",
+        "description": "Fresh npm project; npm install of both downloaded tarballs (no manual @langchain/langgraph version pin -- resolved automatically as the producer's pinned regular dependency); ran docs/releases/evidence/beta.5/verify_ts_installed_behavior.mjs behavior (join dedup, permuted dedup, delimiter escaping, canonicalStringify)",
+        "installConfirmation": "node -p \"require('./node_modules/@langchain/langgraph/package.json').version\" -> 1.4.14 (exact)",
+        "outcome": "pass",
+        "log": "docs/releases/evidence/beta.5/ts-registry-installed-behavior-output.log"
+      },
+      {
+        "name": "version-refusal",
+        "description": "Fresh npm project with package.json overrides pinning @langchain/langgraph to the real published prerelease 1.4.15-rc.0 (required because the producer pins @langchain/langgraph as a regular, non-peer dependency, so a plain install always nests its own 1.4.14 copy -- only a single deduped shared copy via overrides reaches the refusal path, per docs/releases/evidence/beta.5/qualification.json's exactVersionRefusal.typescript note). Installed both downloaded tarballs plus the pinned prerelease; confirmed exactly one @langchain/langgraph copy in node_modules (no nested second copy); ran verify_ts_installed_behavior.mjs refusal",
+        "installConfirmation": "single node_modules/@langchain/langgraph directory resolving to 1.4.15-rc.0; no other nested copy found",
+        "outcome": "pass",
+        "log": "docs/releases/evidence/beta.5/ts-registry-version-refusal-output.log"
+      }
+    ]
+  },
+  "summary": "All 9 checks passed (2 Python version smokes, 1 Python installed-behavior, 2 Python refusal forms, 1 TS registry smoke, 1 TS installed-behavior, 1 TS refusal) against artifacts installed exclusively from the real public PyPI and npm registries. No deviation from the supported-version matrices in packages/python/langgraph/src/agent_topology/langgraph/_compatibility.json ({1.2.10, 1.2.11}) or packages/typescript/langgraph/src/compatibility.json ({1.4.14}).",
+  "environment": "macOS (darwin), Python 3.14.7, Node.js v22.16.0, npm 11.4.1. All venvs and npm projects created under /tmp/beta5-verify, outside the repository working tree; deleted after this record was written."
+}
