@@ -15,6 +15,7 @@ and LangGraph.js; the format remains provisional.
 | Export your first Python graph, with no model or API key | [Python quickstart](getting-started/python.md) |
 | Export a LangGraph.js graph in Node.js | [TypeScript / JavaScript quickstart](getting-started/typescript.md) |
 | Choose a package or check framework support | [Installation and compatibility](reference/compatibility.md) |
+| Learn when a newer/older LangGraph might become supported | [LangGraph version-range expansion policy](reference/langgraph-version-policy.md) |
 | Understand nodes, joins, completeness, and hashes | [Concepts](guides/concepts.md) |
 | Validate JSON or build a document consumer | [Consuming documents](guides/consuming-documents.md) |
 | Look up function signatures and errors | [API reference](reference/api.md) |

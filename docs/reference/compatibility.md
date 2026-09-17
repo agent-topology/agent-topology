@@ -24,8 +24,11 @@ LangGraph.js directly, also declare `@langchain/langgraph@1.4.14` as a dependenc
 | `@agent-topology/langgraph` | Node.js 20+; CI covers 20 and 22 | LangGraph.js 1.4.14 |
 
 Both producers reject framework versions without conformance evidence before graph
-inspection. A newer installed framework is not automatically supported. Check the
-version in the same environment that runs your application:
+inspection. A newer installed framework is not automatically supported. See the
+[LangGraph version-range expansion policy](langgraph-version-policy.md) for the
+cadence and evidence bar for adding a version, and where to see pending
+qualification work. Check the version in the same environment that runs your
+application:
 
 ```bash
 python -m pip show agent-topology-langgraph agent-topology-spec langgraph
