@@ -3,6 +3,12 @@
 [Repository](https://github.com/milocosmopolitan/campaign-agent) ·
 [Snapshot](snapshot.json) · [Cross-consumer findings](../README.md)
 
+Latest recheck: [2026-09-17 declared children](review-2026-09-17-declared-children.md)
+verifies all six `channel_concept`/`channel_production` wrapped-child
+relationships materialize as real hierarchy links at the commit adopting
+`declare_children`. This report and [review-2026-09-17.md](review-2026-09-17.md)
+below remain immutable historical interpretations of their own older commits.
+
 ## Version and implemented boundary
 
 No tags or GitHub releases were found. Baseline and inspected remote main:
