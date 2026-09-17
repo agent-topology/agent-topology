@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "coordinatedVersion": "0.1.0-beta.5",
+  "sourceCommit": "dc030305096444908b1ba19a3458a6d97c9cf90b",
+  "branch": "rc/0.1.0-beta.5",
+  "publishedAt": "2026-09-17T18:24:11Z",
+  "purpose": "Issue #172's actual public-registry publication of the two beta.5 changed packages, dispatched with publish=true after docs/releases/evidence/beta.5/publication-revalidation.json passed. Each run required and received the protected environment's maintainer approval (milocosmopolitan) before its publish job executed; no automation bypassed that gate.",
+  "packages": [
+    {
+      "name": "agent-topology-langgraph",
+      "ecosystem": "python",
+      "version": "0.1.0b5",
+      "run": "https://github.com/agent-topology/agent-topology/actions/runs/35258086313",
+      "environment": "pypi-agent-topology-langgraph",
+      "registryPreflight": "verify_spec_registry.py ran inside the publish job (per docs/releasing.md's producer registry preflight): resolved the prepared agent-topology-spec bound, installed agent-topology-spec==0.1.0b4 from public PyPI in a fresh venv, confirmed the installed version, installed the qualified langgraph wheel, and ran scripts/smoke_langgraph_installation.py against that combination -- all before npm publish uploaded anything.",
+      "artifacts": [
+        {
+          "packagetype": "bdist_wheel",
+          "filename": "agent_topology_langgraph-0.1.0b5-py3-none-any.whl",
+          "sha256": "de0ac39f0938d6a73c6e30f48b7c5f09e22fb500d78ff78f90542805201112b5",
+          "size": 14485,
+          "matchesQualificationReceipt": true
+        },
+        {
+          "packagetype": "sdist",
+          "filename": "agent_topology_langgraph-0.1.0b5.tar.gz",
+          "sha256": "cadb74edfe008c2182e7245cfe35fce83842104bac70d2fe74c77face9c02221",
+          "size": 30027,
+          "matchesQualificationReceipt": true
+        }
+      ],
+      "requiresDist": ["agent-topology-spec<0.2.0,>=0.1.0b4", "langgraph<=1.2.11,>=1.2.10"],
+      "verification": "curl https://pypi.org/pypi/agent-topology-langgraph/0.1.0b5/json -- both file digests are byte-identical to docs/releases/evidence/beta.5/python-langgraph-qualification.json's recorded sha256 values, confirming the exact locally-qualified wheel/sdist were uploaded with no rebuild."
+    },
+    {
+      "name": "@agent-topology/langgraph",
+      "ecosystem": "npm",
+      "version": "0.1.0-beta.5",
+      "run": "https://github.com/agent-topology/agent-topology/actions/runs/35258088908",
+      "environment": "npm-public-preview",
+      "distTag": "beta",
+      "registryPreflight": "verify_npm_registry_peer.mjs ran inside the qualify/publish sequence per docs/releasing.md: read the prepared @agent-topology/spec peer (0.1.0-beta.4), confirmed that exact version was already public on npm, clean-installed it from the registry together with the already-qualified producer tarball (no workspace links, no local support tarball), and ran a minimal public-API smoke -- before npm publish uploaded anything.",
+      "artifact": {
+        "filename": "agent-topology-langgraph-0.1.0-beta.5.tgz",
+        "shasum": "dc7f8cd9350ca8125a3eaffaef4a802f12749f62",
+        "integrity": "sha512-fGtVueLzABxq17uaDxeTO6LBuRLvwBMLdeH8U9yqToQJa1A/mVxwIlmoVdQMEkyLy/NrFFsHRjumxGOoIeAZdw==",
+        "sha256": "138ff62729f623bcf441b75ecb4ae06f82ba564a57d8fe7884c9fcc7b98c5e5c",
+        "unpackedSize": 28216,
+        "fileCount": 10,
+        "matchesQualificationReceipt": true
+      },
+      "provenance": {
+        "attestationUrl": "https://registry.npmjs.org/-/npm/v1/attestations/@agent-topology%2flanggraph@0.1.0-beta.5",
+        "predicateType": "https://slsa.dev/provenance/v1",
+        "transparencyLog": "https://search.sigstore.dev/?logIndex=2879484879"
+      },
+      "peerDependency": "@langchain/langgraph@1.4.14 (runtime dependency, exact); @agent-topology/spec@0.1.0-beta.4 (declared peer/compatible version, unchanged from beta.4, already public)",
+      "verification": "Downloaded the published tarball from https://registry.npmjs.org/@agent-topology/langgraph/-/langgraph-0.1.0-beta.5.tgz and independently computed sha256 (138ff62729f623bcf441b75ecb4ae06f82ba564a57d8fe7884c9fcc7b98c5e5c, matches docs/releases/evidence/beta.5/npm-langgraph-qualification.json exactly) and sha512 (matches the registry's own recorded `integrity` field exactly), confirming byte-for-byte the same tarball qualified by #171 was uploaded with no rebuild. `npm view` dist-tags show `beta` -> 0.1.0-beta.5; `latest` remains 0.1.0-beta.1, unmoved, per policy of never advancing the default dist-tag for a prerelease."
+    }
+  ],
+  "reusedUnchangedPackages": [
+    { "name": "agent-topology-spec", "ecosystem": "python", "version": "0.1.0b4", "note": "Already public from beta.4; not republished. Used as-is by the langgraph registry preflight above." },
+    { "name": "@agent-topology/spec", "ecosystem": "npm", "version": "0.1.0-beta.4", "note": "Already public from beta.4; not republished. Used as-is by the langgraph registry preflight above." }
+  ],
+  "approvalGate": "Both publish jobs paused at status=waiting on their protected GitHub Environment (pypi-agent-topology-langgraph, npm-public-preview) until the required reviewer (milocosmopolitan) approved the deployment in the GitHub UI; no administrator bypass was used.",
+  "notes": "Publication only. This does not itself complete issue #172: clean public-registry installation smoke against these exact published versions, the immutable v0.1.0-beta.5 tag and draft GitHub prerelease (release-finalization workflow's stage phase), the closeout PR moving release-state.json to coordinatedPublished, and the finalization workflow's complete phase all remain outstanding. See docs/releases/evidence/beta.5/publication-revalidation.json's remainingForPublication list."
+}

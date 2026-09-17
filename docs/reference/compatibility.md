@@ -3,14 +3,14 @@
 [Documentation home](../README.md)
 
 Choose the package for the language of the compiled graph, or install just a
-specification package when consuming JSON. These commands select the verified beta.4 public preview.
+specification package when consuming JSON. These commands select the verified beta.5 public preview.
 
 | Task | Install |
 | --- | --- |
 | Read documents in Python | `python -m pip install "agent-topology-spec==0.1.0b4"` |
-| Extract Python LangGraph graphs or use `agt` | `python -m pip install "agent-topology-langgraph==0.1.0b4"` |
+| Extract Python LangGraph graphs or use `agt` | `python -m pip install "agent-topology-langgraph==0.1.0b5"` |
 | Read documents in Node.js | `npm install @agent-topology/spec@0.1.0-beta.4` |
-| Extract LangGraph.js graphs | `npm install @agent-topology/spec@0.1.0-beta.4 @agent-topology/langgraph@0.1.0-beta.4` |
+| Extract LangGraph.js graphs | `npm install @agent-topology/spec@0.1.0-beta.4 @agent-topology/langgraph@0.1.0-beta.5` |
 
 The Python producer installs its specification dependency. The TypeScript producer
 declares it as a peer; install both explicitly. For application code that imports
@@ -44,7 +44,7 @@ or [CommonJS async import example](../getting-started/typescript.md#use-it-from-
 see [ESM installation errors](../guides/troubleshooting.md#esm-installation-errors)
 for `ERR_PACKAGE_PATH_NOT_EXPORTED` recovery.
 
-See [release notes](../releases/v0.1.0-beta.4.md) for published artifact identities,
+See [release notes](../releases/v0.1.0-beta.5.md) for published artifact identities,
 the [contract](../0.1-contract.md#supported-versions) for links to the authoritative
 compatibility manifests, and [local development](../maintainers/development.md)
 to test unreleased source.

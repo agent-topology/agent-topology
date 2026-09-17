@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "coordinatedVersion": "0.1.0-beta.5",
+  "sourceCommit": "dc030305096444908b1ba19a3458a6d97c9cf90b",
+  "branch": "rc/0.1.0-beta.5",
+  "publish": false,
+  "revalidatedAt": "2026-09-17T17:58:47Z",
+  "purpose": "Issue #172's pre-publication revalidation: re-run the protected release workflows for both changed packages against the exact frozen source #171 already qualified, immediately before requesting publish=true dispatch. This confirms no drift occurred between qualification (2026-09-17T17:20:36Z, docs/releases/evidence/beta.5/qualification.json) and publication readiness, and that each package-specific receipt/preflight still passes on the same commit. No artifact was uploaded to any registry (publish=false throughout); the registry-preflight/publish jobs that only run with publish=true were not exercised here and remain gated behind the protected-environment approval described in docs/releasing.md.",
+  "runs": [
+    {
+      "workflow": "Release one Python package",
+      "run": "https://github.com/agent-topology/agent-topology/actions/runs/35256003742",
+      "inputs": { "package": "langgraph", "version": "0.1.0b5", "publish": false },
+      "headSha": "dc030305096444908b1ba19a3458a6d97c9cf90b",
+      "conclusion": "success",
+      "covers": "langgraph test matrix (Python 3.11/3.13/3.14), authorize job (spec artifact reused unchanged, LangGraph artifact re-verified); publish job correctly skipped (publish=false)"
+    },
+    {
+      "workflow": "Release one npm package",
+      "run": "https://github.com/agent-topology/agent-topology/actions/runs/35256005631",
+      "inputs": { "package": "langgraph", "version": "0.1.0-beta.5", "spec-version": "0.1.0-beta.4", "publish": false },
+      "headSha": "dc030305096444908b1ba19a3458a6d97c9cf90b",
+      "conclusion": "success",
+      "covers": "selection (candidate docs + prepared release source checks), qualify (build, test, clean-install both tarballs together, checkout-clean, commit/digest binding); registry-preflight job ran but its verification steps were correctly skipped (publish=false); publish job correctly skipped"
+    }
+  ],
+  "sourceDriftCheck": "Both runs' headSha (dc030305096444908b1ba19a3458a6d97c9cf90b) matches docs/releases/release-state.json candidate.qualification.sourceCommit exactly; rc/0.1.0-beta.5 received no new commits between #171's qualification and this revalidation.",
+  "remainingForPublication": [
+    "Dispatch release-python.yml --ref rc/0.1.0-beta.5 -f package=langgraph -f version=0.1.0b5 -f publish=true and obtain the pypi-agent-topology-langgraph environment's required-reviewer approval (milocosmopolitan) before the publish job runs.",
+    "Dispatch release-npm.yml --ref rc/0.1.0-beta.5 -f package=langgraph -f version=0.1.0-beta.5 -f spec-version=0.1.0-beta.4 -f publish=true and obtain the npm-public-preview environment's required-reviewer approval before the publish job runs.",
+    "Install both newly published exact versions from the public registries in a clean environment and repeat the public smoke/behavior/exact-version-refusal paths already exercised locally against the qualified tarball in docs/releases/evidence/beta.5/qualification.json.",
+    "Record published artifact URLs, digests, and provenance here or in a follow-up evidence file.",
+    "Run the release-finalization workflow's stage phase to create the immutable v0.1.0-beta.5 tag and draft GitHub prerelease.",
+    "Open the dedicated closeout PR (release-state candidate -> coordinatedPublished, public installation docs, release notes) once all publication evidence exists.",
+    "After the closeout PR merges, run the finalization workflow's complete phase to make the GitHub prerelease public."
+  ],
+  "notes": "This record is for issue #172 (parent #166, blocked by #171). It intentionally stops before publish=true: publication requires manual approval on protected GitHub environments (pypi-agent-topology-langgraph, npm-public-preview) that only the repository's maintainer can grant, per docs/releasing.md's 'Python producer environment protection' section. No PyPI or npm upload, tag, or GitHub prerelease was created by this revalidation. As of this record, neither agent-topology-langgraph==0.1.0b5 nor @agent-topology/langgraph@0.1.0-beta.5 exists on their public registries (confirmed by direct registry query); the unchanged agent-topology-spec==0.1.0b4 and @agent-topology/spec@0.1.0-beta.4 are already public from the beta.4 release."
+}

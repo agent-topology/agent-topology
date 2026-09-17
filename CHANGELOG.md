@@ -7,13 +7,26 @@ future package versions will move together.
 
 ## Unreleased
 
-### 0.1.0-beta.5 candidate
+- Add a machine-readable release-state record and phase-specific documentation
+  checks so artifact qualification cannot be mistaken for a completed public
+  release.
+- Require a separate post-publication closeout before a draft GitHub prerelease
+  becomes public, and automatically reopen release issues closed as completed with
+  missing acceptance criteria.
+- Publish the [LangGraph version-range expansion
+  policy](docs/reference/langgraph-version-policy.md): the seven-day review
+  cadence for new stable releases, the exact evidence required before a
+  version is added, the RC freeze rule, and where consumers can see pending
+  qualification work.
+
+## v0.1.0-beta.5 public preview — 2026-09-17
 
 Prepared on `rc/0.1.0-beta.5`: the Python producer distribution uses `0.1.0b5`
 and the npm producer package uses `0.1.0-beta.5`; both specification packages
-stay on their published beta.4 versions, unchanged. This candidate has not
-been published. See the
-[candidate release notes](docs/releases/v0.1.0-beta.5.md) and the
+stay on their published beta.4 versions, unchanged. Both changed producer
+packages, the immutable tag, the GitHub prerelease, and live installation
+documentation identify the published and verified beta.5 release. See the
+[release notes](docs/releases/v0.1.0-beta.5.md) and the
 [beta.4 to beta.5 upgrade guide](docs/guides/upgrading-beta.5.md).
 
 - Add `declare_children(compiled_graph, children)` to
@@ -30,17 +43,6 @@ been published. See the
   differently-grouped source set. No structure-hash algorithm version change;
   every existing valid fixture's join id and hash are unaffected. See
   [ADR 0015](docs/decisions/0015-join-identity-deduplication-and-unambiguous-encoding.md).
-- Add a machine-readable release-state record and phase-specific documentation
-  checks so artifact qualification cannot be mistaken for a completed public
-  release.
-- Require a separate post-publication closeout before a draft GitHub prerelease
-  becomes public, and automatically reopen release issues closed as completed with
-  missing acceptance criteria.
-- Publish the [LangGraph version-range expansion
-  policy](docs/reference/langgraph-version-policy.md): the seven-day review
-  cadence for new stable releases, the exact evidence required before a
-  version is added, the RC freeze rule, and where consumers can see pending
-  qualification work.
 
 ## v0.1.0-beta.4 public preview — 2026-09-15
 

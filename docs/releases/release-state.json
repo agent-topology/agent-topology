@@ -1,78 +1,36 @@
 {
   "schemaVersion": 1,
   "coordinatedPublished": {
-    "coordinatedVersion": "0.1.0-beta.4",
-    "tag": "v0.1.0-beta.4",
-    "sourceCommit": "05486d7ee9cee7650779cb0e9c00a85bd152a3e8",
-    "releaseNotes": "docs/releases/v0.1.0-beta.4.md",
-    "migrationGuide": "docs/guides/upgrading-beta.4.md",
-    "evidence": "docs/releases/evidence/v0.1.0-beta.4.json",
-    "githubRelease": "https://github.com/agent-topology/agent-topology/releases/tag/v0.1.0-beta.4",
-    "packages": [
-      {
-        "name": "agent-topology-spec",
-        "ecosystem": "python",
-        "version": "0.1.0b4"
-      },
-      {
-        "name": "agent-topology-langgraph",
-        "ecosystem": "python",
-        "version": "0.1.0b4"
-      },
-      {
-        "name": "@agent-topology/spec",
-        "ecosystem": "npm",
-        "version": "0.1.0-beta.4"
-      },
-      {
-        "name": "@agent-topology/langgraph",
-        "ecosystem": "npm",
-        "version": "0.1.0-beta.4"
-      }
-    ]
-  },
-  "candidate": {
     "coordinatedVersion": "0.1.0-beta.5",
     "tag": "v0.1.0-beta.5",
-    "branch": "rc/0.1.0-beta.5",
+    "sourceCommit": "dc030305096444908b1ba19a3458a6d97c9cf90b",
     "releaseNotes": "docs/releases/v0.1.0-beta.5.md",
     "migrationGuide": "docs/guides/upgrading-beta.5.md",
-    "qualification": {
-      "sourceCommit": "dc030305096444908b1ba19a3458a6d97c9cf90b",
-      "publish": false,
-      "qualifiedAt": "2026-09-17T17:20:36Z",
-      "evidence": "docs/releases/evidence/beta.5/qualification.json"
-    },
+    "evidence": "docs/releases/evidence/v0.1.0-beta.5.json",
+    "githubRelease": "https://github.com/agent-topology/agent-topology/releases/tag/v0.1.0-beta.5",
     "packages": [
       {
         "name": "agent-topology-spec",
         "ecosystem": "python",
-        "version": "0.1.0b4",
-        "unchanged": true,
-        "note": "Source, schema, and fixtures identical to the published v0.1.0-beta.4 agent-topology-spec artifact; retained without a rebuild. See docs/releases/v0.1.0-beta.5.md#selected-packages."
+        "version": "0.1.0b4"
       },
       {
         "name": "agent-topology-langgraph",
         "ecosystem": "python",
-        "version": "0.1.0b5",
-        "unchanged": false,
-        "note": "New build: join-identity deduplication/escaping (ADR 0015) and declare_children (ADR 0014)."
+        "version": "0.1.0b5"
       },
       {
         "name": "@agent-topology/spec",
         "ecosystem": "npm",
-        "version": "0.1.0-beta.4",
-        "unchanged": true,
-        "note": "Source, schema, and fixtures identical to the published v0.1.0-beta.4 @agent-topology/spec artifact; retained without a rebuild. See docs/releases/v0.1.0-beta.5.md#selected-packages."
+        "version": "0.1.0-beta.4"
       },
       {
         "name": "@agent-topology/langgraph",
         "ecosystem": "npm",
-        "version": "0.1.0-beta.5",
-        "unchanged": false,
-        "note": "New build: join-identity deduplication/escaping (ADR 0015). declare_children (ADR 0014) is Python-only for this candidate."
+        "version": "0.1.0-beta.5"
       }
     ]
   },
+  "candidate": null,
   "partialPublications": []
 }

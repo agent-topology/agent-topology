@@ -1,0 +1,2 @@
+OK refused on @langchain/langgraph@1.4.15-rc.0: Unsupported LangGraph.js version 1.4.15-rc.0. @agent-topology/langgraph has extraction evidence only for 1.4.14. Install a tested release with `npm install @langchain/langgraph@1.4.14`.
+VERSION REFUSAL CHECK PASSED

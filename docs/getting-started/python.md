@@ -3,8 +3,10 @@
 See the [beta.1 to beta.2 upgrade guide](../guides/upgrading-beta.2.md) for beta.2
 package selections, hash baselines, and expanded-subgraph migration, and the
 [beta.2 to beta.3 upgrade guide](../guides/upgrading-beta.3.md) for beta.3's
-join-consumption helper and numeric-canonical-bytes changes, and the
-[beta.3 to beta.4 upgrade guide](../guides/upgrading-beta.4.md) for the
+join-consumption helper and numeric-canonical-bytes changes, the
+[beta.3 to beta.4 upgrade guide](../guides/upgrading-beta.4.md) for beta.4's
+nested-graph materialization and subgraphId changes, and the
+[beta.4 to beta.5 upgrade guide](../guides/upgrading-beta.5.md) for the
 current published release.
 
 [Documentation home](../README.md) · [Compatibility](../reference/compatibility.md)
@@ -19,7 +21,7 @@ In a new directory, create and activate a virtual environment:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install "agent-topology-langgraph==0.1.0b4"
+python -m pip install "agent-topology-langgraph==0.1.0b5"
 ```
 
 On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1` instead.
