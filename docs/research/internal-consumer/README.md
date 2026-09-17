@@ -11,6 +11,16 @@ is the probe evidence behind [ADR 0014](../../decisions/0014-explicit-constructi
 which [#180](https://github.com/agent-topology/agent-topology/issues/180)
 implements against campaign's real six call sites.
 
+R2 is now implemented and verified end to end:
+[#185](https://github.com/agent-topology/agent-topology/issues/185) shipped
+`declare_children`, [campaign-agent#63](https://github.com/milocosmopolitan/campaign-agent/pull/63)
+adopted it at all six call sites, and
+[campaign-agent/review-2026-09-17-declared-children.md](campaign-agent/review-2026-09-17-declared-children.md)
+([#186](https://github.com/agent-topology/agent-topology/issues/186))
+re-runs the 11-factory inventory against that commit and confirms each of the
+six relationships materializes as the real declared child, not just an
+updated graph count.
+
 Recorded 2026-09-15. All three reference repositories are in development.
 This is historical research, not a new support guarantee or an accepted design.
 

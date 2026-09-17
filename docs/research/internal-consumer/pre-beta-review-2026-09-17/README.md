@@ -115,6 +115,17 @@ parent-child relation. Campaign owns its factory change, requested through its
 issue tracker; topology owns any producer/contract change. Full hierarchy support
 must remain unclaimed until that integration passes.
 
+**Update, 2026-09-17 (same day, after this review):** that integration passed.
+[#185](https://github.com/agent-topology/agent-topology/issues/185) shipped the
+explicit construction-time `declare_children` contract this section called for
+([ADR 0014](../../../decisions/0014-explicit-construction-time-child-declaration.md)),
+and [campaign-agent#63](https://github.com/milocosmopolitan/campaign-agent/pull/63)
+adopted it at all six wrapper call sites. Re-run and per-relationship
+verification against that commit is recorded in
+[campaign-agent/review-2026-09-17-declared-children.md](../campaign-agent/review-2026-09-17-declared-children.md)
+([#186](https://github.com/agent-topology/agent-topology/issues/186)). R2 is
+resolved; full hierarchy support for these six sites can now be claimed.
+
 ### R3 — P2: release issues disagree about beta.5 scope
 
 As read on 2026-09-17, closed [#165](https://github.com/agent-topology/agent-topology/issues/165)
