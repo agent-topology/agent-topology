@@ -136,6 +136,14 @@ function edgeDocuments(values: readonly EdgeValue[]): TopologyEdge[] {
     });
 }
 
+function escapeJoinSource(source: string): string {
+  // Escape "\" first, then "+", so every unescaped "+" in the encoded string
+  // is a genuine source boundary. Two differently-grouped source lists (e.g.
+  // [a+b, c] versus [a, b+c]) then always encode to different strings,
+  // regardless of what a node happens to be named. See ADR 0014.
+  return source.replace(/\\/g, "\\\\").replace(/\+/g, "\\+");
+}
+
 function builderStructure(compiledGraph: RuntimeCompiledGraph): {
   edges: TopologyEdge[];
   joins: MultiSourceJoin[];
@@ -166,24 +174,36 @@ function builderStructure(compiledGraph: RuntimeCompiledGraph): {
     }
   }
 
-  const joins = [...compiledGraph.builder.waitingEdges].map(
-    ([rawSources, rawTarget]) => {
-      const sortedSources = rawSources.map(String).sort(compareText);
-      const [first, second, ...rest] = sortedSources;
-      if (first === undefined || second === undefined) {
-        throw new TypeError(
-          "a multi-source join must contain at least two sources",
-        );
-      }
-      const sources: [string, string, ...string[]] = [first, second, ...rest];
-      const target = String(rawTarget);
-      return {
-        id: `join:${sources.join("+")}:${target}`,
-        sources,
-        target,
-      };
-    },
-  );
+  // A join's sources are an AND-barrier keyed by their set, not their
+  // declared order: LangGraph fires the target once per superstep in which
+  // every source has written, however many equivalently-grouped addEdge(
+  // sources, target) declarations produced that barrier (verified by
+  // invoking a compiled graph with reversed and repeated declarations of the
+  // same source set; see ADR 0014). Declarations that share a sorted source
+  // set and target are therefore the same join and collapse to one record,
+  // unlike edgeDocuments' occurrence-numbered ordinary edges, whose
+  // OR-triggered paths really can fire independently.
+  const joinsByKey = new Map<string, MultiSourceJoin>();
+  for (const [rawSources, rawTarget] of compiledGraph.builder.waitingEdges) {
+    const sortedSources = rawSources.map(String).sort(compareText);
+    const [first, second, ...rest] = sortedSources;
+    if (first === undefined || second === undefined) {
+      throw new TypeError(
+        "a multi-source join must contain at least two sources",
+      );
+    }
+    const sources: [string, string, ...string[]] = [first, second, ...rest];
+    const target = String(rawTarget);
+    const key = `${JSON.stringify(sources)}\0${target}`;
+    if (joinsByKey.has(key)) continue;
+    const encodedSources = sources.map(escapeJoinSource).join("+");
+    joinsByKey.set(key, {
+      id: `join:${encodedSources}:${target}`,
+      sources,
+      target,
+    });
+  }
+  const joins = [...joinsByKey.values()];
   return { edges: edgeDocuments(values), joins, unknownRouters };
 }
 

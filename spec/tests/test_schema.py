@@ -35,7 +35,7 @@ class SchemaTests(unittest.TestCase):
 
     def test_conformance_expected_documents(self) -> None:
         expected_paths = sorted(CONFORMANCE_FIXTURES_DIR.glob("*/expected.json"))
-        self.assertEqual(len(expected_paths), 8)
+        self.assertEqual(len(expected_paths), 11)
         for path in expected_paths:
             with self.subTest(fixture=path.parent.name):
                 document = json.loads(path.read_text(encoding="utf-8"))

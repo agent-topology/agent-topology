@@ -422,6 +422,40 @@ def test_unsupported_version_has_its_own_status(
     assert "unsupported version" in capsys.readouterr().err
 
 
+def test_delimiter_bearing_join_sources_is_an_extraction_failure(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The public API's upstream-unobservable delimiter disposition (see
+    test_join_identity.py and ADR 0014) surfaces through the CLI as the
+    existing generic extraction-error status, not a fabricated document.
+    """
+    target = tmp_path / "graph.py"
+    output = tmp_path / "topology.json"
+    target.write_text(
+        """from langgraph.graph import END, START, StateGraph
+
+builder = StateGraph(dict)
+for name in ("a", "a+b", "b+c", "c", "sink"):
+    builder.add_node(name, lambda state: state)
+    if name != "sink":
+        builder.add_edge(START, name)
+builder.add_edge(["a+b", "c"], "sink")
+builder.add_edge(["a", "b+c"], "sink")
+builder.add_edge("sink", END)
+graph = builder.compile()
+""",
+        encoding="utf-8",
+    )
+
+    result = _cli.main(["describe", f"{target}:graph", "--out", str(output)])
+
+    error = capsys.readouterr().err
+    assert result == _cli.ExitCode.EXTRACTION
+    assert "extraction error" in error
+    assert "InvalidUpdateError" in error
+    assert not output.exists()
+
+
 def test_unwritable_output_has_its_own_status(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:

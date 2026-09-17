@@ -85,6 +85,18 @@ def _edge_documents(
     return edges
 
 
+def _escape_join_source(source: str) -> str:
+    """Escape a source id so the ``+`` join delimiter cannot be forged.
+
+    Backslash is escaped first, then ``+``, so every unescaped ``+`` in the
+    encoded string is a genuine source boundary. Two differently-grouped
+    source lists (e.g. ``[a+b, c]`` versus ``[a, b+c]``) then always encode to
+    different strings, regardless of what a node happens to be named. See
+    ADR 0014.
+    """
+    return source.replace("\\", "\\\\").replace("+", "\\+")
+
+
 def _builder_structure(
     compiled_graph: CompiledStateGraph,
 ) -> tuple[
@@ -114,14 +126,29 @@ def _builder_structure(
             (str(source), str(target), "conditional") for target in node.ends
         )
 
-    joins = [
-        {
-            "id": f"join:{'+'.join(sorted(map(str, sources)))}:{target}",
-            "sources": sorted(map(str, sources)),
-            "target": str(target),
+    # A join's sources are an AND-barrier keyed by their set, not their
+    # declared order: LangGraph fires the target once per superstep in which
+    # every source has written, however many equivalently-grouped
+    # `add_edge(sources, target)` declarations produced that barrier (verified
+    # by invoking a compiled graph with reversed and repeated declarations of
+    # the same source set; see ADR 0014). Declarations that share a sorted
+    # source set and target are therefore the same join and collapse to one
+    # record, unlike `_edge_documents`' occurrence-numbered ordinary edges,
+    # whose OR-triggered paths really can fire independently.
+    joins_by_key: dict[tuple[tuple[str, ...], str], dict[str, Any]] = {}
+    for sources, target in builder.waiting_edges:
+        sorted_sources = sorted(map(str, sources))
+        target_str = str(target)
+        key = (tuple(sorted_sources), target_str)
+        if key in joins_by_key:
+            continue
+        encoded_sources = "+".join(_escape_join_source(s) for s in sorted_sources)
+        joins_by_key[key] = {
+            "id": f"join:{encoded_sources}:{target_str}",
+            "sources": sorted_sources,
+            "target": target_str,
         }
-        for sources, target in builder.waiting_edges
-    ]
+    joins = list(joins_by_key.values())
     return _edge_documents(edge_values), joins, unknown_routers
 
 

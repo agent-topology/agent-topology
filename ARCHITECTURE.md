@@ -81,6 +81,11 @@ without false confidence.
 - Collections are canonicalised before output and hashing.
 - The format version, hash-algorithm version, and package versions are separate.
 - Multi-source joins remain distinct from several independent incoming edges.
+- A join's identity is its sorted source set and target, not its declaration
+  order or how many equivalent declarations produced it: reversed, permuted,
+  or repeated declarations of the same source set and target collapse to one
+  join, and a source id's own characters cannot forge a collision with a
+  different source set ([ADR 0014](docs/decisions/0014-join-identity-deduplication-and-unambiguous-encoding.md)).
 - Graph identifiers are unique document-local addresses selected by producer callers;
   display names are independent and author-owned.
 - Vendor neutrality is provisional while only one framework model is observed.

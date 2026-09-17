@@ -15,7 +15,10 @@ const fixturesRoot = resolve(
 );
 const expectedCases = [
   "conditional-routing",
+  "independent-incoming-edges",
   "interrupt-before",
+  "join-permuted-sources",
+  "join-repeated-declaration",
   "linear-flow",
   "loop",
   "multi-source-join",
