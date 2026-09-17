@@ -14,7 +14,10 @@ from langgraph.graph.state import CompiledStateGraph
 FIXTURES_DIR = Path(__file__).parents[4] / "conformance" / "fixtures"
 EXPECTED_CASES = {
     "conditional-routing",
+    "independent-incoming-edges",
     "interrupt-before",
+    "join-permuted-sources",
+    "join-repeated-declaration",
     "linear-flow",
     "loop",
     "multi-source-join",
