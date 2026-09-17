@@ -34,7 +34,8 @@ jobs:
           gh issue reopen "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY"
           comment_id="$(gh api --paginate \
             "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER/comments" \
-            --slurp --jq '[.[].[] | select(.body | contains("<!-- release-issue-close-guard -->"))] | last | .id // empty')"
+            --jq '.[] | select(.body | contains("<!-- release-issue-close-guard -->")) | .id' \
+            | tail -n 1)"
           jq -n --rawfile body "$COMMENT_FILE" '{body: $body}' > "${{ runner.temp }}/comment.json"
           if [ -n "$comment_id" ]; then
             gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$comment_id" \
